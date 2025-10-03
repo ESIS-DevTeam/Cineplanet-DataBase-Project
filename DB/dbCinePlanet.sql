@@ -2,13 +2,9 @@
 CREATE TABLE USUARIO (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
-    apellidoPaterno VARCHAR(100) NOT NULL,
-    apellidoMaterno VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
     tipoDocumento VARCHAR(20) NOT NULL,
-    numeroDocumento VARCHAR(20) UNIQUE NOT NULL,
-    fechaNacimiento DATE,
-    celular VARCHAR(20),
-    genero VARCHAR(10)
+    numeroDocumento VARCHAR(20) UNIQUE NOT NULL
 );
 
 CREATE TABLE CINE (
@@ -52,7 +48,7 @@ CREATE TABLE PROMO (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     descripcion TEXT,
-    fecha_inicio DATE,
+    fecha_inicio DATE,  
     fecha_fin DATE,
     estado ENUM('activa', 'inactiva') DEFAULT 'activa'
 );
@@ -64,7 +60,12 @@ CREATE TABLE SOCIO (
     departamento VARCHAR(50),
     provincia VARCHAR(50),
     distrito VARCHAR(50),
+    apellidoPaterno VARCHAR(100) NOT NULL,
+    apellidoMaterno VARCHAR(100) NOT NULL,
     cineplanetFavorito VARCHAR(50),
+    fechaNacimiento DATE,
+    celular VARCHAR(20),
+    genero VARCHAR(10)
     FOREIGN KEY (id) REFERENCES USUARIO(id) ON DELETE CASCADE
 );
 
