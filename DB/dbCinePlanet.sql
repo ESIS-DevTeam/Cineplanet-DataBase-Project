@@ -1,4 +1,10 @@
--- Primero las tablas sin dependencias
+DROP DATABASE dbcineplanet;
+CREATE DATABASE dbcineplanet;
+USE dbcineplanet;
+
+--------------------------------------
+
+
 CREATE TABLE USUARIO (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
@@ -26,7 +32,7 @@ CREATE TABLE PELICULA (
     autor VARCHAR(100),
     trailer VARCHAR(255),
     portada VARCHAR(255),
-    idioma VARCHAR(50),
+    -- idioma se normaliza en PELICULA_IDIOMA
     estado ENUM('activa', 'inactiva') DEFAULT 'activa'
 );
 
@@ -48,12 +54,16 @@ CREATE TABLE PROMO (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     descripcion TEXT,
-    fecha_inicio DATE,  
+    fecha_inicio DATE,
     fecha_fin DATE,
+    -- tipo de promo: porcentaje (valor = 10 => 10%) o fijo (valor = 5 => 5 unidades monetarias)
+    tipo ENUM('porcentaje','fijo') DEFAULT 'fijo',
+    valor DECIMAL(10,2) DEFAULT 0,
+    -- aplicaA indica si la promo se aplica a todos los items, solo productos o solo funciones
+    aplicaA ENUM('todo','productos','funciones') DEFAULT 'todo',
     estado ENUM('activa', 'inactiva') DEFAULT 'activa'
 );
 
--- Luego las que dependen de las anteriores
 CREATE TABLE SOCIO (
     id INT PRIMARY KEY,
     password VARCHAR(255) NOT NULL,
@@ -65,7 +75,7 @@ CREATE TABLE SOCIO (
     cineplanetFavorito VARCHAR(50),
     fechaNacimiento DATE,
     celular VARCHAR(20),
-    genero VARCHAR(10)
+    genero VARCHAR(10),
     FOREIGN KEY (id) REFERENCES USUARIO(id) ON DELETE CASCADE
 );
 
@@ -86,7 +96,20 @@ CREATE TABLE PELICULA_FORMATO (
     FOREIGN KEY (idFormato) REFERENCES FORMATO(id) ON DELETE CASCADE
 );
 
--- Tabla FUNCION para funciones de cine
+-- Normalización de idiomas: una película puede tener varios idiomas, y una función también
+CREATE TABLE IDIOMA (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE PELICULA_IDIOMA (
+    idPelicula INT NOT NULL,
+    idIdioma INT NOT NULL,
+    PRIMARY KEY (idPelicula, idIdioma),
+    FOREIGN KEY (idPelicula) REFERENCES PELICULA(id) ON DELETE CASCADE,
+    FOREIGN KEY (idIdioma) REFERENCES IDIOMA(id) ON DELETE CASCADE
+);
+
 CREATE TABLE FUNCION (
     id INT AUTO_INCREMENT PRIMARY KEY,
     idPelicula INT NOT NULL,
@@ -95,17 +118,22 @@ CREATE TABLE FUNCION (
     fecha DATE NOT NULL,
     hora TIME NOT NULL,
     precio DECIMAL(6,2) NOT NULL,
+    -- cada función tiene un solo idioma (idIdioma puede ser NULL si no se especifica)
+    idIdioma INT NULL,
     estado ENUM('activa', 'inactiva') DEFAULT 'activa',
     FOREIGN KEY (idPelicula) REFERENCES PELICULA(id) ON DELETE CASCADE,
     FOREIGN KEY (idSala) REFERENCES SALA(id) ON DELETE CASCADE,
-    FOREIGN KEY (idFormato) REFERENCES FORMATO(id) ON DELETE CASCADE
+    FOREIGN KEY (idFormato) REFERENCES FORMATO(id) ON DELETE CASCADE,
+    FOREIGN KEY (idIdioma) REFERENCES IDIOMA(id) ON DELETE SET NULL
 );
 
 CREATE TABLE BOLETA (
     id INT AUTO_INCREMENT PRIMARY KEY,
     idUsuario INT NOT NULL,
     fecha DATE NOT NULL,
-    total DECIMAL(10,2) NOT NULL,
+    subtotal DECIMAL(10,2) NOT NULL DEFAULT 0,
+    descuentoTotal DECIMAL(10,2) NOT NULL DEFAULT 0,
+    total DECIMAL(10,2) NOT NULL DEFAULT 0,
     FOREIGN KEY (idUsuario) REFERENCES USUARIO(id) ON DELETE CASCADE
 );
 
@@ -114,27 +142,529 @@ CREATE TABLE PRODUCTOS_BOLETA (
     idBoleta INT NOT NULL,
     idProducto INT NOT NULL,
     cantidad INT DEFAULT 1,
+    precioUnitario DECIMAL(10,2) NOT NULL,
+    subtotal DECIMAL(10,2) AS (cantidad * precioUnitario) STORED,
     FOREIGN KEY (idBoleta) REFERENCES BOLETA(id) ON DELETE CASCADE,
     FOREIGN KEY (idProducto) REFERENCES PRODUCTO(id) ON DELETE CASCADE
 );
 
--- Relación de funciones compradas en una boleta
 CREATE TABLE FUNCIONES_BOLETA (
     id INT AUTO_INCREMENT PRIMARY KEY,
     idBoleta INT NOT NULL,
     idFuncion INT NOT NULL,
     cantidad INT DEFAULT 1,
+    precioUnitario DECIMAL(10,2) NOT NULL,
+    subtotal DECIMAL(10,2) AS (cantidad * precioUnitario) STORED,
     FOREIGN KEY (idBoleta) REFERENCES BOLETA(id) ON DELETE CASCADE,
     FOREIGN KEY (idFuncion) REFERENCES FUNCION(id) ON DELETE CASCADE
 );
 
-    -- Relación de promociones aplicadas a una boleta
-    CREATE TABLE PROMO_BOLETA (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        idBoleta INT NOT NULL,
-        idPromo INT NOT NULL,
-        montoDescuento DECIMAL(10,2) DEFAULT 0,
-        detalle VARCHAR(255),
-        FOREIGN KEY (idBoleta) REFERENCES BOLETA(id) ON DELETE CASCADE,
-        FOREIGN KEY (idPromo) REFERENCES PROMO(id) ON DELETE CASCADE
-    );
+CREATE TABLE PROMO_BOLETA (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    idBoleta INT NOT NULL,
+    idPromo INT NOT NULL,
+    montoDescuento DECIMAL(10,2) DEFAULT 0,
+    detalle VARCHAR(255),
+    FOREIGN KEY (idBoleta) REFERENCES BOLETA(id) ON DELETE CASCADE,
+    FOREIGN KEY (idPromo) REFERENCES PROMO(id) ON DELETE CASCADE
+);
+
+-- Tabla de depuración para recálculos (no necesaria en producción, útil para debugging)
+/* DEBUG_RECALC removed: no debug tables in production schema */
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS recalc_boleta_total$$
+CREATE PROCEDURE recalc_boleta_total(IN p_idBoleta INT)
+BEGIN
+    DECLARE v_prod_sub DECIMAL(14,2) DEFAULT 0;
+    DECLARE v_func_sub DECIMAL(14,2) DEFAULT 0;
+    DECLARE v_subtotal DECIMAL(14,2) DEFAULT 0;
+    DECLARE v_desc_total DECIMAL(14,2) DEFAULT 0;
+    DECLARE v_got_lock INT DEFAULT 0;
+
+    -- Intentar obtener lock por boleta (timeout 5s)
+    SET v_got_lock = GET_LOCK(CONCAT('recalc_lock_', p_idBoleta), 5);
+
+    IF v_got_lock = 1 THEN
+        -- Calcular subtotales
+        SELECT IFNULL(SUM(cantidad * precioUnitario),0) INTO v_prod_sub FROM PRODUCTOS_BOLETA WHERE idBoleta = p_idBoleta;
+        SELECT IFNULL(SUM(cantidad * precioUnitario),0) INTO v_func_sub FROM FUNCIONES_BOLETA WHERE idBoleta = p_idBoleta;
+        SET v_subtotal = v_prod_sub + v_func_sub;
+
+        -- Calcular descuento total sin modificar PROMO_BOLETA (evita error 1442)
+        SELECT IFNULL(SUM(
+            CASE p.tipo
+                WHEN 'porcentaje' THEN
+                    CASE p.aplicaA
+                        WHEN 'productos' THEN (v_prod_sub * p.valor / 100)
+                        WHEN 'funciones' THEN (v_func_sub * p.valor / 100)
+                        ELSE (v_subtotal * p.valor / 100)
+                    END
+                WHEN 'fijo' THEN p.valor
+                ELSE 0
+            END
+        ), 0) INTO v_desc_total
+        FROM PROMO_BOLETA pb
+        JOIN PROMO p ON pb.idPromo = p.id
+        WHERE pb.idBoleta = p_idBoleta
+          AND p.estado = 'activa';
+
+        IF v_desc_total > v_subtotal THEN
+            SET v_desc_total = v_subtotal;
+        END IF;
+
+        -- Actualizar solo BOLETA (subtotal/desc/total)
+        UPDATE BOLETA
+        SET subtotal = ROUND(v_subtotal,2),
+            descuentoTotal = ROUND(v_desc_total,2),
+            total = ROUND(GREATEST(0, v_subtotal - v_desc_total),2)
+        WHERE id = p_idBoleta;
+
+        -- Liberar lock
+        DO RELEASE_LOCK(CONCAT('recalc_lock_', p_idBoleta));
+    END IF;
+END$$
+DELIMITER ;
+
+-- ==================================================================
+-- Procedimientos CRUD y helpers para operaciones comunes
+-- ==================================================================
+
+DELIMITER $$
+
+-- USUARIO
+DROP PROCEDURE IF EXISTS usuario_create$$
+CREATE PROCEDURE usuario_create(
+    IN p_nombre VARCHAR(100), IN p_email VARCHAR(100), IN p_tipoDocumento VARCHAR(20), IN p_numeroDocumento VARCHAR(20), OUT p_id INT)
+BEGIN
+    INSERT INTO USUARIO(nombre,email,tipoDocumento,numeroDocumento) VALUES (p_nombre,p_email,p_tipoDocumento,p_numeroDocumento);
+    SET p_id = LAST_INSERT_ID();
+END$$
+
+DROP PROCEDURE IF EXISTS usuario_get$$
+CREATE PROCEDURE usuario_get(IN p_id INT)
+BEGIN
+    SELECT * FROM USUARIO WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS usuario_update$$
+CREATE PROCEDURE usuario_update(IN p_id INT, IN p_nombre VARCHAR(100), IN p_email VARCHAR(100), IN p_tipoDocumento VARCHAR(20), IN p_numeroDocumento VARCHAR(20))
+BEGIN
+    UPDATE USUARIO SET nombre = p_nombre, email = p_email, tipoDocumento = p_tipoDocumento, numeroDocumento = p_numeroDocumento WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS usuario_delete$$
+CREATE PROCEDURE usuario_delete(IN p_id INT)
+BEGIN
+    DELETE FROM USUARIO WHERE id = p_id;
+END$$
+
+-- CINE
+DROP PROCEDURE IF EXISTS cine_create$$
+CREATE PROCEDURE cine_create(IN p_nombre VARCHAR(100), IN p_direccion VARCHAR(255), IN p_telefono VARCHAR(20), IN p_email VARCHAR(100), IN p_ciudad VARCHAR(50), OUT p_id INT)
+BEGIN
+    INSERT INTO CINE(nombre,direccion,telefono,email,ciudad) VALUES (p_nombre,p_direccion,p_telefono,p_email,p_ciudad);
+    SET p_id = LAST_INSERT_ID();
+END$$
+
+DROP PROCEDURE IF EXISTS cine_get$$
+CREATE PROCEDURE cine_get(IN p_id INT)
+BEGIN
+    SELECT * FROM CINE WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS cine_update$$
+CREATE PROCEDURE cine_update(IN p_id INT, IN p_nombre VARCHAR(100), IN p_direccion VARCHAR(255), IN p_telefono VARCHAR(20), IN p_email VARCHAR(100), IN p_ciudad VARCHAR(50))
+BEGIN
+    UPDATE CINE SET nombre=p_nombre, direccion=p_direccion, telefono=p_telefono, email=p_email, ciudad=p_ciudad WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS cine_delete$$
+CREATE PROCEDURE cine_delete(IN p_id INT)
+BEGIN
+    DELETE FROM CINE WHERE id = p_id;
+END$$
+
+-- IDIOMA
+DROP PROCEDURE IF EXISTS idioma_create$$
+CREATE PROCEDURE idioma_create(IN p_nombre VARCHAR(50), OUT p_id INT)
+BEGIN
+    INSERT INTO IDIOMA(nombre) VALUES (p_nombre);
+    SET p_id = LAST_INSERT_ID();
+END$$
+
+DROP PROCEDURE IF EXISTS idioma_get_all$$
+CREATE PROCEDURE idioma_get_all()
+BEGIN
+    SELECT * FROM IDIOMA;
+END$$
+
+-- PELICULA
+DROP PROCEDURE IF EXISTS socio_create$$
+CREATE PROCEDURE socio_create(
+    IN p_idUsuario INT,
+    IN p_password VARCHAR(255),
+    IN p_departamento VARCHAR(50),
+    IN p_provincia VARCHAR(50),
+    IN p_distrito VARCHAR(50),
+    IN p_apellidoPaterno VARCHAR(100),
+    IN p_apellidoMaterno VARCHAR(100),
+    IN p_cineplanetFavorito VARCHAR(50),
+    IN p_fechaNacimiento DATE,
+    IN p_celular VARCHAR(20),
+    IN p_genero VARCHAR(10)
+)
+BEGIN
+    -- Asumimos que el usuario ya existe; el id del socio es el mismo que el id de usuario
+    INSERT INTO SOCIO(id,password,departamento,provincia,distrito,apellidoPaterno,apellidoMaterno,cineplanetFavorito,fechaNacimiento,celular,genero)
+    VALUES (p_idUsuario,p_password,p_departamento,p_provincia,p_distrito,p_apellidoPaterno,p_apellidoMaterno,p_cineplanetFavorito,p_fechaNacimiento,p_celular,p_genero);
+END$$
+
+DROP PROCEDURE IF EXISTS socio_get$$
+CREATE PROCEDURE socio_get(IN p_id INT)
+BEGIN
+    SELECT * FROM SOCIO WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS socio_update$$
+CREATE PROCEDURE socio_update(
+    IN p_id INT,
+    IN p_password VARCHAR(255),
+    IN p_departamento VARCHAR(50),
+    IN p_provincia VARCHAR(50),
+    IN p_distrito VARCHAR(50),
+    IN p_apellidoPaterno VARCHAR(100),
+    IN p_apellidoMaterno VARCHAR(100),
+    IN p_cineplanetFavorito VARCHAR(50),
+    IN p_fechaNacimiento DATE,
+    IN p_celular VARCHAR(20),
+    IN p_genero VARCHAR(10)
+)
+BEGIN
+    UPDATE SOCIO SET password = p_password, departamento = p_departamento, provincia = p_provincia, distrito = p_distrito, apellidoPaterno = p_apellidoPaterno, apellidoMaterno = p_apellidoMaterno, cineplanetFavorito = p_cineplanetFavorito, fechaNacimiento = p_fechaNacimiento, celular = p_celular, genero = p_genero WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS socio_delete$$
+CREATE PROCEDURE socio_delete(IN p_id INT)
+BEGIN
+    DELETE FROM SOCIO WHERE id = p_id;
+END$$
+DROP PROCEDURE IF EXISTS pelicula_create$$
+CREATE PROCEDURE pelicula_create(
+    IN p_genero VARCHAR(100), IN p_duracion INT, IN p_restriccionEdad VARCHAR(20), IN p_restriccionComercial VARCHAR(50), IN p_sinopsis TEXT, IN p_autor VARCHAR(100), IN p_trailer VARCHAR(255), IN p_portada VARCHAR(255), IN p_estado ENUM('activa','inactiva'), OUT p_id INT)
+BEGIN
+    INSERT INTO PELICULA(genero,duracion,restriccionEdad,restriccionComercial,sinopsis,autor,trailer,portada,estado)
+    VALUES (p_genero,p_duracion,p_restriccionEdad,p_restriccionComercial,p_sinopsis,p_autor,p_trailer,p_portada,p_estado);
+    SET p_id = LAST_INSERT_ID();
+END$$
+
+DROP PROCEDURE IF EXISTS pelicula_get$$
+CREATE PROCEDURE pelicula_get(IN p_id INT)
+BEGIN
+    SELECT * FROM PELICULA WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS pelicula_update$$
+CREATE PROCEDURE pelicula_update(
+    IN p_id INT, IN p_genero VARCHAR(100), IN p_duracion INT, IN p_restriccionEdad VARCHAR(20), IN p_restriccionComercial VARCHAR(50), IN p_sinopsis TEXT, IN p_autor VARCHAR(100), IN p_trailer VARCHAR(255), IN p_portada VARCHAR(255), IN p_estado ENUM('activa','inactiva'))
+BEGIN
+    UPDATE PELICULA SET genero=p_genero, duracion=p_duracion, restriccionEdad=p_restriccionEdad, restriccionComercial=p_restriccionComercial, sinopsis=p_sinopsis, autor=p_autor, trailer=p_trailer, portada=p_portada, estado=p_estado WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS pelicula_delete$$
+CREATE PROCEDURE pelicula_delete(IN p_id INT)
+BEGIN
+    DELETE FROM PELICULA WHERE id = p_id;
+END$$
+
+-- PELICULA_IDIOMA (asignar/quitar idioma a pelicula)
+DROP PROCEDURE IF EXISTS pelicula_idioma_add$$
+CREATE PROCEDURE pelicula_idioma_add(IN p_idPelicula INT, IN p_idIdioma INT)
+BEGIN
+    INSERT IGNORE INTO PELICULA_IDIOMA(idPelicula,idIdioma) VALUES (p_idPelicula,p_idIdioma);
+END$$
+
+DROP PROCEDURE IF EXISTS pelicula_idioma_remove$$
+CREATE PROCEDURE pelicula_idioma_remove(IN p_idPelicula INT, IN p_idIdioma INT)
+BEGIN
+    DELETE FROM PELICULA_IDIOMA WHERE idPelicula = p_idPelicula AND idIdioma = p_idIdioma;
+END$$
+
+-- FORMATO
+DROP PROCEDURE IF EXISTS formato_create$$
+CREATE PROCEDURE formato_create(IN p_nombre VARCHAR(50), OUT p_id INT)
+BEGIN
+    INSERT INTO FORMATO(nombre) VALUES (p_nombre);
+    SET p_id = LAST_INSERT_ID();
+END$$
+
+DROP PROCEDURE IF EXISTS formato_get_all$$
+CREATE PROCEDURE formato_get_all()
+BEGIN
+    SELECT * FROM FORMATO;
+END$$
+
+-- PRODUCTO
+DROP PROCEDURE IF EXISTS producto_create$$
+CREATE PROCEDURE producto_create(IN p_nombre VARCHAR(100), IN p_descripcion TEXT, IN p_precio DECIMAL(5,2), IN p_imagen VARCHAR(255), IN p_tipo VARCHAR(50), OUT p_id INT)
+BEGIN
+    INSERT INTO PRODUCTO(nombre,descripcion,precio,imagen,tipo) VALUES (p_nombre,p_descripcion,p_precio,p_imagen,p_tipo);
+    SET p_id = LAST_INSERT_ID();
+END$$
+
+DROP PROCEDURE IF EXISTS producto_get$$
+CREATE PROCEDURE producto_get(IN p_id INT)
+BEGIN
+    SELECT * FROM PRODUCTO WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS producto_update$$
+CREATE PROCEDURE producto_update(IN p_id INT, IN p_nombre VARCHAR(100), IN p_descripcion TEXT, IN p_precio DECIMAL(5,2), IN p_imagen VARCHAR(255), IN p_tipo VARCHAR(50))
+BEGIN
+    UPDATE PRODUCTO SET nombre=p_nombre, descripcion=p_descripcion, precio=p_precio, imagen=p_imagen, tipo=p_tipo WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS producto_delete$$
+CREATE PROCEDURE producto_delete(IN p_id INT)
+BEGIN
+    DELETE FROM PRODUCTO WHERE id = p_id;
+END$$
+
+-- PROMO
+DROP PROCEDURE IF EXISTS promo_create$$
+CREATE PROCEDURE promo_create(IN p_nombre VARCHAR(100), IN p_descripcion TEXT, IN p_fecha_inicio DATE, IN p_fecha_fin DATE, IN p_tipo ENUM('porcentaje','fijo'), IN p_valor DECIMAL(10,2), IN p_aplicaA ENUM('todo','productos','funciones'), IN p_estado ENUM('activa','inactiva'), OUT p_id INT)
+BEGIN
+    INSERT INTO PROMO(nombre,descripcion,fecha_inicio,fecha_fin,tipo,valor,aplicaA,estado) VALUES (p_nombre,p_descripcion,p_fecha_inicio,p_fecha_fin,p_tipo,p_valor,p_aplicaA,p_estado);
+    SET p_id = LAST_INSERT_ID();
+END$$
+
+DROP PROCEDURE IF EXISTS promo_get$$
+CREATE PROCEDURE promo_get(IN p_id INT)
+BEGIN
+    SELECT * FROM PROMO WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS promo_update$$
+CREATE PROCEDURE promo_update(IN p_id INT, IN p_nombre VARCHAR(100), IN p_descripcion TEXT, IN p_fecha_inicio DATE, IN p_fecha_fin DATE, IN p_tipo ENUM('porcentaje','fijo'), IN p_valor DECIMAL(10,2), IN p_aplicaA ENUM('todo','productos','funciones'), IN p_estado ENUM('activa','inactiva'))
+BEGIN
+    UPDATE PROMO SET nombre=p_nombre, descripcion=p_descripcion, fecha_inicio=p_fecha_inicio, fecha_fin=p_fecha_fin, tipo=p_tipo, valor=p_valor, aplicaA=p_aplicaA, estado=p_estado WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS promo_delete$$
+CREATE PROCEDURE promo_delete(IN p_id INT)
+BEGIN
+    DELETE FROM PROMO WHERE id = p_id;
+END$$
+
+-- SALA
+DROP PROCEDURE IF EXISTS sala_create$$
+CREATE PROCEDURE sala_create(IN p_nombre VARCHAR(100), IN p_capacidad INT, IN p_tipo VARCHAR(50), IN p_idCine INT, OUT p_id INT)
+BEGIN
+    INSERT INTO SALA(nombre,capacidad,tipo,idCine) VALUES (p_nombre,p_capacidad,p_tipo,p_idCine);
+    SET p_id = LAST_INSERT_ID();
+END$$
+
+DROP PROCEDURE IF EXISTS sala_get$$
+CREATE PROCEDURE sala_get(IN p_id INT)
+BEGIN
+    SELECT * FROM SALA WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS sala_update$$
+CREATE PROCEDURE sala_update(IN p_id INT, IN p_nombre VARCHAR(100), IN p_capacidad INT, IN p_tipo VARCHAR(50), IN p_idCine INT)
+BEGIN
+    UPDATE SALA SET nombre=p_nombre, capacidad=p_capacidad, tipo=p_tipo, idCine=p_idCine WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS sala_delete$$
+CREATE PROCEDURE sala_delete(IN p_id INT)
+BEGIN
+    DELETE FROM SALA WHERE id = p_id;
+END$$
+
+-- FUNCION
+DROP PROCEDURE IF EXISTS funcion_create$$
+CREATE PROCEDURE funcion_create(IN p_idPelicula INT, IN p_idSala INT, IN p_idFormato INT, IN p_fecha DATE, IN p_hora TIME, IN p_precio DECIMAL(6,2), IN p_idIdioma INT, IN p_estado ENUM('activa','inactiva'), OUT p_id INT)
+BEGIN
+    INSERT INTO FUNCION(idPelicula,idSala,idFormato,fecha,hora,precio,idIdioma,estado) VALUES (p_idPelicula,p_idSala,p_idFormato,p_fecha,p_hora,p_precio,p_idIdioma,p_estado);
+    SET p_id = LAST_INSERT_ID();
+END$$
+
+DROP PROCEDURE IF EXISTS funcion_get$$
+CREATE PROCEDURE funcion_get(IN p_id INT)
+BEGIN
+    SELECT * FROM FUNCION WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS funcion_update$$
+CREATE PROCEDURE funcion_update(IN p_id INT, IN p_idPelicula INT, IN p_idSala INT, IN p_idFormato INT, IN p_fecha DATE, IN p_hora TIME, IN p_precio DECIMAL(6,2), IN p_idIdioma INT, IN p_estado ENUM('activa','inactiva'))
+BEGIN
+    UPDATE FUNCION SET idPelicula=p_idPelicula, idSala=p_idSala, idFormato=p_idFormato, fecha=p_fecha, hora=p_hora, precio=p_precio, idIdioma=p_idIdioma, estado=p_estado WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS funcion_delete$$
+CREATE PROCEDURE funcion_delete(IN p_id INT)
+BEGIN
+    DELETE FROM FUNCION WHERE id = p_id;
+END$$
+
+-- BOLETA
+DROP PROCEDURE IF EXISTS boleta_create$$
+CREATE PROCEDURE boleta_create(IN p_idUsuario INT, IN p_fecha DATE, OUT p_id INT)
+BEGIN
+    INSERT INTO BOLETA(idUsuario,fecha) VALUES (p_idUsuario,p_fecha);
+    SET p_id = LAST_INSERT_ID();
+END$$
+
+DROP PROCEDURE IF EXISTS boleta_get$$
+CREATE PROCEDURE boleta_get(IN p_id INT)
+BEGIN
+    SELECT * FROM BOLETA WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS boleta_delete$$
+CREATE PROCEDURE boleta_delete(IN p_id INT)
+BEGIN
+    DELETE FROM BOLETA WHERE id = p_id;
+END$$
+
+-- PRODUCTOS_BOLETA (helpers que llaman a recalc)
+DROP PROCEDURE IF EXISTS producto_boleta_add$$
+CREATE PROCEDURE producto_boleta_add(IN p_idBoleta INT, IN p_idProducto INT, IN p_cantidad INT, IN p_precioUnitario DECIMAL(10,2), OUT p_id INT)
+BEGIN
+    INSERT INTO PRODUCTOS_BOLETA(idBoleta,idProducto,cantidad,precioUnitario) VALUES (p_idBoleta,p_idProducto,p_cantidad,p_precioUnitario);
+    SET p_id = LAST_INSERT_ID();
+    CALL recalc_boleta_total(p_idBoleta);
+END$$
+
+DROP PROCEDURE IF EXISTS producto_boleta_update$$
+CREATE PROCEDURE producto_boleta_update(IN p_id INT, IN p_cantidad INT, IN p_precioUnitario DECIMAL(10,2))
+BEGIN
+    UPDATE PRODUCTOS_BOLETA SET cantidad = p_cantidad, precioUnitario = p_precioUnitario WHERE id = p_id;
+    -- recalcular por idBoleta
+    CALL recalc_boleta_total((SELECT idBoleta FROM PRODUCTOS_BOLETA WHERE id = p_id));
+END$$
+
+DROP PROCEDURE IF EXISTS producto_boleta_delete$$
+CREATE PROCEDURE producto_boleta_delete(IN p_id INT)
+BEGIN
+    DECLARE v_idBoleta INT;
+    SELECT idBoleta INTO v_idBoleta FROM PRODUCTOS_BOLETA WHERE id = p_id;
+    DELETE FROM PRODUCTOS_BOLETA WHERE id = p_id;
+    IF v_idBoleta IS NOT NULL THEN
+        CALL recalc_boleta_total(v_idBoleta);
+    END IF;
+END$$
+
+-- FUNCIONES_BOLETA (helpers)
+DROP PROCEDURE IF EXISTS funcion_boleta_add$$
+CREATE PROCEDURE funcion_boleta_add(IN p_idBoleta INT, IN p_idFuncion INT, IN p_cantidad INT, IN p_precioUnitario DECIMAL(10,2), OUT p_id INT)
+BEGIN
+    INSERT INTO FUNCIONES_BOLETA(idBoleta,idFuncion,cantidad,precioUnitario) VALUES (p_idBoleta,p_idFuncion,p_cantidad,p_precioUnitario);
+    SET p_id = LAST_INSERT_ID();
+    CALL recalc_boleta_total(p_idBoleta);
+END$$
+
+DROP PROCEDURE IF EXISTS funcion_boleta_update$$
+CREATE PROCEDURE funcion_boleta_update(IN p_id INT, IN p_cantidad INT, IN p_precioUnitario DECIMAL(10,2))
+BEGIN
+    UPDATE FUNCIONES_BOLETA SET cantidad = p_cantidad, precioUnitario = p_precioUnitario WHERE id = p_id;
+    CALL recalc_boleta_total((SELECT idBoleta FROM FUNCIONES_BOLETA WHERE id = p_id));
+END$$
+
+DROP PROCEDURE IF EXISTS funcion_boleta_delete$$
+CREATE PROCEDURE funcion_boleta_delete(IN p_id INT)
+BEGIN
+    DECLARE v_idBoleta INT;
+    SELECT idBoleta INTO v_idBoleta FROM FUNCIONES_BOLETA WHERE id = p_id;
+    DELETE FROM FUNCIONES_BOLETA WHERE id = p_id;
+    IF v_idBoleta IS NOT NULL THEN
+        CALL recalc_boleta_total(v_idBoleta);
+    END IF;
+END$$
+
+-- PROMO_BOLETA helpers
+DROP PROCEDURE IF EXISTS promo_boleta_add$$
+CREATE PROCEDURE promo_boleta_add(IN p_idBoleta INT, IN p_idPromo INT, OUT p_id INT)
+BEGIN
+    INSERT INTO PROMO_BOLETA(idBoleta,idPromo) VALUES (p_idBoleta,p_idPromo);
+    SET p_id = LAST_INSERT_ID();
+    CALL recalc_boleta_total(p_idBoleta);
+END$$
+
+DROP PROCEDURE IF EXISTS promo_boleta_remove$$
+CREATE PROCEDURE promo_boleta_remove(IN p_id INT)
+BEGIN
+    DECLARE v_idBoleta INT;
+    SELECT idBoleta INTO v_idBoleta FROM PROMO_BOLETA WHERE id = p_id;
+    DELETE FROM PROMO_BOLETA WHERE id = p_id;
+    IF v_idBoleta IS NOT NULL THEN
+        CALL recalc_boleta_total(v_idBoleta);
+    END IF;
+END$$
+
+DELIMITER ;
+
+
+-- Índices recomendados para evitar problemas con sql_safe_updates (UPDATE por idBoleta)
+ALTER TABLE PRODUCTOS_BOLETA ADD INDEX idx_productos_boleta_idBoleta (idBoleta);
+ALTER TABLE FUNCIONES_BOLETA ADD INDEX idx_funciones_boleta_idBoleta (idBoleta);
+ALTER TABLE PROMO_BOLETA ADD INDEX idx_promo_boleta_idBoleta (idBoleta);
+
+-- Triggers: al cambiar productos/funciones/promos de una boleta, recalcular
+DELIMITER $$
+CREATE TRIGGER trg_productos_boleta_after_insert AFTER INSERT ON PRODUCTOS_BOLETA
+FOR EACH ROW
+BEGIN
+    CALL recalc_boleta_total(NEW.idBoleta);
+END$$
+
+CREATE TRIGGER trg_productos_boleta_after_update AFTER UPDATE ON PRODUCTOS_BOLETA
+FOR EACH ROW
+BEGIN
+    CALL recalc_boleta_total(NEW.idBoleta);
+END$$
+
+CREATE TRIGGER trg_productos_boleta_after_delete AFTER DELETE ON PRODUCTOS_BOLETA
+FOR EACH ROW
+BEGIN
+    CALL recalc_boleta_total(OLD.idBoleta);
+END$$
+
+CREATE TRIGGER trg_funciones_boleta_after_insert AFTER INSERT ON FUNCIONES_BOLETA
+FOR EACH ROW
+BEGIN
+    CALL recalc_boleta_total(NEW.idBoleta);
+END$$
+
+CREATE TRIGGER trg_funciones_boleta_after_update AFTER UPDATE ON FUNCIONES_BOLETA
+FOR EACH ROW
+BEGIN
+    CALL recalc_boleta_total(NEW.idBoleta);
+END$$
+
+CREATE TRIGGER trg_funciones_boleta_after_delete AFTER DELETE ON FUNCIONES_BOLETA
+FOR EACH ROW
+BEGIN
+    CALL recalc_boleta_total(OLD.idBoleta);
+END$$
+
+-- Para PROMO_BOLETA es útil recalcular cuando se inserta/actualiza/elimina una promo aplicada
+CREATE TRIGGER trg_promo_boleta_after_insert AFTER INSERT ON PROMO_BOLETA
+FOR EACH ROW
+BEGIN
+    CALL recalc_boleta_total(NEW.idBoleta);
+END$$
+
+CREATE TRIGGER trg_promo_boleta_after_update AFTER UPDATE ON PROMO_BOLETA
+FOR EACH ROW
+BEGIN
+    CALL recalc_boleta_total(NEW.idBoleta);
+END$$
+
+CREATE TRIGGER trg_promo_boleta_after_delete AFTER DELETE ON PROMO_BOLETA
+FOR EACH ROW
+BEGIN
+    CALL recalc_boleta_total(OLD.idBoleta);
+END$$
+DELIMITER ;
