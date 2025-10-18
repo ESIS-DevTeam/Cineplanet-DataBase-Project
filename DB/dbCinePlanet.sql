@@ -299,7 +299,7 @@ BEGIN
     SELECT * FROM IDIOMA;
 END$$
 
--- PELICULA
+-- SOCIO
 DROP PROCEDURE IF EXISTS socio_create$$
 CREATE PROCEDURE socio_create(
     IN p_idUsuario INT,
@@ -349,6 +349,8 @@ CREATE PROCEDURE socio_delete(IN p_id INT)
 BEGIN
     DELETE FROM SOCIO WHERE id = p_id;
 END$$
+
+-- PELICULA
 DROP PROCEDURE IF EXISTS pelicula_create$$
 CREATE PROCEDURE pelicula_create(
     IN p_genero VARCHAR(100), IN p_duracion INT, IN p_restriccionEdad VARCHAR(20), IN p_restriccionComercial VARCHAR(50), IN p_sinopsis TEXT, IN p_autor VARCHAR(100), IN p_trailer VARCHAR(255), IN p_portada VARCHAR(255), IN p_estado ENUM('activa','inactiva'), OUT p_id INT)

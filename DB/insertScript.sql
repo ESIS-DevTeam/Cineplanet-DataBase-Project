@@ -13,63 +13,66 @@ DELETE FROM PROMO_BOLETA; DELETE FROM PRODUCTOS_BOLETA; DELETE FROM FUNCIONES_BO
 DELETE FROM PROMO; DELETE FROM PRODUCTO; DELETE FROM FUNCION; DELETE FROM PELICULA_IDIOMA; DELETE FROM PELICULA_FORMATO; DELETE FROM PELICULA; DELETE FROM FORMATO; DELETE FROM SALA; DELETE FROM CINE; DELETE FROM IDIOMA; DELETE FROM SOCIO; DELETE FROM USUARIO;
 
 -- 1) Idiomas
-INSERT INTO IDIOMA(nombre) VALUES ('Español'); SET @idioma_es = LAST_INSERT_ID();
-INSERT INTO IDIOMA(nombre) VALUES ('Inglés'); INSERT INTO IDIOMA(nombre) VALUES ('Subtitulado');
+-- Crear idiomas usando el procedimiento
+CALL idioma_create('Español', @idioma_es);
+CALL idioma_create('Inglés', @idioma_en);
+CALL idioma_create('Subtitulado', @idioma_sub);
 
 -- 2) Usuarios
-INSERT INTO USUARIO(nombre,email,tipoDocumento,numeroDocumento) VALUES ('Juan Perez','juan@example.com','DNI','12345678'); SET @u1 = LAST_INSERT_ID();
-INSERT INTO USUARIO(nombre,email,tipoDocumento,numeroDocumento) VALUES ('Ana Gomez','ana@example.com','DNI','87654321'); SET @u2 = LAST_INSERT_ID();
+-- Crear usuarios usando el procedimiento usuario_create (valores únicos para evitar solapamientos)
+CALL usuario_create('Juan Perez Test','juan.test@example.com','DNI','20000001', @u1);
+CALL usuario_create('Ana Gomez Test','ana.test@example.com','DNI','20000002', @u2);
 
 -- 2.1) Socio (ejemplo) — usa el id del usuario previamente creado (@u1)
-INSERT INTO SOCIO(id,password,departamento,provincia,distrito,apellidoPaterno,apellidoMaterno,cineplanetFavorito,fechaNacimiento,celular,genero)
-VALUES (@u1,'pass123','Lima','Lima','Miraflores','Perez','Lopez','Cine Central','1990-05-10','999888777','M');
+-- Crear socio usando el procedimiento socio_create
+CALL socio_create(@u1, 'pass123', 'Lima', 'Lima', 'Miraflores', 'Perez', 'Lopez', 'Cine Central', '1990-05-10', '999888777', 'M');
 
 -- 3) Cine y sala
-INSERT INTO CINE(nombre,direccion,telefono,email,ciudad) VALUES ('Cine Central','Av Central 100','999111222','central@cine.com','Lima'); SET @cine1 = LAST_INSERT_ID();
-INSERT INTO SALA(nombre,capacidad,tipo,idCine) VALUES ('Sala A',150,'2D',@cine1); SET @sala1 = LAST_INSERT_ID();
+-- Crear cine y sala usando los procedimientos
+CALL cine_create('Cine Prueba','Av Prueba 101','999222333','prueba@cine.com','Lima', @cine1);
+CALL sala_create('Sala Prueba',120,'2D',@cine1, @sala1);
 
 -- 4) Formatos
-INSERT INTO FORMATO(nombre) VALUES ('2D'); SET @fmt2d = LAST_INSERT_ID();
-INSERT INTO FORMATO(nombre) VALUES ('3D');
+-- Crear formatos usando procedimiento
+CALL formato_create('2D', @fmt2d);
+CALL formato_create('3D', @fmt3d);
 
 -- 5) Películas
-INSERT INTO PELICULA(genero,duracion,restriccionEdad,restriccionComercial,sinopsis,autor,trailer,portada,estado)
-VALUES ('Drama',110,'13+','Normal','Sinopsis ejemplo','Director X',NULL,NULL,'activa'); SET @pel1 = LAST_INSERT_ID();
+-- Crear película usando procedimiento (valores de ejemplo distintos)
+CALL pelicula_create('Comedia',95,'13+','Normal','Sinopsis de prueba','Director Demo',NULL,NULL,'activa', @pel1);
 
 -- Asociar formato e idiomas a la película
-INSERT INTO PELICULA_FORMATO(idPelicula,idFormato) VALUES (@pel1,@fmt2d);
-INSERT INTO PELICULA_IDIOMA(idPelicula,idIdioma) VALUES (@pel1,@idioma_es);
+-- Asociar formato e idioma. Para idioma usamos el procedimiento de normalización
+INSERT IGNORE INTO PELICULA_FORMATO(idPelicula,idFormato) VALUES (@pel1,@fmt2d);
+CALL pelicula_idioma_add(@pel1, @idioma_es);
 
 -- 6) Funciones (cada función tiene un solo idioma)
--- Función 1: precio 20.00 en Español
-INSERT INTO FUNCION(idPelicula,idSala,idFormato,fecha,hora,precio,idIdioma,estado) VALUES (@pel1,@sala1,@fmt2d,'2025-10-20','18:00:00',20.00,@idioma_es,'activa'); SET @func1 = LAST_INSERT_ID();
--- Función 2: precio 25.00 en Inglés
-INSERT INTO FUNCION(idPelicula,idSala,idFormato,fecha,hora,precio,idIdioma,estado) VALUES (@pel1,@sala1,@fmt2d,'2025-10-20','21:00:00',25.00,(@idioma_es+1),'activa'); SET @func2 = LAST_INSERT_ID();
+-- Crear función usando procedimiento (fechas distintas para evitar solapamientos)
+CALL funcion_create(@pel1, @sala1, @fmt2d, '2025-11-01', '18:00:00', 22.00, @idioma_es, 'activa', @func1);
+CALL funcion_create(@pel1, @sala1, @fmt2d, '2025-11-01', '21:00:00', 28.00, @idioma_en, 'activa', @func2);
 
 -- 7) Productos
-INSERT INTO PRODUCTO(nombre,descripcion,precio,imagen,tipo) VALUES ('Palomitas Med','Palomitas medianas',10.00,NULL,'dulceria'); SET @prod1 = LAST_INSERT_ID();
-INSERT INTO PRODUCTO(nombre,descripcion,precio,imagen,tipo) VALUES ('Gaseosa L','Gaseosa grande',7.00,NULL,'dulceria'); SET @prod2 = LAST_INSERT_ID();
+-- Crear productos usando procedimiento
+CALL producto_create('Palomitas Med Test','Palomitas medianas de prueba',11.00,NULL,'dulceria', @prod1);
+CALL producto_create('Gaseosa L Test','Gaseosa grande de prueba',8.00,NULL,'dulceria', @prod2);
 
 -- 8) Promociones
 -- Promo 1: 10% en productos
-INSERT INTO PROMO(nombre,descripcion,fecha_inicio,fecha_fin,tipo,valor,aplicaA,estado)
-VALUES ('PromoProd10','10% en productos','2025-10-01','2025-12-31','porcentaje',10.00,'productos','activa'); SET @promo_prod = LAST_INSERT_ID();
--- Promo 2: S/5 fijo en funciones
-INSERT INTO PROMO(nombre,descripcion,fecha_inicio,fecha_fin,tipo,valor,aplicaA,estado)
-VALUES ('PromoFunc5','S/5 descuento en entradas','2025-10-01','2025-12-31','fijo',5.00,'funciones','activa'); SET @promo_func = LAST_INSERT_ID();
--- Promo 3: 15% en todo
-INSERT INTO PROMO(nombre,descripcion,fecha_inicio,fecha_fin,tipo,valor,aplicaA,estado)
-VALUES ('PromoTodo15','15% en todo','2025-10-01','2025-12-31','porcentaje',15.00,'todo','activa'); SET @promo_all = LAST_INSERT_ID();
+-- Crear promociones usando procedimiento
+CALL promo_create('PromoProd10 Test','10% en productos de prueba','2025-10-01','2025-12-31','porcentaje',10.00,'productos','activa', @promo_prod);
+CALL promo_create('PromoFunc5 Test','S/5 descuento en entradas de prueba','2025-10-01','2025-12-31','fijo',5.00,'funciones','activa', @promo_func);
+CALL promo_create('PromoTodo15 Test','15% en todo de prueba','2025-10-01','2025-12-31','porcentaje',15.00,'todo','activa', @promo_all);
 
 -- ==========
 -- BOLETA 1: función con descuento fijo (Solo función + promo función)
 -- ==========
-INSERT INTO BOLETA(idUsuario,fecha) VALUES (@u1,'2025-10-14'); SET @b1 = LAST_INSERT_ID();
--- Añadir 2 entradas de la función id=@func1 (precio 20.00)
-INSERT INTO FUNCIONES_BOLETA(idBoleta,idFuncion,cantidad,precioUnitario) VALUES (@b1,@func1,2,20.00);
--- Aplicar promo de funciones (PromoFunc5)
-INSERT INTO PROMO_BOLETA(idBoleta,idPromo) VALUES (@b1,@promo_func);
--- Forzar recálculo
+-- Crear boleta usando procedimiento y añadir líneas usando los helpers
+CALL boleta_create(@u1,'2025-11-02', @b1);
+-- obtener precio actual de la función creada
+SELECT precio INTO @precio_func FROM FUNCION WHERE id = @func1;
+CALL funcion_boleta_add(@b1, @func1, 2, @precio_func, @func_line1);
+-- Aplicar promo de funciones
+CALL promo_boleta_add(@b1, @promo_func, @promo_boleta_line1);
 CALL recalc_boleta_total(@b1);
 
 -- Mostrar resultado boleta 1
@@ -78,11 +81,10 @@ SELECT 'BOLETA1' AS which, b.* FROM BOLETA b WHERE id = @b1;
 -- ==========
 -- BOLETA 2: producto con descuento porcentaje (Solo productos + promo productos)
 -- ==========
-INSERT INTO BOLETA(idUsuario,fecha) VALUES (@u1,'2025-10-14'); SET @b2 = LAST_INSERT_ID();
--- Añadir 3 palomitas
-INSERT INTO PRODUCTOS_BOLETA(idBoleta,idProducto,cantidad,precioUnitario) VALUES (@b2,@prod1,3,10.00);
--- Aplicar promo de productos (PromoProd10)
-INSERT INTO PROMO_BOLETA(idBoleta,idPromo) VALUES (@b2,@promo_prod);
+CALL boleta_create(@u1,'2025-11-03', @b2);
+SELECT precio INTO @precio_prod1 FROM PRODUCTO WHERE id = @prod1;
+CALL producto_boleta_add(@b2, @prod1, 3, @precio_prod1, @prod_line1);
+CALL promo_boleta_add(@b2, @promo_prod, @promo_boleta_line2);
 CALL recalc_boleta_total(@b2);
 
 SELECT 'BOLETA2' AS which, b.* FROM BOLETA b WHERE id = @b2;
@@ -90,14 +92,13 @@ SELECT 'BOLETA2' AS which, b.* FROM BOLETA b WHERE id = @b2;
 -- ==========
 -- BOLETA 3: mixta (producto + función) con promos separadas
 -- ==========
-INSERT INTO BOLETA(idUsuario,fecha) VALUES (@u2,'2025-10-14'); SET @b3 = LAST_INSERT_ID();
--- Producto: 1 palomitas
-INSERT INTO PRODUCTOS_BOLETA(idBoleta,idProducto,cantidad,precioUnitario) VALUES (@b3,@prod1,1,10.00);
--- Función: 1 entrada función id=@func2 (precio 25.00)
-INSERT INTO FUNCIONES_BOLETA(idBoleta,idFuncion,cantidad,precioUnitario) VALUES (@b3,@func2,1,25.00);
--- Aplicar promos productos y funciones a la boleta
-INSERT INTO PROMO_BOLETA(idBoleta,idPromo) VALUES (@b3,@promo_prod);
-INSERT INTO PROMO_BOLETA(idBoleta,idPromo) VALUES (@b3,@promo_func);
+CALL boleta_create(@u2,'2025-11-04', @b3);
+SELECT precio INTO @precio_prod1b FROM PRODUCTO WHERE id = @prod1;
+CALL producto_boleta_add(@b3, @prod1, 1, @precio_prod1b, @prod_line2);
+SELECT precio INTO @precio_func2 FROM FUNCION WHERE id = @func2;
+CALL funcion_boleta_add(@b3, @func2, 1, @precio_func2, @func_line2);
+CALL promo_boleta_add(@b3, @promo_prod, @promo_boleta_line3);
+CALL promo_boleta_add(@b3, @promo_func, @promo_boleta_line4);
 CALL recalc_boleta_total(@b3);
 
 SELECT 'BOLETA3' AS which, b.* FROM BOLETA b WHERE id = @b3;
