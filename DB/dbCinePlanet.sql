@@ -13,13 +13,21 @@ CREATE TABLE USUARIO (
     numeroDocumento VARCHAR(20) UNIQUE NOT NULL
 );
 
+-- CIUDAD: normalización de ciudades para CINE
+CREATE TABLE CIUDAD (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL UNIQUE
+);
+
 CREATE TABLE CINE (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     direccion VARCHAR(255) NOT NULL,
     telefono VARCHAR(20) NOT NULL,
     email VARCHAR(100) NOT NULL,
-    ciudad VARCHAR(50)
+    -- referencia normalizada a CIUDAD
+    idCiudad INT NULL,
+    FOREIGN KEY (idCiudad) REFERENCES CIUDAD(id) ON DELETE SET NULL
 );
 
 CREATE TABLE PELICULA (
@@ -88,6 +96,17 @@ CREATE TABLE SALA (
     FOREIGN KEY (idCine) REFERENCES CINE(id) ON DELETE CASCADE
 );
 
+-- ASIENTO: cada asiento pertenece a una SALA, identificado por (idSala, fila, numero)
+CREATE TABLE ASIENTO (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    idSala INT NOT NULL,
+    fila CHAR(1) NOT NULL,
+    numero INT NOT NULL,
+    tipo ENUM('normal','discapacidad') NOT NULL DEFAULT 'normal',
+    CONSTRAINT uq_asiento_sala_fila_num UNIQUE (idSala, fila, numero),
+    FOREIGN KEY (idSala) REFERENCES SALA(id) ON DELETE CASCADE
+);
+
 CREATE TABLE PELICULA_FORMATO (
     idPelicula INT NOT NULL,
     idFormato INT NOT NULL,
@@ -127,6 +146,21 @@ CREATE TABLE FUNCION (
     FOREIGN KEY (idIdioma) REFERENCES IDIOMA(id) ON DELETE SET NULL
 );
 
+-- CATEGORIA (normalización de categorías para películas)
+CREATE TABLE CATEGORIA (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL UNIQUE
+);
+
+-- Tabla intermedia PELICULA_CATEGORIA (muchos-a-muchos)
+CREATE TABLE PELICULA_CATEGORIA (
+    idPelicula INT NOT NULL,
+    idCategoria INT NOT NULL,
+    PRIMARY KEY (idPelicula, idCategoria),
+    FOREIGN KEY (idPelicula) REFERENCES PELICULA(id) ON DELETE CASCADE,
+    FOREIGN KEY (idCategoria) REFERENCES CATEGORIA(id) ON DELETE CASCADE
+);
+
 CREATE TABLE BOLETA (
     id INT AUTO_INCREMENT PRIMARY KEY,
     idUsuario INT NOT NULL,
@@ -135,6 +169,20 @@ CREATE TABLE BOLETA (
     descuentoTotal DECIMAL(10,2) NOT NULL DEFAULT 0,
     total DECIMAL(10,2) NOT NULL DEFAULT 0,
     FOREIGN KEY (idUsuario) REFERENCES USUARIO(id) ON DELETE CASCADE
+);
+
+-- BOLETA_ASIENTO: registra qué asiento se vendió para una boleta y función
+-- Se asegura que un mismo asiento no sea asignado a la misma función más de una vez
+CREATE TABLE BOLETA_ASIENTO (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    idBoleta INT NOT NULL,
+    idFuncion INT NOT NULL,
+    idAsiento INT NOT NULL,
+    precioUnitario DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (idBoleta) REFERENCES BOLETA(id) ON DELETE CASCADE,
+    FOREIGN KEY (idFuncion) REFERENCES FUNCION(id) ON DELETE CASCADE,
+    FOREIGN KEY (idAsiento) REFERENCES ASIENTO(id) ON DELETE CASCADE,
+    CONSTRAINT uq_funcion_asiento UNIQUE (idFuncion, idAsiento)
 );
 
 CREATE TABLE PRODUCTOS_BOLETA (
@@ -261,9 +309,9 @@ END$$
 
 -- CINE
 DROP PROCEDURE IF EXISTS cine_create$$
-CREATE PROCEDURE cine_create(IN p_nombre VARCHAR(100), IN p_direccion VARCHAR(255), IN p_telefono VARCHAR(20), IN p_email VARCHAR(100), IN p_ciudad VARCHAR(50), OUT p_id INT)
+CREATE PROCEDURE cine_create(IN p_nombre VARCHAR(100), IN p_direccion VARCHAR(255), IN p_telefono VARCHAR(20), IN p_email VARCHAR(100), IN p_idCiudad INT, OUT p_id INT)
 BEGIN
-    INSERT INTO CINE(nombre,direccion,telefono,email,ciudad) VALUES (p_nombre,p_direccion,p_telefono,p_email,p_ciudad);
+    INSERT INTO CINE(nombre,direccion,telefono,email,idCiudad) VALUES (p_nombre,p_direccion,p_telefono,p_email,p_idCiudad);
     SET p_id = LAST_INSERT_ID();
 END$$
 
@@ -274,9 +322,9 @@ BEGIN
 END$$
 
 DROP PROCEDURE IF EXISTS cine_update$$
-CREATE PROCEDURE cine_update(IN p_id INT, IN p_nombre VARCHAR(100), IN p_direccion VARCHAR(255), IN p_telefono VARCHAR(20), IN p_email VARCHAR(100), IN p_ciudad VARCHAR(50))
+CREATE PROCEDURE cine_update(IN p_id INT, IN p_nombre VARCHAR(100), IN p_direccion VARCHAR(255), IN p_telefono VARCHAR(20), IN p_email VARCHAR(100), IN p_idCiudad INT)
 BEGIN
-    UPDATE CINE SET nombre=p_nombre, direccion=p_direccion, telefono=p_telefono, email=p_email, ciudad=p_ciudad WHERE id = p_id;
+    UPDATE CINE SET nombre=p_nombre, direccion=p_direccion, telefono=p_telefono, email=p_email, idCiudad=p_idCiudad WHERE id = p_id;
 END$$
 
 DROP PROCEDURE IF EXISTS cine_delete$$
@@ -297,6 +345,20 @@ DROP PROCEDURE IF EXISTS idioma_get_all$$
 CREATE PROCEDURE idioma_get_all()
 BEGIN
     SELECT * FROM IDIOMA;
+END$$
+
+-- CIUDAD
+DROP PROCEDURE IF EXISTS ciudad_create$$
+CREATE PROCEDURE ciudad_create(IN p_nombre VARCHAR(100), OUT p_id INT)
+BEGIN
+    INSERT INTO CIUDAD(nombre) VALUES (p_nombre);
+    SET p_id = LAST_INSERT_ID();
+END$$
+
+DROP PROCEDURE IF EXISTS ciudad_get_all$$
+CREATE PROCEDURE ciudad_get_all()
+BEGIN
+    SELECT * FROM CIUDAD;
 END$$
 
 -- SOCIO
@@ -392,6 +454,53 @@ BEGIN
     DELETE FROM PELICULA_IDIOMA WHERE idPelicula = p_idPelicula AND idIdioma = p_idIdioma;
 END$$
 
+-- CATEGORIA
+DROP PROCEDURE IF EXISTS categoria_create$$
+CREATE PROCEDURE categoria_create(IN p_nombre VARCHAR(100), OUT p_id INT)
+BEGIN
+    INSERT INTO CATEGORIA(nombre) VALUES (p_nombre);
+    SET p_id = LAST_INSERT_ID();
+END$$
+
+DROP PROCEDURE IF EXISTS categoria_get_all$$
+CREATE PROCEDURE categoria_get_all()
+BEGIN
+    SELECT * FROM CATEGORIA;
+END$$
+
+DROP PROCEDURE IF EXISTS categoria_get$$
+CREATE PROCEDURE categoria_get(IN p_id INT)
+BEGIN
+    SELECT * FROM CATEGORIA WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS categoria_update$$
+CREATE PROCEDURE categoria_update(IN p_id INT, IN p_nombre VARCHAR(100))
+BEGIN
+    UPDATE CATEGORIA SET nombre = p_nombre WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS categoria_delete$$
+CREATE PROCEDURE categoria_delete(IN p_id INT)
+BEGIN
+    DELETE FROM CATEGORIA WHERE id = p_id;
+END$$
+
+-- PELICULA_CATEGORIA (asignar/quitar categoría a pelicula)
+DROP PROCEDURE IF EXISTS pelicula_categoria_add$$
+CREATE PROCEDURE pelicula_categoria_add(IN p_idPelicula INT, IN p_idCategoria INT)
+BEGIN
+    INSERT IGNORE INTO PELICULA_CATEGORIA(idPelicula,idCategoria) VALUES (p_idPelicula,p_idCategoria);
+END$$
+
+DROP PROCEDURE IF EXISTS pelicula_categoria_remove$$
+CREATE PROCEDURE pelicula_categoria_remove(IN p_idPelicula INT, IN p_idCategoria INT)
+BEGIN
+    DELETE FROM PELICULA_CATEGORIA WHERE idPelicula = p_idPelicula AND idCategoria = p_idCategoria;
+END$$
+
+DELIMITER ;
+
 -- FORMATO
 DROP PROCEDURE IF EXISTS formato_create$$
 CREATE PROCEDURE formato_create(IN p_nombre VARCHAR(50), OUT p_id INT)
@@ -404,6 +513,51 @@ DROP PROCEDURE IF EXISTS formato_get_all$$
 CREATE PROCEDURE formato_get_all()
 BEGIN
     SELECT * FROM FORMATO;
+END$$
+
+-- CATEGORIA
+DROP PROCEDURE IF EXISTS categoria_create$$
+CREATE PROCEDURE categoria_create(IN p_nombre VARCHAR(100), OUT p_id INT)
+BEGIN
+    INSERT INTO CATEGORIA(nombre) VALUES (p_nombre);
+    SET p_id = LAST_INSERT_ID();
+END$$
+
+DROP PROCEDURE IF EXISTS categoria_get_all$$
+CREATE PROCEDURE categoria_get_all()
+BEGIN
+    SELECT * FROM CATEGORIA;
+END$$
+
+DROP PROCEDURE IF EXISTS categoria_get$$
+CREATE PROCEDURE categoria_get(IN p_id INT)
+BEGIN
+    SELECT * FROM CATEGORIA WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS categoria_update$$
+CREATE PROCEDURE categoria_update(IN p_id INT, IN p_nombre VARCHAR(100))
+BEGIN
+    UPDATE CATEGORIA SET nombre = p_nombre WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS categoria_delete$$
+CREATE PROCEDURE categoria_delete(IN p_id INT)
+BEGIN
+    DELETE FROM CATEGORIA WHERE id = p_id;
+END$$
+
+-- PELICULA_CATEGORIA
+DROP PROCEDURE IF EXISTS pelicula_categoria_add$$
+CREATE PROCEDURE pelicula_categoria_add(IN p_idPelicula INT, IN p_idCategoria INT)
+BEGIN
+    INSERT IGNORE INTO PELICULA_CATEGORIA(idPelicula,idCategoria) VALUES (p_idPelicula,p_idCategoria);
+END$$
+
+DROP PROCEDURE IF EXISTS pelicula_categoria_remove$$
+CREATE PROCEDURE pelicula_categoria_remove(IN p_idPelicula INT, IN p_idCategoria INT)
+BEGIN
+    DELETE FROM PELICULA_CATEGORIA WHERE idPelicula = p_idPelicula AND idCategoria = p_idCategoria;
 END$$
 
 -- PRODUCTO
@@ -482,6 +636,39 @@ DROP PROCEDURE IF EXISTS sala_delete$$
 CREATE PROCEDURE sala_delete(IN p_id INT)
 BEGIN
     DELETE FROM SALA WHERE id = p_id;
+END$$
+
+-- ASIENTO CRUD (ubicado junto a SALA)
+DROP PROCEDURE IF EXISTS asiento_create$$
+CREATE PROCEDURE asiento_create(
+    IN p_idSala INT, IN p_fila CHAR(1), IN p_numero INT, IN p_tipo ENUM('normal','discapacidad'), OUT p_id INT)
+BEGIN
+    INSERT INTO ASIENTO(idSala,fila,numero,tipo) VALUES (p_idSala,p_fila,p_numero,p_tipo);
+    SET p_id = LAST_INSERT_ID();
+END$$
+
+DROP PROCEDURE IF EXISTS asiento_get$$
+CREATE PROCEDURE asiento_get(IN p_id INT)
+BEGIN
+    SELECT * FROM ASIENTO WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS asiento_get_by_sala$$
+CREATE PROCEDURE asiento_get_by_sala(IN p_idSala INT)
+BEGIN
+    SELECT * FROM ASIENTO WHERE idSala = p_idSala ORDER BY fila, numero;
+END$$
+
+DROP PROCEDURE IF EXISTS asiento_update$$
+CREATE PROCEDURE asiento_update(IN p_id INT, IN p_fila CHAR(1), IN p_numero INT, IN p_tipo ENUM('normal','discapacidad'))
+BEGIN
+    UPDATE ASIENTO SET fila = p_fila, numero = p_numero, tipo = p_tipo WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS asiento_delete$$
+CREATE PROCEDURE asiento_delete(IN p_id INT)
+BEGIN
+    DELETE FROM ASIENTO WHERE id = p_id;
 END$$
 
 -- FUNCION
@@ -583,6 +770,48 @@ BEGIN
     IF v_idBoleta IS NOT NULL THEN
         CALL recalc_boleta_total(v_idBoleta);
     END IF;
+END$$
+
+-- BOLETA_ASIENTO helpers (reservar/quitar asiento al momento de vender)
+-- Valida pertenencia de asiento a la sala de la función y evita duplicados por constraint
+DROP PROCEDURE IF EXISTS boleta_asiento_add$$
+CREATE PROCEDURE boleta_asiento_add(
+    IN p_idBoleta INT, IN p_idFuncion INT, IN p_idAsiento INT, IN p_precioUnitario DECIMAL(10,2), OUT p_id INT)
+BEGIN
+    DECLARE v_idSalaFuncion INT;
+    DECLARE v_idSalaAsiento INT;
+
+    SELECT idSala INTO v_idSalaFuncion FROM FUNCION WHERE id = p_idFuncion;
+    SELECT idSala INTO v_idSalaAsiento FROM ASIENTO WHERE id = p_idAsiento;
+
+    IF v_idSalaFuncion IS NULL OR v_idSalaAsiento IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Funcion o Asiento no encontrado';
+    END IF;
+
+    IF v_idSalaFuncion <> v_idSalaAsiento THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El asiento no pertenece a la sala de la funcion';
+    END IF;
+
+    INSERT INTO BOLETA_ASIENTO(idBoleta,idFuncion,idAsiento,precioUnitario) VALUES (p_idBoleta,p_idFuncion,p_idAsiento,p_precioUnitario);
+    SET p_id = LAST_INSERT_ID();
+END$$
+
+DROP PROCEDURE IF EXISTS boleta_asiento_remove$$
+CREATE PROCEDURE boleta_asiento_remove(IN p_id INT)
+BEGIN
+    DELETE FROM BOLETA_ASIENTO WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS get_asientos_por_funcion$$
+CREATE PROCEDURE get_asientos_por_funcion(IN p_idFuncion INT)
+BEGIN
+    SELECT a.id AS idAsiento, a.fila, a.numero, a.tipo,
+        CASE WHEN ba.id IS NULL THEN 'libre' ELSE 'ocupado' END AS estado,
+        ba.idBoleta
+    FROM ASIENTO a
+    LEFT JOIN BOLETA_ASIENTO ba ON ba.idAsiento = a.id AND ba.idFuncion = p_idFuncion
+    WHERE a.idSala = (SELECT idSala FROM FUNCION WHERE id = p_idFuncion)
+    ORDER BY a.fila, a.numero;
 END$$
 
 -- PROMO_BOLETA helpers
