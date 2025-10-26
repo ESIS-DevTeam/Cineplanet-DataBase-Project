@@ -84,6 +84,7 @@ CREATE TABLE SOCIO (
     fechaNacimiento DATE,
     celular VARCHAR(20),
     genero VARCHAR(10),
+    grado ENUM('clasico','plata','oro','black') NOT NULL DEFAULT 'clasico',
     FOREIGN KEY (id) REFERENCES USUARIO(id) ON DELETE CASCADE
 );
 
@@ -361,6 +362,24 @@ BEGIN
     SELECT * FROM CIUDAD;
 END$$
 
+DROP PROCEDURE IF EXISTS ciudad_get$$
+CREATE PROCEDURE ciudad_get(IN p_id INT)
+BEGIN
+    SELECT * FROM CIUDAD WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS ciudad_update$$
+CREATE PROCEDURE ciudad_update(IN p_id INT, IN p_nombre VARCHAR(100))
+BEGIN
+    UPDATE CIUDAD SET nombre = p_nombre WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS ciudad_delete$$
+CREATE PROCEDURE ciudad_delete(IN p_id INT)
+BEGIN
+    DELETE FROM CIUDAD WHERE id = p_id;
+END$$
+
 -- SOCIO
 DROP PROCEDURE IF EXISTS socio_create$$
 CREATE PROCEDURE socio_create(
@@ -374,12 +393,13 @@ CREATE PROCEDURE socio_create(
     IN p_cineplanetFavorito VARCHAR(50),
     IN p_fechaNacimiento DATE,
     IN p_celular VARCHAR(20),
-    IN p_genero VARCHAR(10)
+    IN p_genero VARCHAR(10),
+    IN p_grado ENUM('clasico','plata','oro','black')
 )
 BEGIN
     -- Asumimos que el usuario ya existe; el id del socio es el mismo que el id de usuario
-    INSERT INTO SOCIO(id,password,departamento,provincia,distrito,apellidoPaterno,apellidoMaterno,cineplanetFavorito,fechaNacimiento,celular,genero)
-    VALUES (p_idUsuario,p_password,p_departamento,p_provincia,p_distrito,p_apellidoPaterno,p_apellidoMaterno,p_cineplanetFavorito,p_fechaNacimiento,p_celular,p_genero);
+    INSERT INTO SOCIO(id,password,departamento,provincia,distrito,apellidoPaterno,apellidoMaterno,cineplanetFavorito,fechaNacimiento,celular,genero,grado)
+    VALUES (p_idUsuario,p_password,p_departamento,p_provincia,p_distrito,p_apellidoPaterno,p_apellidoMaterno,p_cineplanetFavorito,p_fechaNacimiento,p_celular,p_genero,p_grado);
 END$$
 
 DROP PROCEDURE IF EXISTS socio_get$$
@@ -400,10 +420,11 @@ CREATE PROCEDURE socio_update(
     IN p_cineplanetFavorito VARCHAR(50),
     IN p_fechaNacimiento DATE,
     IN p_celular VARCHAR(20),
-    IN p_genero VARCHAR(10)
+    IN p_genero VARCHAR(10),
+    IN p_grado ENUM('clasico','plata','oro','black')
 )
 BEGIN
-    UPDATE SOCIO SET password = p_password, departamento = p_departamento, provincia = p_provincia, distrito = p_distrito, apellidoPaterno = p_apellidoPaterno, apellidoMaterno = p_apellidoMaterno, cineplanetFavorito = p_cineplanetFavorito, fechaNacimiento = p_fechaNacimiento, celular = p_celular, genero = p_genero WHERE id = p_id;
+    UPDATE SOCIO SET password = p_password, departamento = p_departamento, provincia = p_provincia, distrito = p_distrito, apellidoPaterno = p_apellidoPaterno, apellidoMaterno = p_apellidoMaterno, cineplanetFavorito = p_cineplanetFavorito, fechaNacimiento = p_fechaNacimiento, celular = p_celular, genero = p_genero, grado = p_grado WHERE id = p_id;
 END$$
 
 DROP PROCEDURE IF EXISTS socio_delete$$
@@ -454,6 +475,19 @@ BEGIN
     DELETE FROM PELICULA_IDIOMA WHERE idPelicula = p_idPelicula AND idIdioma = p_idIdioma;
 END$$
 
+-- PELICULA_FORMATO (asignar/quitar formato a pelicula)
+DROP PROCEDURE IF EXISTS pelicula_formato_add$$
+CREATE PROCEDURE pelicula_formato_add(IN p_idPelicula INT, IN p_idFormato INT)
+BEGIN
+    INSERT IGNORE INTO PELICULA_FORMATO(idPelicula,idFormato) VALUES (p_idPelicula,p_idFormato);
+END$$
+
+DROP PROCEDURE IF EXISTS pelicula_formato_remove$$
+CREATE PROCEDURE pelicula_formato_remove(IN p_idPelicula INT, IN p_idFormato INT)
+BEGIN
+    DELETE FROM PELICULA_FORMATO WHERE idPelicula = p_idPelicula AND idFormato = p_idFormato;
+END$$
+
 -- CATEGORIA
 DROP PROCEDURE IF EXISTS categoria_create$$
 CREATE PROCEDURE categoria_create(IN p_nombre VARCHAR(100), OUT p_id INT)
@@ -498,8 +532,6 @@ CREATE PROCEDURE pelicula_categoria_remove(IN p_idPelicula INT, IN p_idCategoria
 BEGIN
     DELETE FROM PELICULA_CATEGORIA WHERE idPelicula = p_idPelicula AND idCategoria = p_idCategoria;
 END$$
-
-DELIMITER ;
 
 -- FORMATO
 DROP PROCEDURE IF EXISTS formato_create$$
@@ -800,6 +832,32 @@ DROP PROCEDURE IF EXISTS boleta_asiento_remove$$
 CREATE PROCEDURE boleta_asiento_remove(IN p_id INT)
 BEGIN
     DELETE FROM BOLETA_ASIENTO WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS boleta_asiento_get$$
+CREATE PROCEDURE boleta_asiento_get(IN p_id INT)
+BEGIN
+    SELECT * FROM BOLETA_ASIENTO WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS boleta_asiento_get_by_boleta$$
+CREATE PROCEDURE boleta_asiento_get_by_boleta(IN p_idBoleta INT)
+BEGIN
+    SELECT ba.*, a.fila, a.numero, a.tipo
+    FROM BOLETA_ASIENTO ba
+    JOIN ASIENTO a ON a.id = ba.idAsiento
+    WHERE ba.idBoleta = p_idBoleta
+    ORDER BY a.fila, a.numero;
+END$$
+
+DROP PROCEDURE IF EXISTS boleta_asiento_get_by_funcion$$
+CREATE PROCEDURE boleta_asiento_get_by_funcion(IN p_idFuncion INT)
+BEGIN
+    SELECT ba.*, a.fila, a.numero, a.tipo
+    FROM BOLETA_ASIENTO ba
+    JOIN ASIENTO a ON a.id = ba.idAsiento
+    WHERE ba.idFuncion = p_idFuncion
+    ORDER BY a.fila, a.numero;
 END$$
 
 DROP PROCEDURE IF EXISTS get_asientos_por_funcion$$
