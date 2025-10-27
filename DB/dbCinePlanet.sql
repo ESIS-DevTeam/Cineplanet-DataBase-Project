@@ -32,6 +32,7 @@ CREATE TABLE CINE (
 
 CREATE TABLE PELICULA (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100),
     genero VARCHAR(100),
     duracion INT,
     restriccionEdad VARCHAR(20),
