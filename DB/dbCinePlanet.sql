@@ -449,6 +449,12 @@ BEGIN
     SELECT * FROM PELICULA WHERE id = p_id;
 END$$
 
+DROP PROCEDURE IF EXISTS pelicula_get_active$$
+CREATE PROCEDURE pelicula_get_active()
+BEGIN
+    SELECT * FROM PELICULA WHERE estado = 'activa';
+END$$
+
 DROP PROCEDURE IF EXISTS pelicula_update$$
 CREATE PROCEDURE pelicula_update(
     IN p_id INT, IN p_genero VARCHAR(100), IN p_duracion INT, IN p_restriccionEdad VARCHAR(20), IN p_restriccionComercial VARCHAR(50), IN p_sinopsis TEXT, IN p_autor VARCHAR(100), IN p_trailer VARCHAR(255), IN p_portada VARCHAR(255), IN p_estado ENUM('activa','inactiva'))
