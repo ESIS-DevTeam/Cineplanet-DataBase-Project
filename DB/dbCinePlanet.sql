@@ -41,7 +41,7 @@ CREATE TABLE PELICULA (
     nombre VARCHAR(100),
     genero INT NOT NULL,
     duracion INT,
-    restriccionEdad VARCHAR(20),
+    restriccion ENUM('+14','+14 DNI','APT','+18'),
     restriccionComercial VARCHAR(50),
     sinopsis TEXT,
     autor VARCHAR(100),
@@ -429,10 +429,10 @@ END$$
 -- PELICULA
 DROP PROCEDURE IF EXISTS pelicula_create$$
 CREATE PROCEDURE pelicula_create(
-    IN p_nombre VARCHAR(100), IN p_genero INT, IN p_duracion INT, IN p_restriccionEdad VARCHAR(20), IN p_restriccionComercial VARCHAR(50), IN p_sinopsis TEXT, IN p_autor VARCHAR(100), IN p_trailer VARCHAR(255), IN p_portada VARCHAR(255), IN p_estado ENUM('activa','inactiva'), OUT p_id INT)
+    IN p_nombre VARCHAR(100), IN p_genero INT, IN p_duracion INT, IN p_restriccion ENUM('+14','+14 DNI','APT','+18'), IN p_restriccionComercial VARCHAR(50), IN p_sinopsis TEXT, IN p_autor VARCHAR(100), IN p_trailer VARCHAR(255), IN p_portada VARCHAR(255), IN p_estado ENUM('activa','inactiva'), OUT p_id INT)
 BEGIN
-    INSERT INTO PELICULA(nombre,genero,duracion,restriccionEdad,restriccionComercial,sinopsis,autor,trailer,portada,estado)
-    VALUES (p_nombre,p_genero,p_duracion,p_restriccionEdad,p_restriccionComercial,p_sinopsis,p_autor,p_trailer,p_portada,p_estado);
+    INSERT INTO PELICULA(nombre,genero,duracion,restriccion,restriccionComercial,sinopsis,autor,trailer,portada,estado)
+    VALUES (p_nombre,p_genero,p_duracion,p_restriccion,p_restriccionComercial,p_sinopsis,p_autor,p_trailer,p_portada,p_estado);
     SET p_id = LAST_INSERT_ID();
 END$$
 
@@ -450,9 +450,9 @@ END$$
 
 DROP PROCEDURE IF EXISTS pelicula_update$$
 CREATE PROCEDURE pelicula_update(
-    IN p_id INT, IN p_nombre VARCHAR(100), IN p_genero INT, IN p_duracion INT, IN p_restriccionEdad VARCHAR(20), IN p_restriccionComercial VARCHAR(50), IN p_sinopsis TEXT, IN p_autor VARCHAR(100), IN p_trailer VARCHAR(255), IN p_portada VARCHAR(255), IN p_estado ENUM('activa','inactiva'))
+    IN p_id INT, IN p_nombre VARCHAR(100), IN p_genero INT, IN p_duracion INT, IN p_restriccion ENUM('+14','+14 DNI','APT','+18'), IN p_restriccionComercial VARCHAR(50), IN p_sinopsis TEXT, IN p_autor VARCHAR(100), IN p_trailer VARCHAR(255), IN p_portada VARCHAR(255), IN p_estado ENUM('activa','inactiva'))
 BEGIN
-    UPDATE PELICULA SET nombre=p_nombre, genero=p_genero, duracion=p_duracion, restriccionEdad=p_restriccionEdad, restriccionComercial=p_restriccionComercial, sinopsis=p_sinopsis, autor=p_autor, trailer=p_trailer, portada=p_portada, estado=p_estado WHERE id = p_id;
+    UPDATE PELICULA SET nombre=p_nombre, genero=p_genero, duracion=p_duracion, restriccion=p_restriccion, restriccionComercial=p_restriccionComercial, sinopsis=p_sinopsis, autor=p_autor, trailer=p_trailer, portada=p_portada, estado=p_estado WHERE id = p_id;
 END$$
 
 DROP PROCEDURE IF EXISTS pelicula_delete$$
