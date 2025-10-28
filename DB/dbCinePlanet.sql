@@ -36,12 +36,17 @@ CREATE TABLE GENERO (
     nombre VARCHAR(100) NOT NULL UNIQUE
 );
 
+CREATE TABLE RESTRICCION (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tipo VARCHAR(50) NOT NULL UNIQUE
+);
+
 CREATE TABLE PELICULA (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100),
     genero INT NOT NULL,
     duracion INT,
-    restriccion ENUM('+14','+14 DNI','APT','+18'),
+    restriccion INT NOT NULL,
     restriccionComercial VARCHAR(50),
     sinopsis TEXT,
     autor VARCHAR(100),
@@ -49,7 +54,8 @@ CREATE TABLE PELICULA (
     portada VARCHAR(255),
     -- idioma se normaliza en PELICULA_IDIOMA
     estado ENUM('activa', 'inactiva') DEFAULT 'activa',
-    FOREIGN KEY (genero) REFERENCES GENERO(id) ON DELETE CASCADE
+    FOREIGN KEY (genero) REFERENCES GENERO(id) ON DELETE CASCADE,
+    FOREIGN KEY (restriccion) REFERENCES RESTRICCION(id) ON DELETE CASCADE
 );
 
 CREATE TABLE FORMATO (
@@ -429,7 +435,7 @@ END$$
 -- PELICULA
 DROP PROCEDURE IF EXISTS pelicula_create$$
 CREATE PROCEDURE pelicula_create(
-    IN p_nombre VARCHAR(100), IN p_genero INT, IN p_duracion INT, IN p_restriccion ENUM('+14','+14 DNI','APT','+18'), IN p_restriccionComercial VARCHAR(50), IN p_sinopsis TEXT, IN p_autor VARCHAR(100), IN p_trailer VARCHAR(255), IN p_portada VARCHAR(255), IN p_estado ENUM('activa','inactiva'), OUT p_id INT)
+    IN p_nombre VARCHAR(100), IN p_genero INT, IN p_duracion INT, IN p_restriccion INT, IN p_restriccionComercial VARCHAR(50), IN p_sinopsis TEXT, IN p_autor VARCHAR(100), IN p_trailer VARCHAR(255), IN p_portada VARCHAR(255), IN p_estado ENUM('activa','inactiva'), OUT p_id INT)
 BEGIN
     INSERT INTO PELICULA(nombre,genero,duracion,restriccion,restriccionComercial,sinopsis,autor,trailer,portada,estado)
     VALUES (p_nombre,p_genero,p_duracion,p_restriccion,p_restriccionComercial,p_sinopsis,p_autor,p_trailer,p_portada,p_estado);
@@ -450,7 +456,7 @@ END$$
 
 DROP PROCEDURE IF EXISTS pelicula_update$$
 CREATE PROCEDURE pelicula_update(
-    IN p_id INT, IN p_nombre VARCHAR(100), IN p_genero INT, IN p_duracion INT, IN p_restriccion ENUM('+14','+14 DNI','APT','+18'), IN p_restriccionComercial VARCHAR(50), IN p_sinopsis TEXT, IN p_autor VARCHAR(100), IN p_trailer VARCHAR(255), IN p_portada VARCHAR(255), IN p_estado ENUM('activa','inactiva'))
+    IN p_id INT, IN p_nombre VARCHAR(100), IN p_genero INT, IN p_duracion INT, IN p_restriccion INT, IN p_restriccionComercial VARCHAR(50), IN p_sinopsis TEXT, IN p_autor VARCHAR(100), IN p_trailer VARCHAR(255), IN p_portada VARCHAR(255), IN p_estado ENUM('activa','inactiva'))
 BEGIN
     UPDATE PELICULA SET nombre=p_nombre, genero=p_genero, duracion=p_duracion, restriccion=p_restriccion, restriccionComercial=p_restriccionComercial, sinopsis=p_sinopsis, autor=p_autor, trailer=p_trailer, portada=p_portada, estado=p_estado WHERE id = p_id;
 END$$
@@ -1773,6 +1779,43 @@ DROP PROCEDURE IF EXISTS genero_delete$$
 CREATE PROCEDURE genero_delete(IN p_id INT)
 BEGIN
     DELETE FROM GENERO WHERE id = p_id;
+END$$
+
+DELIMITER ;
+
+
+--Restriccion
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS restriccion_create$$
+CREATE PROCEDURE restriccion_create(IN p_nombre VARCHAR(100), OUT p_id INT)
+BEGIN
+    INSERT INTO RESTRICCION(tipo) VALUES (p_nombre);
+    SET p_id = LAST_INSERT_ID();
+END$$
+
+DROP PROCEDURE IF EXISTS restriccion_get$$
+CREATE PROCEDURE restriccion_get(IN p_id INT)
+BEGIN
+    SELECT * FROM RESTRICCION WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS restriccion_get_all$$
+CREATE PROCEDURE restriccion_get_all()
+BEGIN
+    SELECT * FROM RESTRICCION;
+END$$
+
+DROP PROCEDURE IF EXISTS restriccion_update$$
+CREATE PROCEDURE restriccion_update(IN p_id INT, IN p_nombre VARCHAR(100))
+BEGIN
+    UPDATE RESTRICCION SET nombre = p_nombre WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS restriccion_delete$$
+CREATE PROCEDURE restriccion_delete(IN p_id INT)
+BEGIN
+    DELETE FROM RESTRICCION WHERE id = p_id;
 END$$
 
 DELIMITER ;
