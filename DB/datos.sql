@@ -37,7 +37,7 @@ INSERT INTO `GENERO` (`id`, `nombre`) VALUES
 (10, 'Romance');
 
 -- -- RESTRICCION (Clasificaciones comunes)
-INSERT INTO `RESTRICCION` (`id`, `tipo`) VALUES
+INSERT INTO `RESTRICCION` (`id`, `nombre`) VALUES
 (1, 'APT'),
 (2, 'PG (Supervisión)'),
 (3, '+14'),

@@ -33,35 +33,59 @@
         </header>
         <main>
             <form id="filtros-peliculas">
-                <label for="select-ciudad">Ciudad:</label>
-                <select id="select-ciudad"></select>
+                <details id="detalleCiudades">
+                    <summary>Seleccionar Ciudad</summary>
+                    <div id="contenedorCiudades"></div>
+                </details>
 
-                <label for="select-cine">Cine:</label>
-                <select id="select-cine"></select>
+                <details id="detalleCines">
+                    <summary>Seleccionar Cines</summary>
+                    <div id="contenedorCines"></div>
+                </details>
+                <details id="fecha">
+                    <summary>Seleccionar Fecha</summary>
+                    <form id="filtro-fecha" aria-label="Filtro de fecha">
+                        <!-- Checkboxes simples en lugar de fieldset -->
+                        <label for="fecha-hoy">
+                            <input type="checkbox" id="fecha-hoy" name="fecha" value="hoy" checked>
+                            Hoy
+                        </label>
+                        <br>
+                        <label for="fecha-manana">
+                            <input type="checkbox" id="fecha-manana" name="fecha" value="manana">
+                            Mañana
+                        </label>
+                        <br>
+                        <label for="fecha-todas">
+                            <input type="checkbox" id="fecha-todas" name="fecha" value="todas">
+                            Todas las fechas por el momento
+                        </label>
+                    </form>
+                </details>
+                <details id="detalleGeneros">
+                    <summary>Seleccionar Géneros</summary>
+                    <div id="contenedorGeneros"></div>
+                </details>
+                
+                <details id="detalleIdiomas">
+                    <summary>Seleccionar Idiomas</summary>
+                    <div id="contenedorIdiomas"></div>
+                </details>
 
-                <label for="select-dia">Día:</label>
-                <select id="select-dia">
-                    <option value="hoy">Hoy</option>
-                    <option value="mañana">Mañana</option>
-                    <option value="semana">Esta semana</option>
-                </select>
+                <details id="detalleFormato">
+                    <summary>Seleccionar Formato</summary>
+                    <div id="contenedorFormato"></div>
+                </details>
 
-                <!-- NUEVOS SELECTORES -->
-                <label for="select-formato">Formato:</label>
-                <select id="select-formato"></select>
-
-                <label for="select-genero">Género:</label>
-                <select id="select-genero"></select>
-
-                <label for="select-idioma">Idioma:</label>
-                <select id="select-idioma"></select>
-
-                <label for="select-censura">Censura:</label>
-                <select id="select-censura"></select>
+                <details id="detalleCensura">
+                    <summary>Seleccionar Censura</summary>
+                    <div id="contenedorCensura"></div>
+                </details>
             </form>
         </main>
         <script src="../js/ciudades.js"></script>
         <script src="../js/cines.js"></script>
         <script src="../js/filtrosExtras.js"></script>
+        <script src="../js/filtros.js"></script>
     </body>
 </html>

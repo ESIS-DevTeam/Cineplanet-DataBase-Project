@@ -1,6 +1,3 @@
-DROP DATABASE dbcineplanet;
-CREATE DATABASE dbcineplanet;
-USE dbcineplanet;
 
 --------------------------------------
 
@@ -38,7 +35,7 @@ CREATE TABLE GENERO (
 
 CREATE TABLE RESTRICCION (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    tipo VARCHAR(50) NOT NULL UNIQUE
+    nombre VARCHAR(50) NOT NULL UNIQUE
 );
 
 CREATE TABLE PELICULA (
@@ -54,7 +51,7 @@ CREATE TABLE PELICULA (
     portada VARCHAR(255),
     -- idioma se normaliza en PELICULA_IDIOMA
     estado ENUM('activa', 'inactiva') DEFAULT 'activa',
-    FOREIGN KEY (genero) REFERENCES GENERO(id) ON DELETE CASCADE
+    FOREIGN KEY (genero) REFERENCES GENERO(id) ON DELETE CASCADE,
     FOREIGN KEY (restriccion) REFERENCES RESTRICCION(id) ON DELETE CASCADE
 );
 
@@ -922,7 +919,7 @@ BEGIN
     SET p_id = LAST_INSERT_ID();
 END$$
 
-DROOP PROCEDURE IF EXISTS restriccion_get$$
+DROP PROCEDURE IF EXISTS restriccion_get$$
 CREATE PROCEDURE restriccion_get(IN p_id INT)
 BEGIN
     SELECT * FROM RESTRICCION WHERE id = p_id;
