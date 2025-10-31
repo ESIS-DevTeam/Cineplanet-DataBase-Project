@@ -3,41 +3,62 @@ require_once "../config/conexion.php";
 
 $conn = Conexion::conectar();
 
-// Recoge los filtros desde la query string
 $filtros = [];
 $params = [];
+$types = "";
 
-// Filtros posibles
+// ======= CIUDAD =======
 if (!empty($_GET['ciudad'])) {
     $filtros[] = "idCiudad = ?";
     $params[] = $_GET['ciudad'];
+    $types .= "i";
 }
+
+// ======= CINE =======
 if (!empty($_GET['cine'])) {
     $filtros[] = "idCine = ?";
     $params[] = $_GET['cine'];
+    $types .= "i";
 }
+
+// ======= GÉNERO =======
 if (!empty($_GET['genero'])) {
     $filtros[] = "genero = (SELECT nombre FROM GENERO WHERE id = ?)";
     $params[] = $_GET['genero'];
+    $types .= "i";
 }
+
+// ======= IDIOMA (varios checkboxes) =======
 if (!empty($_GET['idioma'])) {
     $idiomas = explode(',', $_GET['idioma']);
     $placeholders = implode(',', array_fill(0, count($idiomas), '?'));
     $filtros[] = "idIdioma IN ($placeholders)";
-    $params = array_merge($params, $idiomas);
+    foreach ($idiomas as $idioma) {
+        $params[] = $idioma;
+        $types .= "i";
+    }
 }
+
+// ======= FORMATO (varios checkboxes) =======
 if (!empty($_GET['formato'])) {
     $formatos = explode(',', $_GET['formato']);
     $placeholders = implode(',', array_fill(0, count($formatos), '?'));
     $filtros[] = "idFormato IN ($placeholders)";
-    $params = array_merge($params, $formatos);
+    foreach ($formatos as $formato) {
+        $params[] = $formato;
+        $types .= "i";
+    }
 }
+
+// ======= CENSURA =======
 if (!empty($_GET['censura'])) {
     $filtros[] = "restriccionEdad = (SELECT tipo FROM RESTRICCION WHERE id = ?)";
     $params[] = $_GET['censura'];
+    $types .= "i";
 }
+
+// ======= DÍA =======
 if (!empty($_GET['dia'])) {
-    // dia puede ser 'hoy', 'mañana', 'semana'
     if ($_GET['dia'] === 'hoy') {
         $filtros[] = "fecha = CURDATE()";
     } elseif ($_GET['dia'] === 'mañana') {
@@ -47,7 +68,7 @@ if (!empty($_GET['dia'])) {
     }
 }
 
-// Construye el SQL
+// ======= SQL FINAL =======
 $sql = "SELECT * FROM peliculas_filtro";
 if ($filtros) {
     $sql .= " WHERE " . implode(" AND ", $filtros);
@@ -55,9 +76,7 @@ if ($filtros) {
 
 $stmt = $conn->prepare($sql);
 
-// Vincula los parámetros si hay
 if ($params) {
-    $types = str_repeat('s', count($params));
     $stmt->bind_param($types, ...$params);
 }
 

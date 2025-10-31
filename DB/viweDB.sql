@@ -4,7 +4,7 @@
 -- para filtrar películas en el frontend (peliculas.html)
 -- ===============================================
 
-CREATE OR REPLACE VIEW view_peliculas_filtro AS
+CREATE OR REPLACE VIEW peliculas_filtro AS
 SELECT
     f.id AS idFuncion,
     p.id AS idPelicula,
