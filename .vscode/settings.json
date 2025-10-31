@@ -1,0 +1,9 @@
+{
+    "css.remoteStyleSheets": [
+        "frontend/styles/estilos.css"
+    ],
+    "css.styleSheets": [
+        "frontend/styles/estilos.css",
+        "frontend/styles/*.css" 
+    ]
+}
