@@ -1,7 +1,24 @@
+let datosCines = [];
+let datosCiudades = [];
+let cineCiudadMap = {};
+
 async function cargarDatos(url, contenedorId, nombreCampo) {
   try {
     const response = await fetch(url);
     const datos = await response.json();
+
+    // Guardar datos originales y mapear relaciones
+    if (nombreCampo === 'cine') {
+      datosCines = datos;
+      cineCiudadMap = {};
+      datos.forEach(item => {
+        // Asume que el cine tiene un campo 'id' que representa la ciudad
+        cineCiudadMap[item.id] = item.id; // <-- Aquí, el id del cine es igual al id de la ciudad
+      });
+    }
+    if (nombreCampo === 'ciudad') {
+      datosCiudades = datos;
+    }
 
     const contenedor = document.getElementById(contenedorId);
     contenedor.innerHTML = '';
@@ -14,6 +31,12 @@ async function cargarDatos(url, contenedorId, nombreCampo) {
       checkbox.type = 'checkbox';
       checkbox.name = nombreCampo;
       checkbox.value = item.id;
+      if (nombreCampo === 'cine') {
+        checkbox.setAttribute('data-ciudad-id', item.id); // <-- Aquí también
+      }
+      if (nombreCampo === 'ciudad') {
+        checkbox.setAttribute('data-ciudad-id', item.id);
+      }
 
       label.appendChild(checkbox);
       label.append(` ${item.nombre}`);
@@ -74,4 +97,52 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  const contenedorCiudades = document.getElementById('contenedorCiudades');
+  const contenedorCines = document.getElementById('contenedorCines');
+
+  // Listener para ciudades
+  contenedorCiudades.addEventListener('change', e => {
+    if (e.target.type === 'checkbox') {
+      const ciudadId = e.target.value;
+      const cinesCheckboxes = contenedorCines.querySelectorAll('input[type="checkbox"]');
+      if (e.target.checked) {
+        cinesCheckboxes.forEach(chk => {
+          if (chk.getAttribute('data-ciudad-id') !== ciudadId) {
+            chk.parentElement.style.display = 'none';
+            chk.checked = false;
+          } else {
+            chk.parentElement.style.display = 'block';
+          }
+        });
+      } else {
+        cinesCheckboxes.forEach(chk => {
+          chk.parentElement.style.display = 'block';
+        });
+      }
+    }
+  });
+
+  // Listener para cines
+  contenedorCines.addEventListener('change', e => {
+    if (e.target.type === 'checkbox') {
+      const cineId = e.target.value;
+      const ciudadId = cineCiudadMap[cineId];
+      const ciudadesCheckboxes = contenedorCiudades.querySelectorAll('input[type="checkbox"]');
+      if (e.target.checked) {
+        ciudadesCheckboxes.forEach(chk => {
+          if (chk.value !== String(ciudadId)) {
+            chk.parentElement.style.display = 'none';
+            chk.checked = false;
+          } else {
+            chk.parentElement.style.display = 'block';
+          }
+        });
+      } else {
+        ciudadesCheckboxes.forEach(chk => {
+          chk.parentElement.style.display = 'block';
+        });
+      }
+    }
+  });
 });
