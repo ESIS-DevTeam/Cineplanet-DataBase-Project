@@ -52,7 +52,7 @@ if (!empty($_GET['formato'])) {
 
 // ======= CENSURA =======
 if (!empty($_GET['censura'])) {
-    $filtros[] = "pf.restriccionEdad = ?";
+    $filtros[] = "pf.idRestriccion = ?";
     $params[] = $_GET['censura'];
     $types .= "s";
 }
