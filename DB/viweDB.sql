@@ -1,26 +1,29 @@
 -- ===============================================
--- VIEW: view_peliculas_filtro
+-- VIEW: peliculas_filtro
 -- Descripción: muestra toda la información necesaria
 -- para filtrar películas en el frontend (peliculas.html)
 -- ===============================================
-
+DROP VIEW IF EXISTS peliculas_filtro;
 CREATE OR REPLACE VIEW peliculas_filtro AS
 SELECT
     f.id AS idFuncion,
     p.id AS idPelicula,
     p.nombre AS nombrePelicula,
     g.nombre AS genero,
-    r.tipo AS restriccionEdad,
+    r.nombre AS restriccionEdad,
     p.restriccionComercial,
     p.sinopsis,
     p.autor,
     p.trailer,
     p.portada,
+    p.duracion,
     p.estado AS estadoPelicula,
     f.fecha,
     f.hora,
     f.precio,
     f.estado AS estadoFuncion,
+    f.idFormato,
+    f.idIdioma,
     c.id AS idCine,
     c.nombre AS nombreCine,
     c.direccion AS direccionCine,

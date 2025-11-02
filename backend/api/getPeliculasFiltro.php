@@ -9,70 +9,73 @@ $types = "";
 
 // ======= CIUDAD =======
 if (!empty($_GET['ciudad'])) {
-    $filtros[] = "idCiudad = ?";
+    $filtros[] = "pf.idCiudad = ?";
     $params[] = $_GET['ciudad'];
     $types .= "i";
 }
 
 // ======= CINE =======
 if (!empty($_GET['cine'])) {
-    $filtros[] = "idCine = ?";
+    $filtros[] = "pf.idCine = ?";
     $params[] = $_GET['cine'];
     $types .= "i";
 }
 
 // ======= GÉNERO =======
 if (!empty($_GET['genero'])) {
-    $filtros[] = "genero = (SELECT nombre FROM GENERO WHERE id = ?)";
+    $filtros[] = "pf.genero = ?";
     $params[] = $_GET['genero'];
-    $types .= "i";
+    $types .= "s";
 }
 
-// ======= IDIOMA (varios checkboxes) =======
+// ======= IDIOMA (varios checkboxes) - CORREGIDO =======
 if (!empty($_GET['idioma'])) {
     $idiomas = explode(',', $_GET['idioma']);
     $placeholders = implode(',', array_fill(0, count($idiomas), '?'));
-    $filtros[] = "idIdioma IN ($placeholders)";
+    $filtros[] = "pf.idIdioma IN ($placeholders)";
     foreach ($idiomas as $idioma) {
-        $params[] = $idioma;
+        $params[] = (int)$idioma;
         $types .= "i";
     }
 }
 
-// ======= FORMATO (varios checkboxes) =======
+// ======= FORMATO (varios checkboxes) - CORREGIDO =======
 if (!empty($_GET['formato'])) {
     $formatos = explode(',', $_GET['formato']);
     $placeholders = implode(',', array_fill(0, count($formatos), '?'));
-    $filtros[] = "idFormato IN ($placeholders)";
+    $filtros[] = "pf.idFormato IN ($placeholders)";
     foreach ($formatos as $formato) {
-        $params[] = $formato;
+        $params[] = (int)$formato;
         $types .= "i";
     }
 }
 
 // ======= CENSURA =======
 if (!empty($_GET['censura'])) {
-    $filtros[] = "restriccionEdad = (SELECT nombre FROM RESTRICCION WHERE id = ?)";
+    $filtros[] = "pf.restriccionEdad = ?";
     $params[] = $_GET['censura'];
-    $types .= "i";
+    $types .= "s";
 }
 
 // ======= DÍA =======
 if (!empty($_GET['dia'])) {
     if ($_GET['dia'] === 'hoy') {
-        $filtros[] = "fecha = CURDATE()";
+        $filtros[] = "pf.fecha = CURDATE()";
     } elseif ($_GET['dia'] === 'mañana') {
-        $filtros[] = "fecha = DATE_ADD(CURDATE(), INTERVAL 1 DAY)";
+        $filtros[] = "pf.fecha = DATE_ADD(CURDATE(), INTERVAL 1 DAY)";
     } elseif ($_GET['dia'] === 'semana') {
-        $filtros[] = "fecha BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)";
+        $filtros[] = "pf.fecha BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)";
     }
 }
 
 // ======= SQL FINAL =======
-$sql = "SELECT * FROM peliculas_filtro";
+$sql = "SELECT DISTINCT pf.* FROM peliculas_filtro pf";
+
 if ($filtros) {
     $sql .= " WHERE " . implode(" AND ", $filtros);
 }
+
+$sql .= " ORDER BY pf.fecha ASC, pf.hora ASC";
 
 $stmt = $conn->prepare($sql);
 
