@@ -43,3 +43,36 @@ INNER JOIN CIUDAD ciu ON c.idCiudad = ciu.id
 INNER JOIN FORMATO fo ON f.idFormato = fo.id
 INNER JOIN IDIOMA i ON f.idIdioma = i.id
 WHERE f.estado = 'activa' AND p.estado = 'activa';
+
+
+
+DROP VIEW IF EXISTS peliculas_funciones_activas;
+CREATE OR REPLACE VIEW peliculas_funciones_activas AS
+SELECT 
+    p.id AS idPelicula,
+    p.nombre AS nombrePelicula,
+    g.nombre AS genero,
+    r.nombre AS restriccion,
+    f.id AS idFuncion,
+    f.fecha,
+    f.hora,
+    f.precio,
+    i.nombre AS idioma,
+    fo.nombre AS formato,
+    c.nombre AS cine,
+    ci.nombre AS ciudad
+FROM 
+    PELICULA p
+JOIN GENERO g ON p.genero = g.id
+JOIN RESTRICCION r ON p.restriccion = r.id
+JOIN FUNCION f ON f.idPelicula = p.id
+JOIN SALA s ON f.idSala = s.id
+JOIN CINE c ON s.idCine = c.id
+LEFT JOIN CIUDAD ci ON c.idCiudad = ci.id
+LEFT JOIN IDIOMA i ON f.idIdioma = i.id
+LEFT JOIN FORMATO fo ON f.idFormato = fo.id
+WHERE 
+    f.estado = 'activa'
+    AND p.estado = 'activa'
+GROUP BY 
+    p.id, f.id;

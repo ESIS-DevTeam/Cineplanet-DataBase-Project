@@ -18,5 +18,24 @@ class PeliculaData {
 
         return $peliculas;
     }
+
+    public static function listarConFuncionActiva() {
+        $conn = Conexion::conectar();
+        $sql = "SELECT DISTINCT idPelicula, nombrePelicula FROM peliculas_funciones_activas";
+        $result = $conn->query($sql);
+
+        $peliculas = [];
+
+        if ($result) {
+            while ($fila = $result->fetch_assoc()) {
+                $peliculas[] = [
+                    'id' => $fila['idPelicula'],
+                    'nombre' => $fila['nombrePelicula']
+                ];
+            }
+        }
+
+        return $peliculas;
+    }
 }
 ?>

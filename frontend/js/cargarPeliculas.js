@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   selectPeliculas.disabled = true;
 
   try {
-    const response = await fetch("http://localhost/Cineplanet-DataBase-Project/backend/api/getPeliculas.php");
+    const response = await fetch("http://localhost/Cineplanet-DataBase-Project/backend/api/getPeliculasConFuncion.php");
     if (!response.ok) throw new Error("Error al obtener las películas: " + response.status);
 
     const peliculas = await response.json();
@@ -21,16 +21,25 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
+    // No necesitas filtrar, ya que el endpoint solo devuelve películas con función activa
+    const peliculasActivas = peliculas;
+
+    if (peliculasActivas.length === 0) {
+      selectPeliculas.innerHTML = '<option class="filtro-select-option" value="">No hay películas con funciones activas</option>';
+      selectPeliculas.disabled = true;
+      console.warn('No se encontraron películas con funciones activas');
+      return;
+    }
+
     // Limpia el select y agrega el placeholder
     selectPeliculas.innerHTML = '<option class="filtro-select-option" value="">Qué quieres ver</option>';
 
     // Recorre las películas activas y crea las opciones
-    peliculas.forEach(pelicula => {
+    peliculasActivas.forEach(pelicula => {
       const option = document.createElement("option");
       option.classList.add("filtro-select-option");
       option.value = pelicula.id ?? pelicula.ID ?? '';
-      // fallbacks para el título/nombre
-      option.textContent = pelicula.titulo || pelicula.autor || pelicula.nombre || pelicula.name || (`Pelicula ${option.value}`);
+      option.textContent = pelicula.nombre;
       selectPeliculas.appendChild(option);
     });
 
