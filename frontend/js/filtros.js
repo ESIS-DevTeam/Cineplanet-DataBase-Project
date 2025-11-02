@@ -1,6 +1,11 @@
 let datosCines = [];
 let datosCiudades = [];
 let cineCiudadMap = {};
+let datosPeliculas = [];
+let datosGeneros = [];
+let datosIdiomas = [];
+let datosFormatos = [];
+let datosCensura = [];
 
 async function cargarDatos(url, contenedorId, nombreCampo) {
   try {
@@ -19,54 +24,119 @@ async function cargarDatos(url, contenedorId, nombreCampo) {
     if (nombreCampo === 'ciudad') {
       datosCiudades = datos;
     }
+    if (nombreCampo === 'pelicula') {
+      datosPeliculas = datos;
+    }
+    if (nombreCampo === 'genero') {
+      datosGeneros = datos;
+    }
+    if (nombreCampo === 'idioma') {
+      datosIdiomas = datos;
+    }
+    if (nombreCampo === 'formato') {
+      datosFormatos = datos;
+    }
+    if (nombreCampo === 'censura') {
+      datosCensura = datos;
+    }
 
-    const contenedor = document.getElementById(contenedorId);
-    contenedor.innerHTML = '';
+    // Solo modificar el DOM si el contenedor existe
+    if (contenedorId) {
+      const contenedor = document.getElementById(contenedorId);
+      if (contenedor) {
+        contenedor.innerHTML = '';
 
-    datos.forEach(item => {
-      const label = document.createElement('label');
-      label.style.display = 'block';
+        datos.forEach(item => {
+          const label = document.createElement('label');
+          label.style.display = 'block';
 
-      const checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.name = nombreCampo;
-      checkbox.value = item.id;
-      if (nombreCampo === 'cine') {
-        checkbox.setAttribute('data-ciudad-id', item.id); // <-- Aquí también
-      }
-      if (nombreCampo === 'ciudad') {
-        checkbox.setAttribute('data-ciudad-id', item.id);
-      }
-
-      label.appendChild(checkbox);
-      label.append(` ${item.nombre}`);
-      contenedor.appendChild(label);
-    });
-
-    // Comportamiento de selección única para ciertos filtros
-    if (nombreCampo !== 'idioma' && nombreCampo !== 'formato') {
-      contenedor.addEventListener('change', e => {
-        if (e.target.type === 'checkbox') {
-          const checkboxes = contenedor.querySelectorAll('input[type="checkbox"]');
-
-          if (e.target.checked) {
-            checkboxes.forEach(chk => {
-              if (chk !== e.target) {
-                chk.parentElement.style.display = 'none';
-              }
-            });
-          } else {
-            checkboxes.forEach(chk => {
-              chk.parentElement.style.display = 'block';
-            });
+          const checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.name = nombreCampo;
+          checkbox.value = item.id;
+          if (nombreCampo === 'cine') {
+            checkbox.setAttribute('data-ciudad-id', item.id); // <-- Aquí también
           }
+          if (nombreCampo === 'ciudad') {
+            checkbox.setAttribute('data-ciudad-id', item.id);
+          }
+
+          label.appendChild(checkbox);
+          label.append(` ${item.nombre}`);
+          contenedor.appendChild(label);
+        });
+
+        // Comportamiento de selección única para ciertos filtros
+        if (nombreCampo !== 'idioma' && nombreCampo !== 'formato') {
+          contenedor.addEventListener('change', e => {
+            if (e.target.type === 'checkbox') {
+              const checkboxes = contenedor.querySelectorAll('input[type="checkbox"]');
+
+              if (e.target.checked) {
+                checkboxes.forEach(chk => {
+                  if (chk !== e.target) {
+                    chk.parentElement.style.display = 'none';
+                  }
+                });
+              } else {
+                checkboxes.forEach(chk => {
+                  chk.parentElement.style.display = 'block';
+                });
+              }
+            }
+          });
         }
-      });
+      }
     }
 
   } catch (error) {
     console.error(`Error al cargar ${nombreCampo}:`, error);
   }
+}
+
+function getFiltrosSeleccionados() {
+  const filtros = {};
+  ['contenedorGeneros', 'contenedorIdiomas', 'contenedorFormato', 'contenedorCensura'].forEach(id => {
+    const cont = document.getElementById(id);
+    if (!cont) return;
+    const checked = Array.from(cont.querySelectorAll('input[type="checkbox"]:checked')).map(chk => chk.value);
+    filtros[id] = checked;
+  });
+  return filtros;
+}
+
+function filtrarPeliculasPorFiltros(filtros) {
+  return datosPeliculas.filter(p => {
+    if (filtros.contenedorGeneros.length && !filtros.contenedorGeneros.includes(String(p.id))) return false;
+    if (filtros.contenedorIdiomas.length && !filtros.contenedorIdiomas.includes(String(p.id))) return false;
+    if (filtros.contenedorFormato.length && !filtros.contenedorFormato.includes(String(p.id))) return false;
+    if (filtros.contenedorCensura.length && !filtros.contenedorCensura.includes(String(p.id))) return false;
+    return true;
+  });
+}
+
+function actualizarFiltrosDinamicos() {
+  const filtros = getFiltrosSeleccionados();
+  const peliculasFiltradas = filtrarPeliculasPorFiltros(filtros);
+
+  const actualizarFiltro = (contenedorId, datos) => {
+    const cont = document.getElementById(contenedorId);
+    if (!cont) return;
+    const valoresValidos = new Set(peliculasFiltradas.map(p => String(p.id)));
+    Array.from(cont.querySelectorAll('input[type="checkbox"]')).forEach(chk => {
+      if (valoresValidos.has(chk.value) || chk.checked) {
+        chk.parentElement.style.display = 'block';
+      } else {
+        chk.parentElement.style.display = 'none';
+        chk.checked = false;
+      }
+    });
+  };
+
+  actualizarFiltro('contenedorGeneros', datosGeneros);
+  actualizarFiltro('contenedorIdiomas', datosIdiomas);
+  actualizarFiltro('contenedorFormato', datosFormatos);
+  actualizarFiltro('contenedorCensura', datosCensura);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -76,6 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
   cargarDatos('http://localhost/Cineplanet-DataBase-Project/backend/api/getIdiomas.php', 'contenedorIdiomas', 'idioma');
   cargarDatos('http://localhost/Cineplanet-DataBase-Project/backend/api/getFormatos.php', 'contenedorFormato', 'formato');
   cargarDatos('http://localhost/Cineplanet-DataBase-Project/backend/api/getRestricciones.php', 'contenedorCensura', 'censura');
+  cargarDatos('http://localhost/Cineplanet-DataBase-Project/backend/api/getPeliculas.php', '', 'pelicula'); // Debes tener este endpoint
 
   const filtroFecha = document.getElementById('filtro-fecha');
   if (filtroFecha) {
@@ -143,6 +214,16 @@ document.addEventListener('DOMContentLoaded', () => {
           chk.parentElement.style.display = 'block';
         });
       }
+    }
+  });
+
+  // Listeners para filtros dinámicos
+  ['contenedorGeneros', 'contenedorIdiomas', 'contenedorFormato', 'contenedorCensura'].forEach(id => {
+    const cont = document.getElementById(id);
+    if (cont) {
+      cont.addEventListener('change', () => {
+        actualizarFiltrosDinamicos();
+      });
     }
   });
 });
