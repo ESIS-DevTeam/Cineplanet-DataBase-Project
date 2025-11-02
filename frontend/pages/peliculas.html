@@ -44,23 +44,10 @@
                 </details>
                 <details id="fecha">
                     <summary>Seleccionar Fecha</summary>
-                    <form id="filtro-fecha" aria-label="Filtro de fecha">
-                        <!-- Checkboxes simples en lugar de fieldset -->
-                        <label for="fecha-hoy">
-                            <input type="checkbox" id="fecha-hoy" name="fecha" value="hoy" checked>
-                            Hoy
-                        </label>
-                        <br>
-                        <label for="fecha-manana">
-                            <input type="checkbox" id="fecha-manana" name="fecha" value="manana">
-                            Mañana
-                        </label>
-                        <br>
-                        <label for="fecha-todas">
-                            <input type="checkbox" id="fecha-todas" name="fecha" value="todas">
-                            Todas las fechas por el momento
-                        </label>
-                    </form>
+                    <div id="filtro-fecha">
+                        <label><input type="checkbox" name="fecha" value="hoy"> Hoy</label>
+                        <label><input type="checkbox" name="fecha" value="mañana"> Mañana</label>
+                    </div>  
                 </details>
                 <details id="detalleGeneros">
                     <summary>Seleccionar Géneros</summary>
@@ -83,7 +70,9 @@
                 </details>
                 
             </form>
+            <div id="contenedorPeliculas"></div>
         </main>
         <script src="../js/filtros.js"></script>
+        <script src="../js/peliculasFiltradas.js"></script>
     </body>
 </html>

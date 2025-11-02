@@ -1,7 +1,7 @@
 -- -----------------------------------------------------
 -- Usar la base de datos
 -- -----------------------------------------------------
-USE dbcineplanet;
+
 
 -- Deshabilitar temporalmente la revisión de claves foráneas para cargar datos
 SET FOREIGN_KEY_CHECKS=0;
@@ -111,17 +111,19 @@ INSERT INTO `CINE` (`id`, `nombre`, `direccion`, `telefono`, `email`, `idCiudad`
 (10, 'Cineplanet Real Plaza Pucallpa', 'Av. Centenario Km 4.3', '061605555', 'pucallpa@cineplanet.com.pe', 10);
 
 -- -- PELICULA (10 Películas, dependen de GENERO y RESTRICCION)
+-- -- PELICULA (10 Películas, dependen de GENERO y RESTRICCION)
 INSERT INTO `PELICULA` (`id`, `nombre`, `genero`, `duracion`, `restriccion`, `restriccionComercial`, `sinopsis`, `autor`, `trailer`, `portada`, `estado`) VALUES
-(1, 'El Amanecer del Guardián', 1, 140, 3, 'Recomendada +14', 'Un héroe solitario debe salvar la ciudad...', 'Dir. Juan Pérez', 'trailer1.mp4', 'portada1.jpg', 'activa'),
-(2, 'Risas en la Oficina', 2, 95, 1, 'Para todos', 'Las locuras de un grupo de oficinistas.', 'Dir. Ana López', 'trailer2.mp4', 'portada2.jpg', 'activa'),
-(3, 'El Último Viaje', 3, 120, 2, 'PG', 'Un drama familiar sobre la reconciliación.', 'Dir. Carlos Solano', 'trailer3.mp4', 'portada3.jpg', 'activa'),
-(4, 'Crónicas de Marte', 4, 150, 3, 'Recomendada +14', 'Exploradores descubren vida en Marte.', 'Dir. Lucía Torres', 'trailer4.mp4', 'portada4.jpg', 'activa'),
-(5, 'La Casa del Eco', 5, 100, 4, 'Solo +18', 'Una familia es atormentada por ecos del pasado.', 'Dir. Miguel Ruiz', 'trailer5.mp4', 'portada5.jpg', 'activa'),
-(6, 'El Reino de las Nubes', 6, 110, 1, 'Para todos', 'Una princesa busca el reino perdido.', 'Dir. Sofia Chan', 'trailer6.mp4', 'portada6.jpg', 'activa'),
-(7, 'Misión: Rescate de Mascotas', 7, 90, 1, 'Para todos', 'Un grupo de animales parlanchines...', 'Dir. David Kim', 'trailer7.mp4', 'portada7.jpg', 'activa'),
-(8, 'Código Sombra', 8, 130, 3, 'Recomendada +14', 'Un espía debe detener un complot global.', 'Dir. Elena Frost', 'trailer8.mp4', 'portada8.jpg', 'activa'),
-(9, 'El Corazón del Amazonas', 9, 85, 1, 'Educativa', 'Documental sobre la vida en el Amazonas.', 'Dir. Pedro Morales', 'trailer9.mp4', 'portada9.jpg', 'activa'),
-(10, 'Amor bajo la Lluvia', 10, 105, 2, 'PG', 'Dos extraños se enamoran en un día lluvioso.', 'Dir. Gabriela Ríos', 'trailer10.mp4', 'portada10.jpg', 'activa');
+(1, 'El Amanecer del Guardián', 1, 140, 3, TRUE,  'Un héroe solitario debe salvar la ciudad...', 'Dir. Juan Pérez', 'trailer1.mp4', 'portada1.jpg', 'activa'),
+(2, 'Risas en la Oficina', 2, 95, 1, FALSE, 'Las locuras de un grupo de oficinistas.', 'Dir. Ana López', 'trailer2.mp4', 'portada2.jpg', 'activa'),
+(3, 'El Último Viaje', 3, 120, 2, FALSE, 'Un drama familiar sobre la reconciliación.', 'Dir. Carlos Solano', 'trailer3.mp4', 'portada3.jpg', 'activa'),
+(4, 'Crónicas de Marte', 4, 150, 3, TRUE,  'Exploradores descubren vida en Marte.', 'Dir. Lucía Torres', 'trailer4.mp4', 'portada4.jpg', 'activa'),
+(5, 'La Casa del Eco', 5, 100, 4, TRUE,  'Una familia es atormentada por ecos del pasado.', 'Dir. Miguel Ruiz', 'trailer5.mp4', 'portada5.jpg', 'activa'),
+(6, 'El Reino de las Nubes', 6, 110, 1, FALSE, 'Una princesa busca el reino perdido.', 'Dir. Sofia Chan', 'trailer6.mp4', 'portada6.jpg', 'activa'),
+(7, 'Misión: Rescate de Mascotas', 7, 90, 1, FALSE, 'Un grupo de animales parlanchines...', 'Dir. David Kim', 'trailer7.mp4', 'portada7.jpg', 'activa'),
+(8, 'Código Sombra', 8, 130, 3, TRUE,  'Un espía debe detener un complot global.', 'Dir. Elena Frost', 'trailer8.mp4', 'portada8.jpg', 'activa'),
+(9, 'El Corazón del Amazonas', 9, 85, 1, FALSE, 'Documental sobre la vida en el Amazonas.', 'Dir. Pedro Morales', 'trailer9.mp4', 'portada9.jpg', 'activa'),
+(10, 'Amor bajo la Lluvia', 10, 105, 2, FALSE, 'Dos extraños se enamoran en un día lluvioso.', 'Dir. Gabriela Ríos', 'trailer10.mp4', 'portada10.jpg', 'activa');
+
 
 -- -- SOCIO (10 Socios, dependen de USUARIO)
 INSERT INTO `SOCIO` (`id`, `password`, `departamento`, `provincia`, `distrito`, `apellidoPaterno`, `apellidoMaterno`, `cineplanetFavorito`, `fechaNacimiento`, `celular`, `genero`, `grado`) VALUES

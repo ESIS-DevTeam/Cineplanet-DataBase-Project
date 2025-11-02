@@ -44,16 +44,16 @@ CREATE TABLE PELICULA (
     genero INT NOT NULL,
     duracion INT,
     restriccion INT NOT NULL,
-    restriccionComercial VARCHAR(50),
+    restriccionComercial TINYINT(1) DEFAULT 1,
     sinopsis TEXT,
     autor VARCHAR(100),
     trailer VARCHAR(255),
     portada VARCHAR(255),
-    -- idioma se normaliza en PELICULA_IDIOMA
     estado ENUM('activa', 'inactiva') DEFAULT 'activa',
     FOREIGN KEY (genero) REFERENCES GENERO(id) ON DELETE CASCADE,
     FOREIGN KEY (restriccion) REFERENCES RESTRICCION(id) ON DELETE CASCADE
 );
+
 
 CREATE TABLE FORMATO (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -432,7 +432,7 @@ END$$
 -- PELICULA
 DROP PROCEDURE IF EXISTS pelicula_create$$
 CREATE PROCEDURE pelicula_create(
-    IN p_nombre VARCHAR(100), IN p_genero INT, IN p_duracion INT, IN p_restriccion INT, IN p_restriccionComercial VARCHAR(50), IN p_sinopsis TEXT, IN p_autor VARCHAR(100), IN p_trailer VARCHAR(255), IN p_portada VARCHAR(255), IN p_estado ENUM('activa','inactiva'), OUT p_id INT)
+    IN p_nombre VARCHAR(100), IN p_genero INT, IN p_duracion INT, IN p_restriccion INT, IN p_restriccionComercial BOOLEAN, IN p_sinopsis TEXT, IN p_autor VARCHAR(100), IN p_trailer VARCHAR(255), IN p_portada VARCHAR(255), IN p_estado ENUM('activa','inactiva'), OUT p_id INT)
 BEGIN
     INSERT INTO PELICULA(nombre,genero,duracion,restriccion,restriccionComercial,sinopsis,autor,trailer,portada,estado)
     VALUES (p_nombre,p_genero,p_duracion,p_restriccion,p_restriccionComercial,p_sinopsis,p_autor,p_trailer,p_portada,p_estado);
@@ -453,7 +453,7 @@ END$$
 
 DROP PROCEDURE IF EXISTS pelicula_update$$
 CREATE PROCEDURE pelicula_update(
-    IN p_id INT, IN p_nombre VARCHAR(100), IN p_genero INT, IN p_duracion INT, IN p_restriccion INT, IN p_restriccionComercial VARCHAR(50), IN p_sinopsis TEXT, IN p_autor VARCHAR(100), IN p_trailer VARCHAR(255), IN p_portada VARCHAR(255), IN p_estado ENUM('activa','inactiva'))
+    IN p_id INT, IN p_nombre VARCHAR(100), IN p_genero INT, IN p_duracion INT, IN p_restriccion INT, IN p_restriccionComercial BOOLEAN, IN p_sinopsis TEXT, IN p_autor VARCHAR(100), IN p_trailer VARCHAR(255), IN p_portada VARCHAR(255), IN p_estado ENUM('activa','inactiva'))
 BEGIN
     UPDATE PELICULA SET nombre=p_nombre, genero=p_genero, duracion=p_duracion, restriccion=p_restriccion, restriccionComercial=p_restriccionComercial, sinopsis=p_sinopsis, autor=p_autor, trailer=p_trailer, portada=p_portada, estado=p_estado WHERE id = p_id;
 END$$

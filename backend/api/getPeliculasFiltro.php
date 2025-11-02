@@ -52,7 +52,7 @@ if (!empty($_GET['formato'])) {
 
 // ======= CENSURA =======
 if (!empty($_GET['censura'])) {
-    $filtros[] = "restriccionEdad = (SELECT tipo FROM RESTRICCION WHERE id = ?)";
+    $filtros[] = "restriccionEdad = (SELECT nombre FROM RESTRICCION WHERE id = ?)";
     $params[] = $_GET['censura'];
     $types .= "i";
 }
