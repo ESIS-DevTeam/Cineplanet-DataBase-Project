@@ -168,8 +168,25 @@ const GestorFiltros = {
 const PeliculasFiltradas = {
   async inicializar() {
     Renderizador.inicializar();
+    this.sincronizarFiltrosConURL();
     await this.cargarPeliculas();
     this.configurarEventosFiltros();
+  },
+
+  sincronizarFiltrosConURL() {
+    const params = new URLSearchParams(window.location.search);
+    params.forEach((value, key) => {
+      if (GestorFiltros.filtros.hasOwnProperty(key)) {
+        // Para filtros que aceptan múltiples valores (arrays)
+        if (Array.isArray(GestorFiltros.filtros[key])) {
+          const values = value.split(',');
+          values.forEach(val => GestorFiltros.actualizarFiltro(key, val));
+        } else {
+          // Para filtros de valor único
+          GestorFiltros.actualizarFiltro(key, value);
+        }
+      }
+    });
   },
 
   async cargarPeliculas() {

@@ -139,14 +139,53 @@ function actualizarFiltrosDinamicos() {
   actualizarFiltro('contenedorCensura', datosCensura);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  cargarDatos('http://localhost/Cineplanet-DataBase-Project/backend/api/getCines.php', 'contenedorCines', 'cine');
-  cargarDatos('http://localhost/Cineplanet-DataBase-Project/backend/api/getCiudades.php', 'contenedorCiudades', 'ciudad');
-  cargarDatos('http://localhost/Cineplanet-DataBase-Project/backend/api/getGeneros.php', 'contenedorGeneros', 'genero');
-  cargarDatos('http://localhost/Cineplanet-DataBase-Project/backend/api/getIdiomas.php', 'contenedorIdiomas', 'idioma');
-  cargarDatos('http://localhost/Cineplanet-DataBase-Project/backend/api/getFormatos.php', 'contenedorFormato', 'formato');
-  cargarDatos('http://localhost/Cineplanet-DataBase-Project/backend/api/getRestricciones.php', 'contenedorCensura', 'censura');
-  cargarDatos('http://localhost/Cineplanet-DataBase-Project/backend/api/getPeliculas.php', '', 'pelicula'); // Debes tener este endpoint
+function procesarParametrosURL() {
+  const params = new URLSearchParams(window.location.search);
+  const filterMap = {
+    'genero': 'contenedorGeneros',
+    'idioma': 'contenedorIdiomas',
+    'formato': 'contenedorFormato',
+    'censura': 'contenedorCensura',
+    'cine': 'contenedorCines',
+    'ciudad': 'contenedorCiudades',
+    'pelicula': 'contenedorPeliculas' // Asumiendo que tienes un contenedor para películas
+  };
+
+  let filtersApplied = false;
+
+  for (const [key, value] of params.entries()) {
+    const containerId = filterMap[key];
+    if (containerId) {
+      const container = document.getElementById(containerId);
+      if (container) {
+        const checkbox = container.querySelector(`input[type="checkbox"][value="${value}"]`);
+        if (checkbox) {
+          checkbox.checked = true;
+          // Disparar evento para aplicar el filtro
+          checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+          filtersApplied = true;
+        }
+      }
+    }
+  }
+
+  if (filtersApplied) {
+    actualizarFiltrosDinamicos();
+  }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  await Promise.all([
+    cargarDatos('http://localhost/Cineplanet-DataBase-Project/backend/api/getCines.php', 'contenedorCines', 'cine'),
+    cargarDatos('http://localhost/Cineplanet-DataBase-Project/backend/api/getCiudades.php', 'contenedorCiudades', 'ciudad'),
+    cargarDatos('http://localhost/Cineplanet-DataBase-Project/backend/api/getGeneros.php', 'contenedorGeneros', 'genero'),
+    cargarDatos('http://localhost/Cineplanet-DataBase-Project/backend/api/getIdiomas.php', 'contenedorIdiomas', 'idioma'),
+    cargarDatos('http://localhost/Cineplanet-DataBase-Project/backend/api/getFormatos.php', 'contenedorFormato', 'formato'),
+    cargarDatos('http://localhost/Cineplanet-DataBase-Project/backend/api/getRestricciones.php', 'contenedorCensura', 'censura'),
+    cargarDatos('http://localhost/Cineplanet-DataBase-Project/backend/api/getPeliculas.php', '', 'pelicula') // Debes tener este endpoint
+  ]);
+
+  procesarParametrosURL();
 
   const filtroFecha = document.getElementById('filtro-fecha');
   if (filtroFecha) {
