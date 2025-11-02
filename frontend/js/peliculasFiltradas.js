@@ -40,12 +40,6 @@ const Renderizador = {
     if (!document.getElementById(this.contenedorId)) {
       const contenedor = document.createElement('div');
       contenedor.id = this.contenedorId;
-      contenedor.style.cssText = `
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 20px;
-        padding: 20px;
-      `;
       document.querySelector('main').appendChild(contenedor);
     }
   },
@@ -60,78 +54,58 @@ const Renderizador = {
     const contenedor = document.getElementById(this.contenedorId);
 
     if (!peliculas || peliculas.length === 0) {
-      contenedor.innerHTML = '<p style="grid-column: 1 / -1; text-align: center;">No se encontraron películas</p>';
+      contenedor.innerHTML = '<p>No se encontraron películas</p>';
       return;
     }
 
+    // Deduplicar películas por ID
+    const peliculasUnicas = [];
+    const idsVistos = new Set();
+    
     peliculas.forEach(pelicula => {
+      if (!idsVistos.has(pelicula.idPelicula)) {
+        idsVistos.add(pelicula.idPelicula);
+        peliculasUnicas.push(pelicula);
+      }
+    });
+
+    peliculasUnicas.forEach(pelicula => {
+      const cuadro = document.createElement('div');
+      cuadro.className = 'pelicula-cuadro';
+      cuadro.style.border = '2px solid #333';
+      
       const card = this.crearCard(pelicula);
-      contenedor.appendChild(card);
+      cuadro.appendChild(card);
+      contenedor.appendChild(cuadro);
     });
   },
 
   crearCard(pelicula) {
     const card = document.createElement('div');
-    card.style.cssText = `
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      overflow: hidden;
-      background: #fff;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      transition: transform 0.2s;
-      cursor: pointer;
-    `;
-    card.onmouseover = () => card.style.transform = 'scale(1.05)';
-    card.onmouseout = () => card.style.transform = 'scale(1)';
+    card.className = 'pelicula-card';
 
     const portada = document.createElement('div');
-    portada.style.cssText = `
-      width: 100%;
-      height: 300px;
-      background: url('${pelicula.portada}') center/cover;
-      background-color: #f0f0f0;
-    `;
+    portada.className = 'pelicula-portada';
+    portada.style.backgroundImage = `url('${pelicula.portada}')`;
 
     const info = document.createElement('div');
-    info.style.cssText = `
-      padding: 15px;
-    `;
+    info.className = 'pelicula-info';
 
     const titulo = document.createElement('h3');
     titulo.textContent = pelicula.nombrePelicula;
-    titulo.style.cssText = `
-      margin: 0 0 10px 0;
-      font-size: 16px;
-      color: #333;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    `;
+    titulo.className = 'pelicula-titulo';
 
     const genero = document.createElement('p');
     genero.textContent = `Género: ${pelicula.genero}`;
-    genero.style.cssText = `
-      margin: 5px 0;
-      font-size: 13px;
-      color: #666;
-    `;
+    genero.className = 'pelicula-genero';
 
     const duracion = document.createElement('p');
     duracion.textContent = `Duración: ${pelicula.duracion || 'N/A'} min`;
-    duracion.style.cssText = `
-      margin: 5px 0;
-      font-size: 13px;
-      color: #666;
-    `;
+    duracion.className = 'pelicula-duracion';
 
     const restriccion = document.createElement('p');
     restriccion.textContent = `Clasificación: ${pelicula.restriccionEdad}`;
-    restriccion.style.cssText = `
-      margin: 5px 0;
-      font-size: 13px;
-      color: #d9534f;
-      font-weight: bold;
-    `;
+    restriccion.className = 'pelicula-restriccion';
 
     info.appendChild(titulo);
     info.appendChild(genero);

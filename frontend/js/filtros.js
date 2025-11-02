@@ -62,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target.checked) {
           checkboxes.forEach(chk => {
             if (chk !== e.target) {
+              chk.checked = false;
               chk.parentElement.style.display = 'none';
             }
           });
