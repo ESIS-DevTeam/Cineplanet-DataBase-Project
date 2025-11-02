@@ -17,8 +17,7 @@ async function cargarDatos(url, contenedorId, nombreCampo) {
       datosCines = datos;
       cineCiudadMap = {};
       datos.forEach(item => {
-        // Asume que el cine tiene un campo 'id' que representa la ciudad
-        cineCiudadMap[item.id] = item.id; // <-- Aquí, el id del cine es igual al id de la ciudad
+        cineCiudadMap[item.id] = item.idCiudad; // Relación cine-ciudad
       });
     }
     if (nombreCampo === 'ciudad') {
@@ -55,7 +54,7 @@ async function cargarDatos(url, contenedorId, nombreCampo) {
           checkbox.name = nombreCampo;
           checkbox.value = item.id;
           if (nombreCampo === 'cine') {
-            checkbox.setAttribute('data-ciudad-id', item.id); // <-- Aquí también
+            checkbox.setAttribute('data-ciudad-id', item.idCiudad); // Relación cine-ciudad
           }
           if (nombreCampo === 'ciudad') {
             checkbox.setAttribute('data-ciudad-id', item.id);
@@ -139,6 +138,31 @@ function actualizarFiltrosDinamicos() {
   actualizarFiltro('contenedorCensura', datosCensura);
 }
 
+function sincronizarCinesConCiudad() {
+  const contenedorCiudades = document.getElementById('contenedorCiudades');
+  const contenedorCines = document.getElementById('contenedorCines');
+  if (!contenedorCiudades || !contenedorCines) return;
+
+  // Busca la ciudad seleccionada
+  const ciudadSeleccionada = contenedorCiudades.querySelector('input[type="checkbox"]:checked');
+  if (!ciudadSeleccionada) {
+    // Si no hay ciudad seleccionada, muestra todos los cines
+    contenedorCines.querySelectorAll('input[type="checkbox"]').forEach(chk => {
+      chk.parentElement.style.display = 'block';
+    });
+    return;
+  }
+  const ciudadId = ciudadSeleccionada.value;
+  contenedorCines.querySelectorAll('input[type="checkbox"]').forEach(chk => {
+    if (chk.getAttribute('data-ciudad-id') !== ciudadId) {
+      chk.parentElement.style.display = 'none';
+      chk.checked = false;
+    } else {
+      chk.parentElement.style.display = 'block';
+    }
+  });
+}
+
 function procesarParametrosURL() {
   const params = new URLSearchParams(window.location.search);
   const filterMap = {
@@ -171,6 +195,7 @@ function procesarParametrosURL() {
 
   if (filtersApplied) {
     actualizarFiltrosDinamicos();
+    sincronizarCinesConCiudad(); // <-- sincroniza los cines con la ciudad seleccionada
   }
 }
 
