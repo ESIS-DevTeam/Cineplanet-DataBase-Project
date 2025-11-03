@@ -1,6 +1,5 @@
 let datosCines = [];
 let datosCiudades = [];
-let cineCiudadMap = {};
 let datosPeliculas = [];
 let datosGeneros = [];
 let datosIdiomas = [];
@@ -15,10 +14,6 @@ async function cargarDatos(url, contenedorId, nombreCampo) {
     // Guardar datos originales y mapear relaciones
     if (nombreCampo === 'cine') {
       datosCines = datos;
-      cineCiudadMap = {};
-      datos.forEach(item => {
-        cineCiudadMap[item.id] = item.idCiudad; // Relación cine-ciudad
-      });
     }
     if (nombreCampo === 'ciudad') {
       datosCiudades = datos;
@@ -53,12 +48,6 @@ async function cargarDatos(url, contenedorId, nombreCampo) {
           checkbox.type = 'checkbox';
           checkbox.name = nombreCampo;
           checkbox.value = item.id;
-          if (nombreCampo === 'cine') {
-            checkbox.setAttribute('data-ciudad-id', item.idCiudad); // Relación cine-ciudad
-          }
-          if (nombreCampo === 'ciudad') {
-            checkbox.setAttribute('data-ciudad-id', item.id);
-          }
 
           label.appendChild(checkbox);
           label.append(` ${item.nombre}`);
@@ -96,31 +85,6 @@ async function cargarDatos(url, contenedorId, nombreCampo) {
   }
 }
 
-function sincronizarCinesConCiudad() {
-  const contenedorCiudades = document.getElementById('contenedorCiudades');
-  const contenedorCines = document.getElementById('contenedorCines');
-  if (!contenedorCiudades || !contenedorCines) return;
-
-  // Busca la ciudad seleccionada
-  const ciudadSeleccionada = contenedorCiudades.querySelector('input[type="checkbox"]:checked');
-  if (!ciudadSeleccionada) {
-    // Si no hay ciudad seleccionada, muestra todos los cines
-    contenedorCines.querySelectorAll('input[type="checkbox"]').forEach(chk => {
-      chk.parentElement.style.display = 'block';
-    });
-    return;
-  }
-  const ciudadId = ciudadSeleccionada.value;
-  contenedorCines.querySelectorAll('input[type="checkbox"]').forEach(chk => {
-    if (chk.getAttribute('data-ciudad-id') !== ciudadId) {
-      chk.parentElement.style.display = 'none';
-      chk.checked = false;
-    } else {
-      chk.parentElement.style.display = 'block';
-    }
-  });
-}
-
 function procesarParametrosURL() {
   const params = new URLSearchParams(window.location.search);
   const filterMap = {
@@ -149,10 +113,6 @@ function procesarParametrosURL() {
         }
       }
     }
-  }
-
-  if (filtersApplied) {
-    sincronizarCinesConCiudad(); // <-- sincroniza los cines con la ciudad seleccionada
   }
 }
 
@@ -192,52 +152,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
     */
   }
-
-  const contenedorCiudades = document.getElementById('contenedorCiudades');
-  const contenedorCines = document.getElementById('contenedorCines');
-
-  // Listener para ciudades
-  contenedorCiudades.addEventListener('change', e => {
-    if (e.target.type === 'checkbox') {
-      const ciudadId = e.target.value;
-      const cinesCheckboxes = contenedorCines.querySelectorAll('input[type="checkbox"]');
-      if (e.target.checked) {
-        cinesCheckboxes.forEach(chk => {
-          if (chk.getAttribute('data-ciudad-id') !== ciudadId) {
-            chk.parentElement.style.display = 'none';
-            chk.checked = false;
-          } else {
-            chk.parentElement.style.display = 'block';
-          }
-        });
-      } else {
-        cinesCheckboxes.forEach(chk => {
-          chk.parentElement.style.display = 'block';
-        });
-      }
-    }
-  });
-
-  // Listener para cines
-  contenedorCines.addEventListener('change', e => {
-    if (e.target.type === 'checkbox') {
-      const cineId = e.target.value;
-      const ciudadId = cineCiudadMap[cineId];
-      const ciudadesCheckboxes = contenedorCiudades.querySelectorAll('input[type="checkbox"]');
-      if (e.target.checked) {
-        ciudadesCheckboxes.forEach(chk => {
-          if (chk.value !== String(ciudadId)) {
-            chk.parentElement.style.display = 'none';
-            chk.checked = false;
-          } else {
-            chk.parentElement.style.display = 'block';
-          }
-        });
-      } else {
-        ciudadesCheckboxes.forEach(chk => {
-          chk.parentElement.style.display = 'block';
-        });
-      }
-    }
-  });
 });
