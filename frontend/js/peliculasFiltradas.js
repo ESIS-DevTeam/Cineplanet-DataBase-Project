@@ -203,7 +203,23 @@ const PeliculasFiltradas = {
     formFiltros.addEventListener('change', async (e) => {
       const target = e.target;
       if (target.type === 'checkbox') {
-        GestorFiltros.actualizarFiltro(target.name, target.value);
+        const filterName = target.name;
+        const filterValue = target.value;
+
+        // Lógica de selección única para filtros que no son array
+        if (!Array.isArray(GestorFiltros.filtros[filterName])) {
+          if (target.checked) {
+            // Desmarcar otros checkboxes del mismo grupo
+            const checkboxes = formFiltros.querySelectorAll(`input[name="${filterName}"]`);
+            checkboxes.forEach(chk => {
+              if (chk !== target) {
+                chk.checked = false;
+              }
+            });
+          }
+        }
+        
+        GestorFiltros.actualizarFiltro(filterName, filterValue);
         await this.cargarPeliculas();
       }
     });
@@ -229,26 +245,44 @@ const PeliculasFiltradas = {
     const generosValidos = new Set(peliculas.map(p => String(p.idGenero)));
     const idiomasValidos = new Set(peliculas.map(p => String(p.idIdioma)));
     const formatosValidos = new Set(peliculas.map(p => String(p.idFormato)));
-    const censurasValidas = new Set(peliculas.map(p => String(p.idRestriccion)));
+    const censurasValidas = new Set(peliculas.map(p => String(p.idRestriccion))); // Usar idRestriccion
+    const fechasValidas = new Set(peliculas.map(p => p.fecha));
 
     const actualizarFiltro = (contenedorId, valoresValidos) => {
       const cont = document.getElementById(contenedorId);
       if (!cont) return;
-      Array.from(cont.querySelectorAll('input[type="checkbox"]')).forEach(chk => {
-        if (valoresValidos.has(chk.value) || chk.checked) {
-          chk.parentElement.style.display = 'block';
+      const checkboxes = Array.from(cont.querySelectorAll('input[type="checkbox"]'));
+      const filtroActivo = checkboxes.some(chk => chk.checked);
+
+      checkboxes.forEach(chk => {
+        const esValido = valoresValidos.has(chk.value);
+        if (!filtroActivo) {
+          // Si no hay nada seleccionado en este grupo, mostrar solo los válidos
+          chk.parentElement.style.display = esValido ? 'block' : 'none';
         } else {
-          chk.parentElement.style.display = 'none';
-          // No desmarcar si no es necesario, GestorFiltros maneja el estado
-          // chk.checked = false; 
+          // Si hay algo seleccionado, mostrar solo el seleccionado
+          chk.parentElement.style.display = chk.checked ? 'block' : 'none';
         }
       });
     };
 
+    const actualizarFiltroMultiple = (contenedorId, valoresValidos) => {
+        const cont = document.getElementById(contenedorId);
+        if (!cont) return;
+        Array.from(cont.querySelectorAll('input[type="checkbox"]')).forEach(chk => {
+            if (valoresValidos.has(chk.value) || chk.checked) {
+                chk.parentElement.style.display = 'block';
+            } else {
+                chk.parentElement.style.display = 'none';
+            }
+        });
+    };
+
     actualizarFiltro('contenedorGeneros', generosValidos);
-    actualizarFiltro('contenedorIdiomas', idiomasValidos);
-    actualizarFiltro('contenedorFormato', formatosValidos);
+    actualizarFiltroMultiple('contenedorIdiomas', idiomasValidos);
+    actualizarFiltroMultiple('contenedorFormato', formatosValidos);
     actualizarFiltro('contenedorCensura', censurasValidas);
+    actualizarFiltro('filtro-fecha', fechasValidas);
   }
 };
 

@@ -201,6 +201,7 @@ function procesarParametrosURL() {
     'censura': 'contenedorCensura',
     'cine': 'contenedorCines',
     'ciudad': 'contenedorCiudades',
+    'dia': 'filtro-fecha', // <-- Añadir esta línea
     'pelicula': 'contenedorPeliculas' // Asumiendo que tienes un contenedor para películas
   };
 
@@ -246,20 +247,5 @@ document.addEventListener('DOMContentLoaded', async () => {
   const filtroFecha = document.getElementById('filtro-fecha');
   if (filtroFecha) {
     // SE ELIMINA ESTE BLOQUE PARA EVITAR CONFLICTOS
-    /*
-    filtroFecha.addEventListener('change', e => {
-      if (e.target.type === 'checkbox') {
-        const checkboxes = filtroFecha.querySelectorAll('input[type="checkbox"]');
-        if (e.target.checked) {
-          checkboxes.forEach(chk => {
-            if (chk !== e.target) {
-              chk.checked = false;
-              // No ocultar, la lógica de filtrado se encarga de la UI
-            }
-          });
-        }
-      }
-    });
-    */
   }
 });

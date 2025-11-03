@@ -59,7 +59,14 @@ if (!empty($_GET['censura'])) {
 
 // ======= DÍA =======
 if (!empty($_GET['dia'])) {
-    if ($_GET['dia'] === 'hoy') {
+    // Validar si es una fecha en formato YYYY-MM-DD
+    if (preg_match("/^\d{4}-\d{2}-\d{2}$/", $_GET['dia'])) {
+        $filtros[] = "pf.fecha = ?";
+        $params[] = $_GET['dia'];
+        $types .= "s";
+    }
+    // Mantener la lógica anterior por si se usa en otro lugar
+    elseif ($_GET['dia'] === 'hoy') {
         $filtros[] = "pf.fecha = CURDATE()";
     } elseif ($_GET['dia'] === 'mañana') {
         $filtros[] = "pf.fecha = DATE_ADD(CURDATE(), INTERVAL 1 DAY)";
