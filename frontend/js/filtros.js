@@ -5,6 +5,58 @@ let datosGeneros = [];
 let datosIdiomas = [];
 let datosFormatos = [];
 let datosCensura = [];
+let datosFunciones = [];
+
+function actualizarFiltroFechas() {
+  const contenedorFecha = document.getElementById('filtro-fecha');
+  if (!contenedorFecha) return;
+
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+
+  const fechasUnicas = new Set();
+  datosFunciones.forEach(funcion => {
+    // MySQL devuelve 'YYYY-MM-DD'. Para evitar problemas de zona horaria, lo tratamos como UTC.
+    const fechaFuncion = new Date(funcion.fecha + 'T00:00:00');
+    if (fechaFuncion >= hoy) {
+      fechasUnicas.add(funcion.fecha);
+    }
+  });
+
+  const fechasOrdenadas = Array.from(fechasUnicas).sort();
+  contenedorFecha.innerHTML = ''; // Limpiar contenido estático
+
+  const diasSemana = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+
+  fechasOrdenadas.forEach(fechaStr => {
+    const fecha = new Date(fechaStr + 'T00:00:00');
+    const diaNumero = fecha.getDate();
+    const nombreDia = diasSemana[fecha.getDay()];
+    
+    let textoLabel;
+    const esHoy = fecha.getTime() === hoy.getTime();
+
+    if (esHoy) {
+      textoLabel = `hoy ${nombreDia}`;
+    } else {
+      textoLabel = `${nombreDia} ${diaNumero}`;
+    }
+
+    const label = document.createElement('label');
+    label.style.display = 'block';
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.name = 'dia';
+    checkbox.value = fechaStr;
+
+    label.appendChild(checkbox);
+    label.append(` ${textoLabel}`);
+    contenedorFecha.appendChild(label);
+  });
+
+  // El comportamiento de selección única se ha movido a peliculasFiltradas.js
+  // para centralizar la lógica de los filtros.
+}
 
 function actualizarCines(ciudadId) {
   const contenedorCines = document.getElementById('contenedorCines');
@@ -55,6 +107,9 @@ async function cargarDatos(url, contenedorId, nombreCampo) {
     }
     if (nombreCampo === 'censura') {
       datosCensura = datos;
+    }
+    if (nombreCampo === 'funcion') {
+      datosFunciones = datos;
     }
 
     // Solo modificar el DOM si el contenedor existe
@@ -176,9 +231,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     cargarDatos('http://localhost/Cineplanet-DataBase-Project/backend/api/getIdiomas.php', 'contenedorIdiomas', 'idioma'),
     cargarDatos('http://localhost/Cineplanet-DataBase-Project/backend/api/getFormatos.php', 'contenedorFormato', 'formato'),
     cargarDatos('http://localhost/Cineplanet-DataBase-Project/backend/api/getRestricciones.php', 'contenedorCensura', 'censura'),
-    cargarDatos('http://localhost/Cineplanet-DataBase-Project/backend/api/getPeliculas.php', '', 'pelicula') // Debes tener este endpoint
+    cargarDatos('http://localhost/Cineplanet-DataBase-Project/backend/api/getPeliculas.php', '', 'pelicula'),
+    cargarDatos('http://localhost/Cineplanet-DataBase-Project/backend/api/getFunciones.php', '', 'funcion')
   ]);
 
+  // Una vez cargados todos los datos, asociar funciones a películas
+  datosPeliculas.forEach(pelicula => {
+    pelicula.funciones = datosFunciones.filter(funcion => funcion.idPelicula == pelicula.id);
+  });
+
+  actualizarFiltroFechas();
   procesarParametrosURL();
 
   const filtroFecha = document.getElementById('filtro-fecha');
@@ -192,12 +254,8 @@ document.addEventListener('DOMContentLoaded', async () => {
           checkboxes.forEach(chk => {
             if (chk !== e.target) {
               chk.checked = false;
-              chk.parentElement.style.display = 'none';
+              // No ocultar, la lógica de filtrado se encarga de la UI
             }
-          });
-        } else {
-          checkboxes.forEach(chk => {
-            chk.parentElement.style.display = 'block';
           });
         }
       }
