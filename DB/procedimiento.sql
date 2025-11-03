@@ -424,6 +424,12 @@ BEGIN
     DELETE FROM FUNCION WHERE id = p_id;
 END$$
 
+DROP PROCEDURE IF EXISTS funcion_get_all$$
+CREATE PROCEDURE funcion_get_all()
+BEGIN
+    SELECT * FROM FUNCION;
+END$$
+
 -- BOLETA
 DROP PROCEDURE IF EXISTS boleta_create$$
 CREATE PROCEDURE boleta_create(IN p_idUsuario INT, IN p_fecha DATE, OUT p_id INT)
@@ -597,36 +603,42 @@ ALTER TABLE PROMO_BOLETA ADD INDEX idx_promo_boleta_idBoleta (idBoleta);
 
 -- Triggers: al cambiar productos/funciones/promos de una boleta, recalcular
 DELIMITER $$
+DROP TRIGGER IF EXISTS trg_productos_boleta_after_insert$$
 CREATE TRIGGER trg_productos_boleta_after_insert AFTER INSERT ON PRODUCTOS_BOLETA
 FOR EACH ROW
 BEGIN
     CALL recalc_boleta_total(NEW.idBoleta);
 END$$
 
+DROP TRIGGER IF EXISTS trg_productos_boleta_after_update$$
 CREATE TRIGGER trg_productos_boleta_after_update AFTER UPDATE ON PRODUCTOS_BOLETA
 FOR EACH ROW
 BEGIN
     CALL recalc_boleta_total(NEW.idBoleta);
 END$$
 
+DROP TRIGGER IF EXISTS trg_productos_boleta_after_delete$$
 CREATE TRIGGER trg_productos_boleta_after_delete AFTER DELETE ON PRODUCTOS_BOLETA
 FOR EACH ROW
 BEGIN
     CALL recalc_boleta_total(OLD.idBoleta);
 END$$
 
+DROP TRIGGER IF EXISTS trg_funciones_boleta_after_insert$$
 CREATE TRIGGER trg_funciones_boleta_after_insert AFTER INSERT ON FUNCIONES_BOLETA
 FOR EACH ROW
 BEGIN
     CALL recalc_boleta_total(NEW.idBoleta);
 END$$
 
+DROP TRIGGER IF EXISTS trg_funciones_boleta_after_update$$
 CREATE TRIGGER trg_funciones_boleta_after_update AFTER UPDATE ON FUNCIONES_BOLETA
 FOR EACH ROW
 BEGIN
     CALL recalc_boleta_total(NEW.idBoleta);
 END$$
 
+DROP TRIGGER IF EXISTS trg_funciones_boleta_after_delete$$
 CREATE TRIGGER trg_funciones_boleta_after_delete AFTER DELETE ON FUNCIONES_BOLETA
 FOR EACH ROW
 BEGIN
@@ -634,18 +646,21 @@ BEGIN
 END$$
 
 -- Para PROMO_BOLETA es útil recalcular cuando se inserta/actualiza/elimina una promo aplicada
+DROP TRIGGER IF EXISTS trg_promo_boleta_after_insert$$
 CREATE TRIGGER trg_promo_boleta_after_insert AFTER INSERT ON PROMO_BOLETA
 FOR EACH ROW
 BEGIN
     CALL recalc_boleta_total(NEW.idBoleta);
 END$$
 
+DROP TRIGGER IF EXISTS trg_promo_boleta_after_update$$
 CREATE TRIGGER trg_promo_boleta_after_update AFTER UPDATE ON PROMO_BOLETA
 FOR EACH ROW
 BEGIN
     CALL recalc_boleta_total(NEW.idBoleta);
 END$$
 
+DROP TRIGGER IF EXISTS trg_promo_boleta_after_delete$$
 CREATE TRIGGER trg_promo_boleta_after_delete AFTER DELETE ON PROMO_BOLETA
 FOR EACH ROW
 BEGIN
