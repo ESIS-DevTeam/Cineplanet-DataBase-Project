@@ -66,6 +66,8 @@ async function cargarDatos(url, contenedorId, nombreCampo) {
         });
 
         // Comportamiento de selección única para ciertos filtros
+        // SE ELIMINA ESTE BLOQUE PARA EVITAR CONFLICTOS
+        /*
         if (nombreCampo !== 'idioma' && nombreCampo !== 'formato') {
           contenedor.addEventListener('change', e => {
             if (e.target.type === 'checkbox') {
@@ -85,6 +87,7 @@ async function cargarDatos(url, contenedorId, nombreCampo) {
             }
           });
         }
+        */
       }
     }
 
@@ -168,6 +171,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const filtroFecha = document.getElementById('filtro-fecha');
   if (filtroFecha) {
+    // SE ELIMINA ESTE BLOQUE PARA EVITAR CONFLICTOS
+    /*
     filtroFecha.addEventListener('change', e => {
       if (e.target.type === 'checkbox') {
         const checkboxes = filtroFecha.querySelectorAll('input[type="checkbox"]');
@@ -185,6 +190,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       }
     });
+    */
   }
 
   const contenedorCiudades = document.getElementById('contenedorCiudades');

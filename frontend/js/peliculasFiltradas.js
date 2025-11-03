@@ -207,6 +207,21 @@ const PeliculasFiltradas = {
         await this.cargarPeliculas();
       }
     });
+
+    // Limpiar todos los filtros
+    const btnLimpiar = document.getElementById('limpiar-filtros');
+    if (btnLimpiar) {
+      btnLimpiar.addEventListener('click', async () => {
+        GestorFiltros.limpiarFiltros();
+        
+        // Desmarcar todos los checkboxes
+        formFiltros.querySelectorAll('input[type="checkbox"]').forEach(chk => {
+          chk.checked = false;
+        });
+
+        await this.cargarPeliculas();
+      });
+    }
   },
 
   actualizarFiltrosDinamicosConPeliculas(peliculas) {
@@ -224,7 +239,8 @@ const PeliculasFiltradas = {
           chk.parentElement.style.display = 'block';
         } else {
           chk.parentElement.style.display = 'none';
-          chk.checked = false;
+          // No desmarcar si no es necesario, GestorFiltros maneja el estado
+          // chk.checked = false; 
         }
       });
     };
