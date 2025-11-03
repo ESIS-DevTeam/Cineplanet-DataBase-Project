@@ -6,6 +6,29 @@ let datosIdiomas = [];
 let datosFormatos = [];
 let datosCensura = [];
 
+function actualizarCines(ciudadId) {
+  const contenedorCines = document.getElementById('contenedorCines');
+  if (!contenedorCines) return;
+
+  const cinesAMostrar = ciudadId
+    ? datosCines.filter(cine => cine.idCiudad == ciudadId)
+    : datosCines;
+
+  const idsCinesAMostrar = cinesAMostrar.map(cine => cine.id);
+
+  const checkboxesCines = contenedorCines.querySelectorAll('input[type="checkbox"]');
+  checkboxesCines.forEach(chk => {
+    // Desmarcar todos los cines al cambiar la ciudad
+    chk.checked = false;
+    const cineId = chk.value;
+    if (idsCinesAMostrar.includes(cineId)) {
+      chk.parentElement.style.display = 'block';
+    } else {
+      chk.parentElement.style.display = 'none';
+    }
+  });
+}
+
 async function cargarDatos(url, contenedorId, nombreCampo) {
   try {
     const response = await fetch(url);
@@ -66,10 +89,20 @@ async function cargarDatos(url, contenedorId, nombreCampo) {
                     chk.parentElement.style.display = 'none';
                   }
                 });
+                if (nombreCampo === 'ciudad') {
+                  actualizarCines(e.target.value);
+                }
               } else {
-                checkboxes.forEach(chk => {
-                  chk.parentElement.style.display = 'block';
-                });
+                if (nombreCampo === 'ciudad') {
+                  checkboxes.forEach(chk => {
+                    chk.parentElement.style.display = 'block';
+                  });
+                  actualizarCines(null); // Mostrar todos los cines
+                } else if (nombreCampo === 'cine') {
+                  // Si se desmarca un cine, volvemos a mostrar los cines de la ciudad seleccionada
+                  const ciudadSeleccionada = document.querySelector('#contenedorCiudades input[type="checkbox"]:checked');
+                  actualizarCines(ciudadSeleccionada ? ciudadSeleccionada.value : null);
+                }
               }
             }
           });
