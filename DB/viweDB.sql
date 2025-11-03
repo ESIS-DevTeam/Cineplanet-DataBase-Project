@@ -9,7 +9,9 @@ SELECT
     f.id AS idFuncion,
     p.id AS idPelicula,
     p.nombre AS nombrePelicula,
+    g.id AS idGenero,
     g.nombre AS genero,
+    r.id AS idRestriccion,           -- <--- Añade esta línea
     r.nombre AS restriccionEdad,
     p.restriccionComercial,
     p.sinopsis,

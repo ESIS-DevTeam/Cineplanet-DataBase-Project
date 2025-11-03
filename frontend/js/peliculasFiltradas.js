@@ -193,6 +193,7 @@ const PeliculasFiltradas = {
     const filtros = GestorFiltros.obtenerFiltros();
     const peliculas = await API.obtenerPeliculas(filtros);
     Renderizador.mostrarPeliculas(peliculas);
+    this.actualizarFiltrosDinamicosConPeliculas(peliculas); // <-- Actualiza los filtros dinámicos
   },
 
   configurarEventosFiltros() {
@@ -206,6 +207,32 @@ const PeliculasFiltradas = {
         await this.cargarPeliculas();
       }
     });
+  },
+
+  actualizarFiltrosDinamicosConPeliculas(peliculas) {
+    // Extrae los valores únicos de cada filtro de las películas filtradas
+    const generosValidos = new Set(peliculas.map(p => String(p.idGenero)));
+    const idiomasValidos = new Set(peliculas.map(p => String(p.idIdioma)));
+    const formatosValidos = new Set(peliculas.map(p => String(p.idFormato)));
+    const censurasValidas = new Set(peliculas.map(p => String(p.idRestriccion)));
+
+    const actualizarFiltro = (contenedorId, valoresValidos) => {
+      const cont = document.getElementById(contenedorId);
+      if (!cont) return;
+      Array.from(cont.querySelectorAll('input[type="checkbox"]')).forEach(chk => {
+        if (valoresValidos.has(chk.value) || chk.checked) {
+          chk.parentElement.style.display = 'block';
+        } else {
+          chk.parentElement.style.display = 'none';
+          chk.checked = false;
+        }
+      });
+    };
+
+    actualizarFiltro('contenedorGeneros', generosValidos);
+    actualizarFiltro('contenedorIdiomas', idiomasValidos);
+    actualizarFiltro('contenedorFormato', formatosValidos);
+    actualizarFiltro('contenedorCensura', censurasValidas);
   }
 };
 

@@ -93,51 +93,6 @@ async function cargarDatos(url, contenedorId, nombreCampo) {
   }
 }
 
-function getFiltrosSeleccionados() {
-  const filtros = {};
-  ['contenedorGeneros', 'contenedorIdiomas', 'contenedorFormato', 'contenedorCensura'].forEach(id => {
-    const cont = document.getElementById(id);
-    if (!cont) return;
-    const checked = Array.from(cont.querySelectorAll('input[type="checkbox"]:checked')).map(chk => chk.value);
-    filtros[id] = checked;
-  });
-  return filtros;
-}
-
-function filtrarPeliculasPorFiltros(filtros) {
-  return datosPeliculas.filter(p => {
-    if (filtros.contenedorGeneros.length && !filtros.contenedorGeneros.includes(String(p.id))) return false;
-    if (filtros.contenedorIdiomas.length && !filtros.contenedorIdiomas.includes(String(p.id))) return false;
-    if (filtros.contenedorFormato.length && !filtros.contenedorFormato.includes(String(p.id))) return false;
-    if (filtros.contenedorCensura.length && !filtros.contenedorCensura.includes(String(p.id))) return false;
-    return true;
-  });
-}
-
-function actualizarFiltrosDinamicos() {
-  const filtros = getFiltrosSeleccionados();
-  const peliculasFiltradas = filtrarPeliculasPorFiltros(filtros);
-
-  const actualizarFiltro = (contenedorId, datos) => {
-    const cont = document.getElementById(contenedorId);
-    if (!cont) return;
-    const valoresValidos = new Set(peliculasFiltradas.map(p => String(p.id)));
-    Array.from(cont.querySelectorAll('input[type="checkbox"]')).forEach(chk => {
-      if (valoresValidos.has(chk.value) || chk.checked) {
-        chk.parentElement.style.display = 'block';
-      } else {
-        chk.parentElement.style.display = 'none';
-        chk.checked = false;
-      }
-    });
-  };
-
-  actualizarFiltro('contenedorGeneros', datosGeneros);
-  actualizarFiltro('contenedorIdiomas', datosIdiomas);
-  actualizarFiltro('contenedorFormato', datosFormatos);
-  actualizarFiltro('contenedorCensura', datosCensura);
-}
-
 function sincronizarCinesConCiudad() {
   const contenedorCiudades = document.getElementById('contenedorCiudades');
   const contenedorCines = document.getElementById('contenedorCines');
@@ -194,7 +149,6 @@ function procesarParametrosURL() {
   }
 
   if (filtersApplied) {
-    actualizarFiltrosDinamicos();
     sincronizarCinesConCiudad(); // <-- sincroniza los cines con la ciudad seleccionada
   }
 }
@@ -278,16 +232,6 @@ document.addEventListener('DOMContentLoaded', async () => {
           chk.parentElement.style.display = 'block';
         });
       }
-    }
-  });
-
-  // Listeners para filtros dinámicos
-  ['contenedorGeneros', 'contenedorIdiomas', 'contenedorFormato', 'contenedorCensura'].forEach(id => {
-    const cont = document.getElementById(id);
-    if (cont) {
-      cont.addEventListener('change', () => {
-        actualizarFiltrosDinamicos();
-      });
     }
   });
 });

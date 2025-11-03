@@ -23,9 +23,9 @@ if (!empty($_GET['cine'])) {
 
 // ======= GÉNERO =======
 if (!empty($_GET['genero'])) {
-    $filtros[] = "pf.genero = ?";
-    $params[] = $_GET['genero'];
-    $types .= "s";
+    $filtros[] = "pf.idGenero   = ?";
+    $params[] = (int)$_GET['genero'];
+    $types .= "i";
 }
 
 // ======= IDIOMA (varios checkboxes) - CORREGIDO =======
