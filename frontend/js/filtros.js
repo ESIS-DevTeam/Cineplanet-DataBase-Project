@@ -55,9 +55,7 @@ async function cargarDatos(url, contenedorId, nombreCampo) {
         });
 
         // Comportamiento de selección única para ciertos filtros
-        // SE ELIMINA ESTE BLOQUE PARA EVITAR CONFLICTOS
-        /*
-        if (nombreCampo !== 'idioma' && nombreCampo !== 'formato') {
+        if (nombreCampo === 'cine' || nombreCampo === 'ciudad') {
           contenedor.addEventListener('change', e => {
             if (e.target.type === 'checkbox') {
               const checkboxes = contenedor.querySelectorAll('input[type="checkbox"]');
@@ -76,7 +74,6 @@ async function cargarDatos(url, contenedorId, nombreCampo) {
             }
           });
         }
-        */
       }
     }
 
