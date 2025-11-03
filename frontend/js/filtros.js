@@ -91,6 +91,22 @@ async function cargarDatos(url, contenedorId, nombreCampo) {
                 });
                 if (nombreCampo === 'ciudad') {
                   actualizarCines(e.target.value);
+                } else if (nombreCampo === 'cine') {
+                  // Mostrar solo la ciudad correspondiente y deshabilitarla
+                  const cineSeleccionado = datosCines.find(cine => cine.id == e.target.value);
+                  if (cineSeleccionado) {
+                    const ciudadCheckboxes = document.querySelectorAll('#contenedorCiudades input[type="checkbox"]');
+                    ciudadCheckboxes.forEach(chk => {
+                      if (chk.value == cineSeleccionado.idCiudad) {
+                        chk.checked = true;
+                        chk.disabled = true;
+                        chk.parentElement.style.display = 'block';
+                      } else {
+                        chk.checked = false;
+                        chk.parentElement.style.display = 'none';
+                      }
+                    });
+                  }
                 }
               } else {
                 if (nombreCampo === 'ciudad') {
@@ -99,9 +115,15 @@ async function cargarDatos(url, contenedorId, nombreCampo) {
                   });
                   actualizarCines(null); // Mostrar todos los cines
                 } else if (nombreCampo === 'cine') {
-                  // Si se desmarca un cine, volvemos a mostrar los cines de la ciudad seleccionada
-                  const ciudadSeleccionada = document.querySelector('#contenedorCiudades input[type="checkbox"]:checked');
-                  actualizarCines(ciudadSeleccionada ? ciudadSeleccionada.value : null);
+                  // Si se desmarca un cine, restaurar el filtro de ciudades
+                  const ciudadCheckboxes = document.querySelectorAll('#contenedorCiudades input[type="checkbox"]');
+                  ciudadCheckboxes.forEach(chk => {
+                    chk.checked = false;
+                    chk.disabled = false;
+                    chk.parentElement.style.display = 'block';
+                  });
+                  // Y mostrar todos los cines
+                  actualizarCines(null);
                 }
               }
             }
