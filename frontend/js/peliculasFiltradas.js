@@ -77,6 +77,20 @@ const Renderizador = {
       const card = this.crearCard(pelicula);
       cuadro.appendChild(card);
       contenedor.appendChild(cuadro);
+
+      // --- Lógica de redirección al hacer click en la película ---
+      cuadro.style.cursor = 'pointer';
+      cuadro.addEventListener('click', () => {
+        // Obtener filtros activos
+        const filtros = GestorFiltros.obtenerFiltros();
+        const params = [`pelicula=${encodeURIComponent(pelicula.idPelicula)}`];
+        // Si hay ciudad/cine/dia, agregar a la URL
+        if (filtros.ciudad) params.push(`ciudad=${encodeURIComponent(filtros.ciudad)}`);
+        if (filtros.cine) params.push(`cine=${encodeURIComponent(filtros.cine)}`);
+        if (filtros.dia) params.push(`dia=${encodeURIComponent(filtros.dia)}`);
+        // Redirigir
+        window.location.href = `peliculaSeleccion.html?${params.join('&')}`;
+      });
     });
   },
 
