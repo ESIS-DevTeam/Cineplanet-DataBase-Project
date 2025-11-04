@@ -75,7 +75,8 @@ let allCines = [];
 let allCiudades = [];
 let allFechas = [];
 let rawData = null;
-let cinesFiltradosGlobal = []; // <-- variable global para los cines filtrados
+let cinesFiltradosGlobal = [];
+let funcionesPorCineGlobal = {}; // <-- nueva variable para guardar funciones
 
 async function cargarOpcionesFuncionPelicula() {
   const params = new URLSearchParams(window.location.search);
@@ -91,11 +92,53 @@ async function cargarOpcionesFuncionPelicula() {
     allCines = data.cines;
     allFechas = data.fechas;
 
+    // Pre-cargar funciones para todos los cines
+    for (const cine of allCines) {
+      const funcionesRes = await fetch(
+        `http://localhost/Cineplanet-DataBase-Project/backend/api/getFuncionesPorCine.php?idPelicula=${idPelicula}&idCine=${cine.id}`
+      );
+      funcionesPorCineGlobal[cine.id] = await funcionesRes.json();
+    }
+
     actualizarSelects();
     renderDetallesCines();
   } catch (err) {
-    // Opcional: mostrar error en los selects
+    console.error('Error al cargar opciones:', err);
   }
+}
+
+function obtenerFechasDisponiblesPorCines(cinesIds) {
+  const fechasSet = new Set();
+  cinesIds.forEach(cineId => {
+    const funciones = funcionesPorCineGlobal[cineId] || {};
+    Object.keys(funciones).forEach(fecha => {
+      fechasSet.add(fecha);
+    });
+  });
+  return Array.from(fechasSet).sort();
+}
+
+function obtenerCinesConFecha(fechas) {
+  const cinesSet = new Set();
+  allCines.forEach(cine => {
+    const funciones = funcionesPorCineGlobal[cine.id] || {};
+    fechas.forEach(fecha => {
+      if (funciones[fecha]) {
+        cinesSet.add(cine.id);
+      }
+    });
+  });
+  return cinesSet;
+}
+
+function obtenerCiudadesConFecha(fechas) {
+  const ciudadesSet = new Set();
+  const cinesConFecha = obtenerCinesConFecha(fechas);
+  cinesConFecha.forEach(cineId => {
+    const cine = allCines.find(c => c.id == cineId);
+    if (cine) ciudadesSet.add(cine.idCiudad);
+  });
+  return ciudadesSet;
 }
 
 function actualizarSelects() {
@@ -107,40 +150,36 @@ function actualizarSelects() {
   const cineSel = selectCine.value;
   const fechaSel = selectFecha.value;
 
-  // Filtrar cines por ciudad seleccionada
+  // Determinar qué filtros aplicar
   let cinesFiltrados = allCines;
+  let fechasFiltradas = allFechas;
+  let ciudadesFiltradas = allCiudades;
+
+  // Filtro 1: Por ciudad seleccionada
   if (ciudadSel) {
     cinesFiltrados = cinesFiltrados.filter(c => c.idCiudad == ciudadSel);
-  }
-  // Filtrar cines por cine seleccionado
-  if (cineSel) {
-    cinesFiltrados = cinesFiltrados.filter(c => c.id == cineSel);
+    fechasFiltradas = obtenerFechasDisponiblesPorCines(cinesFiltrados.map(c => c.id));
   }
 
-  // Filtrar fechas según los cines filtrados
-  let fechasFiltradas = [];
-  cinesFiltrados.forEach(cine => {
-    // Buscar fechas en las funciones de ese cine
-    if (rawData.fechas && Array.isArray(rawData.fechas)) {
-      rawData.fechas.forEach(fecha => {
-        // Si el cine tiene esa fecha, agregarla
-        fechasFiltradas.push(fecha);
-      });
-    }
-  });
-  // Eliminar duplicados
-  fechasFiltradas = Array.from(new Set(fechasFiltradas));
-
-  // Filtrar ciudades por cine seleccionado
-  let ciudadesFiltradas = allCiudades;
+  // Filtro 2: Por cine seleccionado (solo afecta ciudades y fechas, no a otros cines)
   if (cineSel) {
-    const cineObj = allCines.find(c => c.id == cineSel);
-    if (cineObj) {
-      ciudadesFiltradas = allCiudades.filter(ci => ci.id == cineObj.idCiudad);
+    const cine = allCines.find(c => c.id == cineSel);
+    if (cine) {
+      ciudadesFiltradas = allCiudades.filter(ci => ci.id == cine.idCiudad);
+      fechasFiltradas = obtenerFechasDisponiblesPorCines([cine.id]);
     }
   }
 
-  // Actualizar selects
+  // Filtro 3: Por fecha seleccionada
+  if (fechaSel) {
+    const cinesConFecha = Array.from(obtenerCinesConFecha([fechaSel]));
+    cinesFiltrados = cinesFiltrados.filter(c => cinesConFecha.includes(c.id));
+    
+    const ciudadesConFecha = Array.from(obtenerCiudadesConFecha([fechaSel]));
+    ciudadesFiltradas = ciudadesFiltradas.filter(ci => ciudadesConFecha.includes(ci.id));
+  }
+
+  // Actualizar select de ciudades
   selectCiudad.innerHTML = '<option value="">Selecciona ciudad</option>';
   ciudadesFiltradas.forEach(c => {
     const opt = document.createElement('option');
@@ -150,6 +189,7 @@ function actualizarSelects() {
     selectCiudad.appendChild(opt);
   });
 
+  // Actualizar select de cines
   selectCine.innerHTML = '<option value="">Selecciona cine</option>';
   cinesFiltrados.forEach(c => {
     const opt = document.createElement('option');
@@ -159,7 +199,7 @@ function actualizarSelects() {
     selectCine.appendChild(opt);
   });
 
-  // Filtrar fechas desde hoy en adelante y mostrar nombre del día
+  // Actualizar select de fechas
   const hoy = new Date();
   hoy.setHours(0, 0, 0, 0);
   const diasSemana = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
@@ -192,7 +232,7 @@ function actualizarSelects() {
     selectFecha.appendChild(opt);
   });
 
-  // Al final de la función, guarda los cines filtrados globalmente
+  // Guardar cines filtrados globalmente
   cinesFiltradosGlobal = cinesFiltrados;
 }
 
