@@ -194,20 +194,50 @@
           selectFecha.appendChild(opt);
         });
 
-        // Mostrar cines en formato <details>
+        // Mostrar cines en formato <details> con funciones agrupadas por formato+idioma
         const cinesContainer = document.getElementById('cines-details-container');
         cinesContainer.innerHTML = '';
-        data.cines.forEach(c => {
+        for (const c of data.cines) {
           const details = document.createElement('details');
           const summary = document.createElement('summary');
           summary.textContent = c.nombre;
           details.appendChild(summary);
 
-          // Aquí puedes agregar el contenido interno de cada cine
-          // Ejemplo: details.innerHTML += '<div>Contenido para el cine</div>';
+          // Obtener funciones por cine usando el endpoint
+          const funcionesRes = await fetch(
+            `http://localhost/Cineplanet-DataBase-Project/backend/api/getFuncionesPorCine.php?idPelicula=${idPelicula}&idCine=${c.id}`
+          );
+          const funcionesPorFecha = await funcionesRes.json();
+
+          // Agrupar por formato+idioma
+          const grupos = {};
+          Object.values(funcionesPorFecha).flat().forEach(funcion => {
+            const key = `${funcion.formato} ${funcion.idioma}`;
+            if (!grupos[key]) grupos[key] = [];
+            grupos[key].push(funcion.hora);
+          });
+
+          Object.entries(grupos).forEach(([titulo, horas]) => {
+            const divGrupo = document.createElement('div');
+            divGrupo.style.marginBottom = '1em';
+            const tituloDiv = document.createElement('div');
+            tituloDiv.textContent = titulo;
+            tituloDiv.style.fontWeight = 'bold';
+            divGrupo.appendChild(tituloDiv);
+
+            horas.forEach(hora => {
+              const btn = document.createElement('button');
+              btn.type = 'button';
+              btn.textContent = hora;
+              btn.style.marginRight = '0.5em';
+              divGrupo.appendChild(btn);
+            });
+
+            details.appendChild(divGrupo);
+          });
 
           cinesContainer.appendChild(details);
-        });
+        }
       } catch (err) {
         // Opcional: mostrar error en los selects
       }
