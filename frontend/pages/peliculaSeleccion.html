@@ -194,58 +194,102 @@
           selectFecha.appendChild(opt);
         });
 
-        // Mostrar cines en formato <details> con funciones agrupadas por formato+idioma
-        const cinesContainer = document.getElementById('cines-details-container');
-        cinesContainer.innerHTML = '';
-        for (const c of data.cines) {
-          const details = document.createElement('details');
-          const summary = document.createElement('summary');
-          summary.textContent = c.nombre;
-          details.appendChild(summary);
+        // Guardar datos para filtrar después
+        window._cineData = data.cines;
+        window._ciudadData = data.ciudades;
+        window._fechaData = data.fechas;
 
-          // Obtener funciones por cine usando el endpoint
-          const funcionesRes = await fetch(
-            `http://localhost/Cineplanet-DataBase-Project/backend/api/getFuncionesPorCine.php?idPelicula=${idPelicula}&idCine=${c.id}`
-          );
-          const funcionesPorFecha = await funcionesRes.json();
-
-          // Agrupar por formato+idioma
-          const grupos = {};
-          Object.values(funcionesPorFecha).flat().forEach(funcion => {
-            const key = `${funcion.formato} ${funcion.idioma}`;
-            if (!grupos[key]) grupos[key] = [];
-            grupos[key].push(funcion.hora);
-          });
-
-          Object.entries(grupos).forEach(([titulo, horas]) => {
-            const divGrupo = document.createElement('div');
-            divGrupo.style.marginBottom = '1em';
-            const tituloDiv = document.createElement('div');
-            tituloDiv.textContent = titulo;
-            tituloDiv.style.fontWeight = 'bold';
-            divGrupo.appendChild(tituloDiv);
-
-            horas.forEach(hora => {
-              const btn = document.createElement('button');
-              btn.type = 'button';
-              btn.textContent = hora;
-              btn.style.marginRight = '0.5em';
-              divGrupo.appendChild(btn);
-            });
-
-            details.appendChild(divGrupo);
-          });
-
-          cinesContainer.appendChild(details);
-        }
+        // Renderizar detalles de cines filtrados
+        renderDetallesCines();
       } catch (err) {
         // Opcional: mostrar error en los selects
+      }
+    }
+
+    async function renderDetallesCines() {
+      const idPelicula = new URLSearchParams(window.location.search).get('pelicula');
+      const selectCiudad = document.getElementById('select-ciudad-funcion');
+      const selectCine = document.getElementById('select-cine-funcion');
+      const selectFecha = document.getElementById('select-fecha-funcion');
+      const cinesContainer = document.getElementById('cines-details-container');
+
+      // Filtrar cines según ciudad seleccionada usando idCiudad
+      let cinesFiltrados = window._cineData || [];
+      const ciudadSeleccionada = document.getElementById('select-ciudad-funcion').value;
+      const cineSeleccionado = document.getElementById('select-cine-funcion').value;
+      const fechaSeleccionada = document.getElementById('select-fecha-funcion').value;
+
+      // Filtrar cines según ciudad seleccionada usando idCiudad
+      if (ciudadSeleccionada) {
+        cinesFiltrados = cinesFiltrados.filter(c => c.idCiudad == ciudadSeleccionada);
+      }
+      if (cineSeleccionado) {
+        cinesFiltrados = cinesFiltrados.filter(c => c.id == cineSeleccionado);
+      }
+
+      cinesContainer.innerHTML = '';
+      for (const c of cinesFiltrados) {
+        const details = document.createElement('details');
+        const summary = document.createElement('summary');
+        summary.textContent = c.nombre;
+        details.appendChild(summary);
+
+        // Obtener funciones por cine usando el endpoint
+        const funcionesRes = await fetch(
+          `http://localhost/Cineplanet-DataBase-Project/backend/api/getFuncionesPorCine.php?idPelicula=${idPelicula}&idCine=${c.id}`
+        );
+        const funcionesPorFecha = await funcionesRes.json();
+
+        // Si hay filtro de fecha, solo mostrar funciones de esa fecha
+        let funcionesFiltradas = funcionesPorFecha;
+        if (selectFecha.value) {
+          funcionesFiltradas = {};
+          if (funcionesPorFecha[selectFecha.value]) {
+            funcionesFiltradas[selectFecha.value] = funcionesPorFecha[selectFecha.value];
+          }
+        }
+
+        // Agrupar por formato+idioma
+        const grupos = {};
+        Object.values(funcionesFiltradas).flat().forEach(funcion => {
+          const key = `${funcion.formato} ${funcion.idioma}`;
+          if (!grupos[key]) grupos[key] = [];
+          grupos[key].push(funcion.hora);
+        });
+
+        // Si no hay funciones, no mostrar el cine
+        if (Object.keys(grupos).length === 0) continue;
+
+        Object.entries(grupos).forEach(([titulo, horas]) => {
+          const divGrupo = document.createElement('div');
+          divGrupo.style.marginBottom = '1em';
+          const tituloDiv = document.createElement('div');
+          tituloDiv.textContent = titulo;
+          tituloDiv.style.fontWeight = 'bold';
+          divGrupo.appendChild(tituloDiv);
+
+          horas.forEach(hora => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.textContent = hora;
+            btn.style.marginRight = '0.5em';
+            divGrupo.appendChild(btn);
+          });
+
+          details.appendChild(divGrupo);
+        });
+
+        cinesContainer.appendChild(details);
       }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
       mostrarInfoPelicula();
       cargarOpcionesFuncionPelicula();
+
+      document.getElementById('select-ciudad-funcion').addEventListener('change', renderDetallesCines);
+      document.getElementById('select-cine-funcion').addEventListener('change', renderDetallesCines);
+      document.getElementById('select-fecha-funcion').addEventListener('change', renderDetallesCines);
     });
   </script>
 </body>

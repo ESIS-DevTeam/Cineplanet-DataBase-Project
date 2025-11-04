@@ -29,7 +29,12 @@ while ($row = $result->fetch_assoc()) {
         $ciudades[$row['idCiudad']] = $row['ciudad'];
     }
     if ($row['idCine'] && $row['nombreCine']) {
-        $cines[$row['idCine']] = $row['nombreCine'];
+        // Guardar también idCiudad en cada cine
+        $cines[$row['idCine']] = [
+            "id" => $row['idCine'],
+            "nombre" => $row['nombreCine'],
+            "idCiudad" => $row['idCiudad']
+        ];
     }
     if ($row['fecha']) {
         $fechas[$row['fecha']] = $row['fecha'];
@@ -45,8 +50,9 @@ $response = [
 foreach ($ciudades as $id => $nombre) {
     $response["ciudades"][] = ["id" => $id, "nombre" => $nombre];
 }
-foreach ($cines as $id => $nombre) {
-    $response["cines"][] = ["id" => $id, "nombre" => $nombre];
+// Cambia aquí para que cines sea un array de objetos con id, nombre, idCiudad
+foreach ($cines as $cine) {
+    $response["cines"][] = $cine;
 }
 foreach ($fechas as $fecha) {
     $response["fechas"][] = $fecha;
