@@ -101,10 +101,40 @@ async function cargarOpcionesFuncionPelicula() {
     }
 
     actualizarSelects();
+    preseleccionarDesdeURL();
     renderDetallesCines();
   } catch (err) {
     console.error('Error al cargar opciones:', err);
   }
+}
+
+function preseleccionarDesdeURL() {
+  const params = new URLSearchParams(window.location.search);
+  const selectCiudad = document.getElementById('select-ciudad-funcion');
+  const selectCine = document.getElementById('select-cine-funcion');
+  const selectFecha = document.getElementById('select-fecha-funcion');
+
+  const ciudadURL = params.get('ciudad');
+  const cineURL = params.get('cine');
+  const diaURL = params.get('dia');
+
+  // Preseleccionar ciudad
+  if (ciudadURL) {
+    selectCiudad.value = ciudadURL;
+  }
+
+  // Preseleccionar cine
+  if (cineURL) {
+    selectCine.value = cineURL;
+  }
+
+  // Preseleccionar fecha
+  if (diaURL) {
+    selectFecha.value = diaURL;
+  }
+
+  // Actualizar selects para reflejar los cambios
+  actualizarSelects();
 }
 
 function obtenerFechasDisponiblesPorCines(cinesIds) {
