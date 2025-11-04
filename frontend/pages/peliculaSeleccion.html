@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Película Seleccionada</title>
+  <link rel="shortcut icon" href="../images/items/icono-cine.ico" type="image/x-icon">
+  <!-- Puedes agregar tus estilos aquí -->
+</head>
+<body>
+  <header>
+    <a href="index.html">
+      <svg class="logo-cineplanet" width="120" height="77" viewBox="0 0 1752.4 1416.2" xmlns="http://www.w3.org/2000/svg">
+        <g></g>
+      </svg>
+    </a>
+    <nav>
+      <ul>
+        <li><a href="peliculas.html">Películas</a></li>
+        <li><a href="cines.html">Cine</a></li>
+        <li><a href="promociones.html">Promociones</a></li>
+        <li><a href="socio.html">Socio</a></li>
+        <li><a href="dulceria.html">Dulcería</a></li>
+        <li><a href="corporativo.html">Corporativo</a></li>
+        <li><a href="blog.html" target="_blank">Blog</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <h1>Película Seleccionada</h1>
+    <div id="info-pelicula">
+      <!-- Aquí se mostrará la información de la película y filtros seleccionados -->
+    </div>
+    <div style="margin-top:2em;">
+      <h2>La función perfecta para ti</h2>
+      <form id="form-funcion-perfecta">
+        <label>
+          Ciudad:
+          <select id="select-ciudad-funcion" name="ciudad">
+            <option value="">Selecciona ciudad</option>
+          </select>
+        </label>
+        <label>
+          Cine:
+          <select id="select-cine-funcion" name="cine">
+            <option value="">Selecciona cine</option>
+          </select>
+        </label>
+        <label>
+          Fecha:
+          <select id="select-fecha-funcion" name="dia">
+            <option value="">Selecciona fecha</option>
+          </select>
+        </label>
+      </form>
+    </div>
+    <div id="cines-details-container" style="margin-top:2em;">
+      <!-- Aquí aparecerán los detalles de cines disponibles -->
+    </div>
+  </main>
+  <script>
+    async function mostrarInfoPelicula() {
+      const params = new URLSearchParams(window.location.search);
+      const idPelicula = params.get('pelicula');
+      const ciudad = params.get('ciudad');
+      const cine = params.get('cine');
+      const dia = params.get('dia');
+      const infoDiv = document.getElementById('info-pelicula');
+
+      if (!idPelicula) {
+        infoDiv.textContent = 'No se ha seleccionado ninguna película.';
+        return;
+      }
+
+      try {
+        // Usar el endpoint nuevo para obtener los datos por id
+        const res = await fetch(`http://localhost/Cineplanet-DataBase-Project/backend/api/getInfoPelicula.php?idPelicula=${idPelicula}`);
+        const pelicula = await res.json();
+
+        if (!pelicula || Object.keys(pelicula).length === 0) {
+          infoDiv.textContent = 'Película no encontrada.';
+          return;
+        }
+
+        // Idiomas y formatos pueden venir como string o array, normalizar
+        let idiomas = pelicula.idiomas || pelicula.idioma || '';
+        if (Array.isArray(idiomas)) idiomas = idiomas.join(', ');
+        let formatos = pelicula.formatos || pelicula.formato || '';
+        if (Array.isArray(formatos)) formatos = formatos.join(', ');
+
+        let trailerHtml = '';
+        if (pelicula.trailer) {
+          // Extraer el ID de YouTube desde el link completo
+          let youtubeId = '';
+          // Admite formatos: https://www.youtube.com/watch?v=xxxx, https://youtu.be/xxxx, etc.
+          const ytMatch = pelicula.trailer.match(/(?:youtube\.com\/.*v=|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+          if (ytMatch) {
+            youtubeId = ytMatch[1];
+          }
+          if (youtubeId) {
+            trailerHtml = `
+              <div style="margin:1em 0;">
+                <iframe src="https://www.youtube.com/embed/${youtubeId}" width="560" height="315" frameborder="0" allowfullscreen></iframe>
+              </div>
+            `;
+          } else {
+            // Si no es YouTube, solo muestra el link
+            trailerHtml = `
+              <div style="margin:1em 0;">
+                <a href="${pelicula.trailer}" target="_blank">${pelicula.trailer}</a>
+              </div>
+            `;
+          }
+        }
+
+        infoDiv.innerHTML = `
+          ${trailerHtml}
+          <h2>${pelicula.nombrePelicula || pelicula.nombre || 'Sin título'}</h2>
+          ${pelicula.portada ? `<img src="${pelicula.portada}" alt="Portada" style="max-width:200px;">` : ''}
+          <p><strong>Sinopsis:</strong> ${pelicula.sinopsis || ''}</p>
+          <p><strong>Género:</strong> ${pelicula.genero || pelicula.generoPelicula || ''}</p>
+          <p><strong>Duración:</strong> ${pelicula.duracion || ''} min</p>
+          <p><strong>Clasificación:</strong> ${pelicula.restriccionEdad || pelicula.clasificacion || ''}</p>
+          <p><strong>Idiomas disponibles:</strong> ${idiomas}</p>
+          <p><strong>Formatos disponibles:</strong> ${formatos}</p>
+          ${ciudad ? `<p><strong>Ciudad:</strong> ${ciudad}</p>` : ''}
+          ${cine ? `<p><strong>Cine:</strong> ${cine}</p>` : ''}
+          ${dia ? `<p><strong>Fecha:</strong> ${dia}</p>` : ''}
+        `;
+      } catch (err) {
+        infoDiv.textContent = 'Error al cargar la película.';
+      }
+    }
+
+    async function cargarOpcionesFuncionPelicula() {
+      const params = new URLSearchParams(window.location.search);
+      const idPelicula = params.get('pelicula');
+      if (!idPelicula) return;
+
+      try {
+        const res = await fetch(`http://localhost/Cineplanet-DataBase-Project/backend/api/getOpcionesFuncionPelicula.php?pelicula=${idPelicula}`);
+        const data = await res.json();
+
+        const selectCiudad = document.getElementById('select-ciudad-funcion');
+        const selectCine = document.getElementById('select-cine-funcion');
+        const selectFecha = document.getElementById('select-fecha-funcion');
+
+        selectCiudad.innerHTML = '<option value="">Selecciona ciudad</option>';
+        selectCine.innerHTML = '<option value="">Selecciona cine</option>';
+        selectFecha.innerHTML = '<option value="">Selecciona fecha</option>';
+
+        data.ciudades.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.id;
+          opt.textContent = c.nombre;
+          selectCiudad.appendChild(opt);
+        });
+        data.cines.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.id;
+          opt.textContent = c.nombre;
+          selectCine.appendChild(opt);
+        });
+
+        // Filtrar fechas desde hoy en adelante y mostrar nombre del día
+        const hoy = new Date();
+        hoy.setHours(0, 0, 0, 0);
+        const diasSemana = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+
+        // Ordenar fechas y filtrar
+        const fechasOrdenadas = Array.from(new Set(data.fechas))
+          .filter(fechaStr => {
+            const fecha = new Date(fechaStr + 'T00:00:00');
+            return fecha >= hoy;
+          })
+          .sort();
+
+        fechasOrdenadas.forEach(fechaStr => {
+          const fecha = new Date(fechaStr + 'T00:00:00');
+          const diaNumero = fecha.getDate();
+          const nombreDia = diasSemana[fecha.getDay()];
+          let textoLabel;
+          const esHoy = fecha.getTime() === hoy.getTime();
+
+          if (esHoy) {
+            textoLabel = `hoy ${nombreDia}`;
+          } else {
+            textoLabel = `${nombreDia} ${diaNumero}`;
+          }
+
+          const opt = document.createElement('option');
+          opt.value = fechaStr;
+          opt.textContent = textoLabel;
+          selectFecha.appendChild(opt);
+        });
+
+        // Mostrar cines en formato <details>
+        const cinesContainer = document.getElementById('cines-details-container');
+        cinesContainer.innerHTML = '';
+        data.cines.forEach(c => {
+          const details = document.createElement('details');
+          const summary = document.createElement('summary');
+          summary.textContent = c.nombre;
+          details.appendChild(summary);
+
+          // Aquí puedes agregar el contenido interno de cada cine
+          // Ejemplo: details.innerHTML += '<div>Contenido para el cine</div>';
+
+          cinesContainer.appendChild(details);
+        });
+      } catch (err) {
+        // Opcional: mostrar error en los selects
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      mostrarInfoPelicula();
+      cargarOpcionesFuncionPelicula();
+    });
+  </script>
+</body>
+</html>

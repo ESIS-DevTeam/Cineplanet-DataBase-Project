@@ -37,5 +37,20 @@ class PeliculaData {
 
         return $peliculas;
     }
+
+    public static function obtenerPorId($id) {
+        $conn = Conexion::conectar();
+        $stmt = $conn->prepare("CALL pelicula_get(?)");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $pelicula = $result ? $result->fetch_assoc() : null;
+
+        $stmt->close();
+        $conn->next_result(); // Limpiar resultados previos de procedimientos
+
+        return $pelicula;
+    }
 }
 ?>
