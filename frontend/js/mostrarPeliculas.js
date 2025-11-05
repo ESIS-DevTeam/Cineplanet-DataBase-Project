@@ -1,3 +1,5 @@
+let urlCheckboxesMarcados = false;
+
 document.addEventListener('DOMContentLoaded', () => {
     cargarPeliculasYFiltros();
     document.getElementById('filtros-peliculas').addEventListener('change', onFiltroChange);
@@ -18,6 +20,10 @@ function cargarPeliculasYFiltros(seleccionadosPrevios = null) {
             mostrarPeliculas(peliculas);
             mostrarFiltrosDinamicos(peliculas, filtros);
             mostrarFiltroFechas(peliculas, filtros);
+            if (!urlCheckboxesMarcados) {
+                marcarCheckboxesPorURL();
+                urlCheckboxesMarcados = true;
+            }
         });
 }
 
@@ -186,4 +192,16 @@ function obtenerFiltrosSeleccionados() {
     const fecha = Array.from(document.querySelectorAll('input[name="dia"]:checked')).map(e => e.value);
     if (fecha.length) filtros.dia = fecha.join(',');
     return filtros;
+}
+
+function marcarCheckboxesPorURL() {
+    const params = new URLSearchParams(window.location.search);
+    params.forEach((value, key) => {
+        const selector = `input[name="${key}"][value="${value}"]`;
+        const checkbox = document.querySelector(selector);
+        if (checkbox) {
+            checkbox.checked = true;
+            checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+    });
 }
