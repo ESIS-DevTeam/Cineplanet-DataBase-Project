@@ -13,6 +13,7 @@ CREATE TABLE USUARIO (
     tipoDocumento VARCHAR(20) NOT NULL,
     numeroDocumento VARCHAR(20) UNIQUE NOT NULL,
     tipoSocio INT DEFAULT 1,
+    isEmpleado int DEFAULT 0,
     FOREIGN KEY (tipoSocio) REFERENCES TIPO_SOCIO(id) ON DELETE SET NULL
 );
 
@@ -293,9 +294,9 @@ DELIMITER $$
 -- USUARIO
 DROP PROCEDURE IF EXISTS usuario_create$$
 CREATE PROCEDURE usuario_create(
-    IN p_nombre VARCHAR(100), IN p_email VARCHAR(100), IN p_tipoDocumento VARCHAR(20), IN p_numeroDocumento VARCHAR(20), IN p_tipoSocio INT, OUT p_id INT)
+    IN p_nombre VARCHAR(100), IN p_email VARCHAR(100), IN p_tipoDocumento VARCHAR(20), IN p_numeroDocumento VARCHAR(20), IN p_tipoSocio INT, IN p_isEmpleado TINYINT(1), OUT p_id INT)
 BEGIN
-    INSERT INTO USUARIO(nombre,email,tipoDocumento,numeroDocumento,tipoSocio) VALUES (p_nombre,p_email,p_tipoDocumento,p_numeroDocumento,p_tipoSocio);
+    INSERT INTO USUARIO(nombre,email,tipoDocumento,numeroDocumento,tipoSocio,isEmpleado) VALUES (p_nombre,p_email,p_tipoDocumento,p_numeroDocumento,p_tipoSocio,p_isEmpleado);
     SET p_id = LAST_INSERT_ID();
 END$$
 
@@ -306,9 +307,9 @@ BEGIN
 END$$
 
 DROP PROCEDURE IF EXISTS usuario_update$$
-CREATE PROCEDURE usuario_update(IN p_id INT, IN p_nombre VARCHAR(100), IN p_email VARCHAR(100), IN p_tipoDocumento VARCHAR(20), IN p_numeroDocumento VARCHAR(20), IN p_tipoSocio INT)
+CREATE PROCEDURE usuario_update(IN p_id INT, IN p_nombre VARCHAR(100), IN p_email VARCHAR(100), IN p_tipoDocumento VARCHAR(20), IN p_numeroDocumento VARCHAR(20), IN p_tipoSocio INT, IN p_isEmpleado TINYINT(1))
 BEGIN
-    UPDATE USUARIO SET nombre = p_nombre, email = p_email, tipoDocumento = p_tipoDocumento, numeroDocumento = p_numeroDocumento, tipoSocio = p_tipoSocio WHERE id = p_id;
+    UPDATE USUARIO SET nombre = p_nombre, email = p_email, tipoDocumento = p_tipoDocumento, numeroDocumento = p_numeroDocumento, tipoSocio = p_tipoSocio, isEmpleado = p_isEmpleado WHERE id = p_id;
 END$$
 
 DROP PROCEDURE IF EXISTS usuario_delete$$
