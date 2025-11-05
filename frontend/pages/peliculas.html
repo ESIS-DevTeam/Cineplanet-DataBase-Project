@@ -9,6 +9,41 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Películas</title>
         <link rel="shortcut icon" href="icono-cine.ico" type="image/x-icon">
+        <style>
+            #contenedorPeliculas {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 20px;
+                margin-top: 30px;
+            }
+            .pelicula-card {
+                border: 2px solid #2d2d2d; /* Borde más grueso y oscuro */
+                border-radius: 8px;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #f9f9f9;
+                width: 220px;
+                box-sizing: border-box;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .pelicula-card img {
+                width: 180px;
+                height: 260px;
+                object-fit: cover;
+                border-radius: 6px;
+                margin-bottom: 10px;
+            }
+            .pelicula-card h3 {
+                margin: 8px 0 6px 0;
+                text-align: center;
+            }
+            .pelicula-card p {
+                margin: 2px 0;
+                text-align: center;
+            }
+        </style>
     </head>
 
     <body>
@@ -71,7 +106,6 @@
             </form>
             <div id="contenedorPeliculas"></div>
         </main>
-        <script src="../js/filtros.js"></script>
-        <script src="../js/peliculasFiltradas.js"></script>
+        <script src="../js/mostrarPeliculas.js"></script>
     </body>
 </html>
