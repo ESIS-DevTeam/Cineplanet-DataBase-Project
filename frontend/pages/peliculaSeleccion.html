@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Película Seleccionada</title>
+  <link rel="shortcut icon" href="../images/items/icono-cine.ico" type="image/x-icon">
+  <!-- Puedes agregar tus estilos aquí -->
+</head>
+<body>
+  <header>
+    <a href="index.html">
+      <svg class="logo-cineplanet" width="120" height="77" viewBox="0 0 1752.4 1416.2" xmlns="http://www.w3.org/2000/svg">
+        <g></g>
+      </svg>
+    </a>
+    <nav>
+      <ul>
+        <li><a href="peliculas.html">Películas</a></li>
+        <li><a href="cines.html">Cine</a></li>
+        <li><a href="promociones.html">Promociones</a></li>
+        <li><a href="socio.html">Socio</a></li>
+        <li><a href="dulceria.html">Dulcería</a></li>
+        <li><a href="corporativo.html">Corporativo</a></li>
+        <li><a href="blog.html" target="_blank">Blog</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <h1>Película Seleccionada</h1>
+    <div id="info-pelicula">
+      <!-- Aquí se mostrará la información de la película y filtros seleccionados -->
+    </div>
+    <div style="margin-top:2em;">
+      <h2>La función perfecta para ti</h2>
+      <form id="form-funcion-perfecta">
+        <label>
+          Ciudad:
+          <select id="select-ciudad-funcion" name="ciudad">
+            <option value="">Selecciona ciudad</option>
+          </select>
+        </label>
+        <label>
+          Cine:
+          <select id="select-cine-funcion" name="cine">
+            <option value="">Selecciona cine</option>
+          </select>
+        </label>
+        <label>
+          Fecha:
+          <select id="select-fecha-funcion" name="dia">
+            <option value="">Selecciona fecha</option>
+          </select>
+        </label>
+      </form>
+    </div>
+    <div id="cines-details-container" style="margin-top:2em;">
+      <!-- Aquí aparecerán los detalles de cines disponibles -->
+    </div>
+  </main>
+  <script src="../js/peliculaSeleccion.js"></script>
+</body>
+</html>

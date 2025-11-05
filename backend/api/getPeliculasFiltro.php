@@ -7,6 +7,9 @@ $filtros = [];
 $params = [];
 $types = "";
 
+// Filtro para mostrar solo funciones desde hoy en adelante
+$filtros[] = "pf.fecha >= CURDATE()";
+
 // ======= CIUDAD =======
 if (!empty($_GET['ciudad'])) {
     $filtros[] = "pf.idCiudad = ?";
@@ -76,7 +79,7 @@ if (!empty($_GET['dia'])) {
 }
 
 // ======= SQL FINAL =======
-$sql = "SELECT DISTINCT pf.* FROM peliculas_filtro pf";
+$sql = "SELECT DISTINCT pf.idPelicula, pf.nombrePelicula, pf.portada, pf.duracion, pf.restriccionEdad, pf.fecha, pf.idCiudad, pf.ciudad, pf.idCine, pf.nombreCine, pf.idGenero, pf.genero, pf.idIdioma, pf.idioma, pf.idFormato, pf.formato, pf.idRestriccion FROM peliculas_filtro pf";
 
 if ($filtros) {
     $sql .= " WHERE " . implode(" AND ", $filtros);
