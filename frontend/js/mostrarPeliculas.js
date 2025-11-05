@@ -21,19 +21,31 @@ function cargarPeliculasYFiltros(seleccionadosPrevios = null) {
     fetch(`../../backend/api/getPeliculasFiltro.php?${params}`)
         .then(res => res.json())
         .then(peliculas => {
-            mostrarPeliculas(peliculas);
+            mostrarPeliculas(peliculas, filtros); // Pasar los filtros a mostrarPeliculas
             mostrarFiltrosDinamicos(peliculas, filtros);
             mostrarFiltroFechas(peliculas, filtros);
         });
 }
 
-function mostrarPeliculas(peliculas) {
+function mostrarPeliculas(peliculas, filtros) {
     const contenedor = document.getElementById('contenedorPeliculas');
     contenedor.innerHTML = '';
     const idsMostrados = new Set();
+
+    // Crear un objeto URLSearchParams con los filtros actuales
+    const paramsFiltro = new URLSearchParams(filtros);
+
     peliculas.forEach(pelicula => {
         if (idsMostrados.has(pelicula.idPelicula)) return;
         idsMostrados.add(pelicula.idPelicula);
+
+        // Crear el enlace
+        const link = document.createElement('a');
+        const linkParams = new URLSearchParams(paramsFiltro);
+        linkParams.set('pelicula', pelicula.idPelicula); // Añadir el id de la película
+        link.href = `peliculaSeleccion.html?${linkParams.toString()}`;
+        link.style.textDecoration = 'none';
+        link.style.color = 'inherit';
 
         const card = document.createElement('div');
         card.className = 'pelicula-card'; // Clase para el cuadro
@@ -56,7 +68,9 @@ function mostrarPeliculas(peliculas) {
         card.appendChild(duracion);
         card.appendChild(restriccion);
 
-        contenedor.appendChild(card);
+        // Añadir la tarjeta al enlace y el enlace al contenedor
+        link.appendChild(card);
+        contenedor.appendChild(link);
     });
 }
 
