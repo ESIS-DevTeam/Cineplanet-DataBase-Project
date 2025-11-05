@@ -1,13 +1,19 @@
 
 --------------------------------------
-
+-- tipoSocio
+CREATE TABLE TIPO_SOCIO (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL UNIQUE
+);
 
 CREATE TABLE USUARIO (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     tipoDocumento VARCHAR(20) NOT NULL,
-    numeroDocumento VARCHAR(20) UNIQUE NOT NULL
+    numeroDocumento VARCHAR(20) UNIQUE NOT NULL,
+    tipoSocio INT DEFAULT 1,
+    FOREIGN KEY (tipoSocio) REFERENCES TIPO_SOCIO(id) ON DELETE SET NULL
 );
 
 -- CIUDAD: normalización de ciudades para CINE
@@ -287,9 +293,9 @@ DELIMITER $$
 -- USUARIO
 DROP PROCEDURE IF EXISTS usuario_create$$
 CREATE PROCEDURE usuario_create(
-    IN p_nombre VARCHAR(100), IN p_email VARCHAR(100), IN p_tipoDocumento VARCHAR(20), IN p_numeroDocumento VARCHAR(20), OUT p_id INT)
+    IN p_nombre VARCHAR(100), IN p_email VARCHAR(100), IN p_tipoDocumento VARCHAR(20), IN p_numeroDocumento VARCHAR(20), IN p_tipoSocio INT, OUT p_id INT)
 BEGIN
-    INSERT INTO USUARIO(nombre,email,tipoDocumento,numeroDocumento) VALUES (p_nombre,p_email,p_tipoDocumento,p_numeroDocumento);
+    INSERT INTO USUARIO(nombre,email,tipoDocumento,numeroDocumento,tipoSocio) VALUES (p_nombre,p_email,p_tipoDocumento,p_numeroDocumento,p_tipoSocio);
     SET p_id = LAST_INSERT_ID();
 END$$
 
@@ -300,9 +306,9 @@ BEGIN
 END$$
 
 DROP PROCEDURE IF EXISTS usuario_update$$
-CREATE PROCEDURE usuario_update(IN p_id INT, IN p_nombre VARCHAR(100), IN p_email VARCHAR(100), IN p_tipoDocumento VARCHAR(20), IN p_numeroDocumento VARCHAR(20))
+CREATE PROCEDURE usuario_update(IN p_id INT, IN p_nombre VARCHAR(100), IN p_email VARCHAR(100), IN p_tipoDocumento VARCHAR(20), IN p_numeroDocumento VARCHAR(20), IN p_tipoSocio INT)
 BEGIN
-    UPDATE USUARIO SET nombre = p_nombre, email = p_email, tipoDocumento = p_tipoDocumento, numeroDocumento = p_numeroDocumento WHERE id = p_id;
+    UPDATE USUARIO SET nombre = p_nombre, email = p_email, tipoDocumento = p_tipoDocumento, numeroDocumento = p_numeroDocumento, tipoSocio = p_tipoSocio WHERE id = p_id;
 END$$
 
 DROP PROCEDURE IF EXISTS usuario_delete$$
@@ -511,6 +517,38 @@ DROP PROCEDURE IF EXISTS formato_get_all$$
 CREATE PROCEDURE formato_get_all()
 BEGIN
     SELECT * FROM FORMATO;
+END$$
+
+-- TIPO_SOCIO
+DROP PROCEDURE IF EXISTS tipo_socio_create$$
+CREATE PROCEDURE tipo_socio_create(IN p_nombre VARCHAR(50), OUT p_id INT)
+BEGIN
+    INSERT INTO TIPO_SOCIO(nombre) VALUES (p_nombre);
+    SET p_id = LAST_INSERT_ID();
+END$$
+
+DROP PROCEDURE IF EXISTS tipo_socio_get$$
+CREATE PROCEDURE tipo_socio_get(IN p_id INT)
+BEGIN
+    SELECT * FROM TIPO_SOCIO WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS tipo_socio_get_all$$
+CREATE PROCEDURE tipo_socio_get_all()
+BEGIN
+    SELECT * FROM TIPO_SOCIO;
+END$$
+
+DROP PROCEDURE IF EXISTS tipo_socio_update$$
+CREATE PROCEDURE tipo_socio_update(IN p_id INT, IN p_nombre VARCHAR(50))
+BEGIN
+    UPDATE TIPO_SOCIO SET nombre = p_nombre WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS tipo_socio_delete$$
+CREATE PROCEDURE tipo_socio_delete(IN p_id INT)
+BEGIN
+    DELETE FROM TIPO_SOCIO WHERE id = p_id;
 END$$
 
 -- TIPO_PRODUCTO
