@@ -3,7 +3,7 @@ DROP PROCEDURE IF EXISTS recalc_boleta_total$$
 CREATE PROCEDURE recalc_boleta_total(IN p_idBoleta INT)
 BEGIN
     DECLARE v_prod_sub DECIMAL(14,2) DEFAULT 0;
-    DECLARE v_func_sub DECIMAL(14,2) DEFAULT 0;
+    DECLARE v_asiento_sub DECIMAL(14,2) DEFAULT 0;
     DECLARE v_subtotal DECIMAL(14,2) DEFAULT 0;
     DECLARE v_desc_total DECIMAL(14,2) DEFAULT 0;
     DECLARE v_got_lock INT DEFAULT 0;
@@ -14,8 +14,8 @@ BEGIN
     IF v_got_lock = 1 THEN
         -- Calcular subtotales
         SELECT IFNULL(SUM(cantidad * precioUnitario),0) INTO v_prod_sub FROM PRODUCTOS_BOLETA WHERE idBoleta = p_idBoleta;
-        SELECT IFNULL(SUM(cantidad * precioUnitario),0) INTO v_func_sub FROM FUNCIONES_BOLETA WHERE idBoleta = p_idBoleta;
-        SET v_subtotal = v_prod_sub + v_func_sub;
+        SELECT IFNULL(SUM(precioUnitario),0) INTO v_asiento_sub FROM BOLETA_ASIENTO WHERE idBoleta = p_idBoleta;
+        SET v_subtotal = v_prod_sub + v_asiento_sub;
 
         -- Calcular descuento total sin modificar PROMO_BOLETA (evita error 1442)
         SELECT IFNULL(SUM(
@@ -23,7 +23,7 @@ BEGIN
                 WHEN 'porcentaje' THEN
                     CASE p.aplicaA
                         WHEN 'productos' THEN (v_prod_sub * p.valor / 100)
-                        WHEN 'funciones' THEN (v_func_sub * p.valor / 100)
+                        WHEN 'funciones' THEN (v_asiento_sub * p.valor / 100)
                         ELSE (v_subtotal * p.valor / 100)
                     END
                 WHEN 'fijo' THEN p.valor
@@ -365,37 +365,43 @@ BEGIN
     DELETE FROM SALA WHERE id = p_id;
 END$$
 
--- ASIENTO CRUD (ubicado junto a SALA)
-DROP PROCEDURE IF EXISTS asiento_create$$
-CREATE PROCEDURE asiento_create(
-    IN p_idSala INT, IN p_fila CHAR(1), IN p_numero INT, IN p_tipo ENUM('normal','discapacidad'), OUT p_id INT)
+DROP PROCEDURE IF EXISTS sala_get_by_cine$$
+CREATE PROCEDURE sala_get_by_cine(IN p_idCine INT)
 BEGIN
-    INSERT INTO ASIENTO(idSala,fila,numero,tipo) VALUES (p_idSala,p_fila,p_numero,p_tipo);
+    SELECT * FROM SALA WHERE idCine = p_idCine;
+END$$
+
+-- PLANO_SALA CRUD (antes ASIENTO)
+DROP PROCEDURE IF EXISTS plano_sala_create$$
+CREATE PROCEDURE plano_sala_create(
+    IN p_idSala INT, IN p_fila CHAR(1), IN p_numero INT, IN p_tipo ENUM('normal','discapacidad','vip'), IN p_disponible TINYINT(1), OUT p_id INT)
+BEGIN
+    INSERT INTO PLANO_SALA(idSala,fila,numero,tipo,disponible) VALUES (p_idSala,p_fila,p_numero,p_tipo,p_disponible);
     SET p_id = LAST_INSERT_ID();
 END$$
 
-DROP PROCEDURE IF EXISTS asiento_get$$
-CREATE PROCEDURE asiento_get(IN p_id INT)
+DROP PROCEDURE IF EXISTS plano_sala_get$$
+CREATE PROCEDURE plano_sala_get(IN p_id INT)
 BEGIN
-    SELECT * FROM ASIENTO WHERE id = p_id;
+    SELECT * FROM PLANO_SALA WHERE id = p_id;
 END$$
 
-DROP PROCEDURE IF EXISTS asiento_get_by_sala$$
-CREATE PROCEDURE asiento_get_by_sala(IN p_idSala INT)
+DROP PROCEDURE IF EXISTS plano_sala_get_by_sala$$
+CREATE PROCEDURE plano_sala_get_by_sala(IN p_idSala INT)
 BEGIN
-    SELECT * FROM ASIENTO WHERE idSala = p_idSala ORDER BY fila, numero;
+    SELECT * FROM PLANO_SALA WHERE idSala = p_idSala ORDER BY fila, numero;
 END$$
 
-DROP PROCEDURE IF EXISTS asiento_update$$
-CREATE PROCEDURE asiento_update(IN p_id INT, IN p_fila CHAR(1), IN p_numero INT, IN p_tipo ENUM('normal','discapacidad'))
+DROP PROCEDURE IF EXISTS plano_sala_update$$
+CREATE PROCEDURE plano_sala_update(IN p_id INT, IN p_fila CHAR(1), IN p_numero INT, IN p_tipo ENUM('normal','discapacidad','vip'), IN p_disponible TINYINT(1))
 BEGIN
-    UPDATE ASIENTO SET fila = p_fila, numero = p_numero, tipo = p_tipo WHERE id = p_id;
+    UPDATE PLANO_SALA SET fila = p_fila, numero = p_numero, tipo = p_tipo, disponible = p_disponible WHERE id = p_id;
 END$$
 
-DROP PROCEDURE IF EXISTS asiento_delete$$
-CREATE PROCEDURE asiento_delete(IN p_id INT)
+DROP PROCEDURE IF EXISTS plano_sala_delete$$
+CREATE PROCEDURE plano_sala_delete(IN p_id INT)
 BEGIN
-    DELETE FROM ASIENTO WHERE id = p_id;
+    DELETE FROM PLANO_SALA WHERE id = p_id;
 END$$
 
 -- FUNCION
@@ -509,13 +515,13 @@ END$$
 -- Valida pertenencia de asiento a la sala de la función y evita duplicados por constraint
 DROP PROCEDURE IF EXISTS boleta_asiento_add$$
 CREATE PROCEDURE boleta_asiento_add(
-    IN p_idBoleta INT, IN p_idFuncion INT, IN p_idAsiento INT, IN p_precioUnitario DECIMAL(10,2), OUT p_id INT)
+    IN p_idBoleta INT, IN p_idFuncion INT, IN p_idPlanoSala INT, IN p_precioUnitario DECIMAL(10,2), OUT p_id INT)
 BEGIN
     DECLARE v_idSalaFuncion INT;
     DECLARE v_idSalaAsiento INT;
 
     SELECT idSala INTO v_idSalaFuncion FROM FUNCION WHERE id = p_idFuncion;
-    SELECT idSala INTO v_idSalaAsiento FROM ASIENTO WHERE id = p_idAsiento;
+    SELECT idSala INTO v_idSalaAsiento FROM PLANO_SALA WHERE id = p_idPlanoSala;
 
     IF v_idSalaFuncion IS NULL OR v_idSalaAsiento IS NULL THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Funcion o Asiento no encontrado';
@@ -525,14 +531,20 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El asiento no pertenece a la sala de la funcion';
     END IF;
 
-    INSERT INTO BOLETA_ASIENTO(idBoleta,idFuncion,idAsiento,precioUnitario) VALUES (p_idBoleta,p_idFuncion,p_idAsiento,p_precioUnitario);
+    INSERT INTO BOLETA_ASIENTO(idBoleta,idFuncion,idPlanoSala,precioUnitario) VALUES (p_idBoleta,p_idFuncion,p_idPlanoSala,p_precioUnitario);
     SET p_id = LAST_INSERT_ID();
+    CALL recalc_boleta_total(p_idBoleta);
 END$$
 
 DROP PROCEDURE IF EXISTS boleta_asiento_remove$$
 CREATE PROCEDURE boleta_asiento_remove(IN p_id INT)
 BEGIN
+    DECLARE v_idBoleta INT;
+    SELECT idBoleta INTO v_idBoleta FROM BOLETA_ASIENTO WHERE id = p_id;
     DELETE FROM BOLETA_ASIENTO WHERE id = p_id;
+    IF v_idBoleta IS NOT NULL THEN
+        CALL recalc_boleta_total(v_idBoleta);
+    END IF;
 END$$
 
 DROP PROCEDURE IF EXISTS boleta_asiento_get$$
@@ -544,33 +556,33 @@ END$$
 DROP PROCEDURE IF EXISTS boleta_asiento_get_by_boleta$$
 CREATE PROCEDURE boleta_asiento_get_by_boleta(IN p_idBoleta INT)
 BEGIN
-    SELECT ba.*, a.fila, a.numero, a.tipo
+    SELECT ba.*, ps.fila, ps.numero, ps.tipo
     FROM BOLETA_ASIENTO ba
-    JOIN ASIENTO a ON a.id = ba.idAsiento
+    JOIN PLANO_SALA ps ON ps.id = ba.idPlanoSala
     WHERE ba.idBoleta = p_idBoleta
-    ORDER BY a.fila, a.numero;
+    ORDER BY ps.fila, ps.numero;
 END$$
 
 DROP PROCEDURE IF EXISTS boleta_asiento_get_by_funcion$$
 CREATE PROCEDURE boleta_asiento_get_by_funcion(IN p_idFuncion INT)
 BEGIN
-    SELECT ba.*, a.fila, a.numero, a.tipo
+    SELECT ba.*, ps.fila, ps.numero, ps.tipo
     FROM BOLETA_ASIENTO ba
-    JOIN ASIENTO a ON a.id = ba.idAsiento
+    JOIN PLANO_SALA ps ON ps.id = ba.idPlanoSala
     WHERE ba.idFuncion = p_idFuncion
-    ORDER BY a.fila, a.numero;
+    ORDER BY ps.fila, ps.numero;
 END$$
 
 DROP PROCEDURE IF EXISTS get_asientos_por_funcion$$
 CREATE PROCEDURE get_asientos_por_funcion(IN p_idFuncion INT)
 BEGIN
-    SELECT a.id AS idAsiento, a.fila, a.numero, a.tipo,
+    SELECT ps.id AS idAsiento, ps.fila, ps.numero, ps.tipo, ps.disponible,
         CASE WHEN ba.id IS NULL THEN 'libre' ELSE 'ocupado' END AS estado,
         ba.idBoleta
-    FROM ASIENTO a
-    LEFT JOIN BOLETA_ASIENTO ba ON ba.idAsiento = a.id AND ba.idFuncion = p_idFuncion
-    WHERE a.idSala = (SELECT idSala FROM FUNCION WHERE id = p_idFuncion)
-    ORDER BY a.fila, a.numero;
+    FROM PLANO_SALA ps
+    LEFT JOIN BOLETA_ASIENTO ba ON ba.idPlanoSala = ps.id AND ba.idFuncion = p_idFuncion
+    WHERE ps.idSala = (SELECT idSala FROM FUNCION WHERE id = p_idFuncion)
+    ORDER BY ps.fila, ps.numero;
 END$$
 
 -- PROMO_BOLETA helpers
@@ -598,7 +610,7 @@ DELIMITER ;
 
 -- Índices recomendados para evitar problemas con sql_safe_updates (UPDATE por idBoleta)
 ALTER TABLE PRODUCTOS_BOLETA ADD INDEX idx_productos_boleta_idBoleta (idBoleta);
-ALTER TABLE FUNCIONES_BOLETA ADD INDEX idx_funciones_boleta_idBoleta (idBoleta);
+ALTER TABLE BOLETA_ASIENTO ADD INDEX idx_boleta_asiento_idBoleta (idBoleta);
 ALTER TABLE PROMO_BOLETA ADD INDEX idx_promo_boleta_idBoleta (idBoleta);
 
 -- Triggers: al cambiar productos/funciones/promos de una boleta, recalcular
@@ -624,22 +636,22 @@ BEGIN
     CALL recalc_boleta_total(OLD.idBoleta);
 END$$
 
-DROP TRIGGER IF EXISTS trg_funciones_boleta_after_insert$$
-CREATE TRIGGER trg_funciones_boleta_after_insert AFTER INSERT ON FUNCIONES_BOLETA
+DROP TRIGGER IF EXISTS trg_boleta_asiento_after_insert$$
+CREATE TRIGGER trg_boleta_asiento_after_insert AFTER INSERT ON BOLETA_ASIENTO
 FOR EACH ROW
 BEGIN
     CALL recalc_boleta_total(NEW.idBoleta);
 END$$
 
-DROP TRIGGER IF EXISTS trg_funciones_boleta_after_update$$
-CREATE TRIGGER trg_funciones_boleta_after_update AFTER UPDATE ON FUNCIONES_BOLETA
+DROP TRIGGER IF EXISTS trg_boleta_asiento_after_update$$
+CREATE TRIGGER trg_boleta_asiento_after_update AFTER UPDATE ON BOLETA_ASIENTO
 FOR EACH ROW
 BEGIN
     CALL recalc_boleta_total(NEW.idBoleta);
 END$$
 
-DROP TRIGGER IF EXISTS trg_funciones_boleta_after_delete$$
-CREATE TRIGGER trg_funciones_boleta_after_delete AFTER DELETE ON FUNCIONES_BOLETA
+DROP TRIGGER IF EXISTS trg_boleta_asiento_after_delete$$
+CREATE TRIGGER trg_boleta_asiento_after_delete AFTER DELETE ON BOLETA_ASIENTO
 FOR EACH ROW
 BEGIN
     CALL recalc_boleta_total(OLD.idBoleta);

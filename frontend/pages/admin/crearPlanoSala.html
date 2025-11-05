@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Crear Plano de Sala</title>
+    <style>
+        body { font-family: sans-serif; }
+        header, main, footer { max-width: 1200px; margin: 0 auto; padding: 1em; }
+        #selector-container { display: flex; gap: 2em; }
+        #ciudades-cines-list, #salas-list { border: 1px solid #ccc; padding: 1em; min-width: 300px; }
+        #plano-container { margin-top: 2em; }
+        .asiento { width: 30px; height: 30px; border: 1px solid #ccc; display: inline-block; margin: 2px; text-align: center; line-height: 30px; cursor: pointer; user-select: none; }
+        .asiento.disponible-false { background-color: #eee; }
+        .asiento.tipo-vip { background-color: gold; }
+        .asiento.tipo-discapacidad { background-color: lightblue; }
+        .fila-letra { font-weight: bold; margin-right: 1em; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Panel de Administración</h1>
+    </header>
+
+    <main>
+        <h2>Crear Plano de Sala</h2>
+        
+        <div id="selector-container">
+            <div id="ciudades-cines-list">
+                <h3>1. Selecciona un Cine</h3>
+                <div id="lista-ciudades">Cargando...</div>
+            </div>
+            <div id="salas-list">
+                <h3>2. Selecciona una Sala</h3>
+                <div id="lista-salas">Selecciona un cine primero.</div>
+            </div>
+        </div>
+
+        <div id="plano-container" style="display: none;">
+            <h3>3. Define el Plano de la Sala</h3>
+            <form id="form-definir-plano">
+                <label for="filas">Filas:</label>
+                <input type="number" id="filas" min="1" max="26" required>
+                <label for="columnas">Asientos por fila:</label>
+                <input type="number" id="columnas" min="1" max="30" required>
+                <button type="submit">Generar Grilla</button>
+            </form>
+            <div id="grilla-asientos" style="margin-top: 1em;"></div>
+            <button id="guardar-plano" style="display: none; margin-top: 1em;">Guardar Plano</button>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Panel de Administración de Cineplanet</p>
+    </footer>
+
+    <script>
+        let cinesGlobal = [];
+        let ciudadesGlobal = [];
+        let salaSeleccionadaId = null;
+
+        async function cargarCiudadesYCines() {
+            try {
+                const [resCiudades, resCines] = await Promise.all([
+                    fetch('http://localhost/Cineplanet-DataBase-Project/backend/api/getCiudades.php'),
+                    fetch('http://localhost/Cineplanet-DataBase-Project/backend/api/getCines.php')
+                ]);
+                ciudadesGlobal = await resCiudades.json();
+                cinesGlobal = await resCines.json();
+
+                const container = document.getElementById('lista-ciudades');
+                container.innerHTML = '';
+
+                ciudadesGlobal.forEach(ciudad => {
+                    const cinesEnCiudad = cinesGlobal.filter(c => c.idCiudad == ciudad.id);
+                    if (cinesEnCiudad.length > 0) {
+                        const details = document.createElement('details');
+                        const summary = document.createElement('summary');
+                        summary.textContent = ciudad.nombre;
+                        details.appendChild(summary);
+
+                        const ul = document.createElement('ul');
+                        cinesEnCiudad.forEach(cine => {
+                            const li = document.createElement('li');
+                            const a = document.createElement('a');
+                            a.href = '#';
+                            a.textContent = cine.nombre;
+                            a.dataset.idCine = cine.id;
+                            a.onclick = (e) => {
+                                e.preventDefault();
+                                cargarSalas(cine.id);
+                            };
+                            li.appendChild(a);
+                            ul.appendChild(li);
+                        });
+                        details.appendChild(ul);
+                        container.appendChild(details);
+                    }
+                });
+            } catch (error) {
+                document.getElementById('lista-ciudades').textContent = 'Error al cargar.';
+                console.error(error);
+            }
+        }
+
+        async function cargarSalas(idCine) {
+            const container = document.getElementById('lista-salas');
+            container.innerHTML = 'Cargando salas...';
+            try {
+                const res = await fetch(`http://localhost/Cineplanet-DataBase-Project/backend/api/getSalasPorCine.php?idCine=${idCine}`);
+                const salas = await res.json();
+                
+                if (salas.length > 0) {
+                    const ul = document.createElement('ul');
+                    salas.forEach(sala => {
+                        const li = document.createElement('li');
+                        const a = document.createElement('a');
+                        a.href = '#';
+                        a.textContent = `${sala.nombre} (Tipo: ${sala.tipo})`;
+                        a.onclick = (e) => {
+                            e.preventDefault();
+                            salaSeleccionadaId = sala.id;
+                            document.getElementById('plano-container').style.display = 'block';
+                            document.getElementById('grilla-asientos').innerHTML = '';
+                            document.getElementById('guardar-plano').style.display = 'none';
+                        };
+                        li.appendChild(a);
+                        ul.appendChild(li);
+                    });
+                    container.innerHTML = '';
+                    container.appendChild(ul);
+                } else {
+                    container.textContent = 'Este cine no tiene salas registradas.';
+                }
+            } catch (error) {
+                container.textContent = 'Error al cargar las salas.';
+                console.error(error);
+            }
+        }
+
+        document.getElementById('form-definir-plano').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const filas = parseInt(document.getElementById('filas').value);
+            const columnas = parseInt(document.getElementById('columnas').value);
+            generarGrilla(filas, columnas);
+        });
+
+        function generarGrilla(filas, columnas) {
+            const grillaContainer = document.getElementById('grilla-asientos');
+            grillaContainer.innerHTML = '';
+            const letrasFilas = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+            for (let i = 0; i < filas; i++) {
+                const filaDiv = document.createElement('div');
+                const filaLetra = document.createElement('span');
+                filaLetra.className = 'fila-letra';
+                filaLetra.textContent = letrasFilas[i];
+                filaDiv.appendChild(filaLetra);
+
+                for (let j = 1; j <= columnas; j++) {
+                    const asiento = document.createElement('div');
+                    asiento.className = 'asiento';
+                    asiento.textContent = j;
+                    asiento.dataset.fila = letrasFilas[i];
+                    asiento.dataset.numero = j;
+                    asiento.dataset.tipo = 'normal';
+                    asiento.dataset.disponible = 'true';
+                    
+                    asiento.addEventListener('click', () => {
+                        // Ciclo simple: disponible -> no disponible
+                        const disponible = asiento.dataset.disponible === 'true';
+                        asiento.dataset.disponible = !disponible;
+                        asiento.classList.toggle('disponible-false', disponible);
+                    });
+
+                    asiento.addEventListener('contextmenu', (e) => {
+                        // Ciclo con click derecho: normal -> vip -> discapacidad -> normal
+                        e.preventDefault();
+                        const tipos = ['normal', 'vip', 'discapacidad'];
+                        const tipoActual = asiento.dataset.tipo;
+                        const indexActual = tipos.indexOf(tipoActual);
+                        const nuevoTipo = tipos[(indexActual + 1) % tipos.length];
+                        
+                        asiento.dataset.tipo = nuevoTipo;
+                        asiento.classList.remove('tipo-normal', 'tipo-vip', 'tipo-discapacidad');
+                        if (nuevoTipo !== 'normal') {
+                            asiento.classList.add(`tipo-${nuevoTipo}`);
+                        }
+                    });
+
+                    filaDiv.appendChild(asiento);
+                }
+                grillaContainer.appendChild(filaDiv);
+            }
+            document.getElementById('guardar-plano').style.display = 'block';
+        }
+
+        document.getElementById('guardar-plano').addEventListener('click', async function() {
+            if (!salaSeleccionadaId) {
+                alert('Por favor, selecciona una sala primero.');
+                return;
+            }
+            const asientos = document.querySelectorAll('#grilla-asientos .asiento');
+            const plano = Array.from(asientos).map(asiento => ({
+                idSala: salaSeleccionadaId,
+                fila: asiento.dataset.fila,
+                numero: parseInt(asiento.dataset.numero),
+                tipo: asiento.dataset.tipo,
+                disponible: asiento.dataset.disponible === 'true' ? 1 : 0
+            }));
+
+            console.log('Enviando plano:', plano);
+            alert('Funcionalidad de guardado no implementada en este ejemplo. Revisa la consola para ver los datos a enviar.');
+            
+            // Lógica para enviar a la API
+            /*
+            try {
+                const response = await fetch('URL_API_PARA_CREAR_PLANO', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(plano)
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    alert('Plano de sala guardado con éxito.');
+                } else {
+                    throw new Error(result.error || 'Error al guardar el plano.');
+                }
+            } catch (error) {
+                console.error('Error al guardar:', error);
+                alert(error.message);
+            }
+            */
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarCiudadesYCines();
+        });
+    </script>
+</body>
+</html>
