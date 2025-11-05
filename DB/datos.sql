@@ -59,18 +59,26 @@ INSERT INTO `IDIOMA` (`id`, `nombre`) VALUES
 (4, 'ENG (Original)'),
 (5, 'QUE (Quechua)');
 
+-- -- TIPO_PRODUCTO (tipos de producto)
+INSERT INTO `TIPO_PRODUCTO` (`id`, `nombre`) VALUES
+(1, 'Popcorn'),
+(2, 'Bebida'),
+(3, 'Snack'),
+(4, 'Combo'),
+(5, 'Dulce');
+
 -- -- PRODUCTO (10 Productos de dulcería)
 INSERT INTO `PRODUCTO` (`id`, `nombre`, `descripcion`, `precio`, `imagen`, `tipo`) VALUES
-(1, 'Popcorn Gigante Salado', 'Cancha salada en balde gigante', 25.50, 'popcorn_g_s.jpg', 'Popcorn'),
-(2, 'Popcorn Gigante Dulce', 'Cancha dulce en balde gigante', 25.50, 'popcorn_g_d.jpg', 'Popcorn'),
-(3, 'Gaseosa Mediana', 'Gaseosa de 22oz (Inca Kola/Coca Cola)', 12.00, 'gaseosa_m.jpg', 'Bebida'),
-(4, 'Gaseosa Grande', 'Gaseosa de 32oz (Inca Kola/Coca Cola)', 15.00, 'gaseosa_g.jpg', 'Bebida'),
-(5, 'Hot Dog Clásico', 'Hot Dog simple con papas al hilo', 10.00, 'hotdog_c.jpg', 'Snack'),
-(6, 'Nachos con Queso', 'Nachos con salsa de queso cheddar', 18.00, 'nachos_q.jpg', 'Snack'),
-(7, 'Combo Pareja', '1 Popcorn Gigante + 2 Gaseosas Medianas', 45.00, 'combo_p.jpg', 'Combo'),
-(8, 'Combo Familiar', '2 Popcorn Gigantes + 4 Gaseosas Grandes', 80.00, 'combo_f.jpg', 'Combo'),
-(9, 'Agua Mineral', 'Botella de agua sin gas 600ml', 6.00, 'agua.jpg', 'Bebida'),
-(10, 'Chocolate Sublime', 'Tableta de chocolate Sublime', 5.00, 'sublime.jpg', 'Dulce');
+(1, 'Popcorn Gigante Salado', 'Cancha salada en balde gigante', 25.50, 'popcorn_g_s.jpg', 1),
+(2, 'Popcorn Gigante Dulce', 'Cancha dulce en balde gigante', 25.50, 'popcorn_g_d.jpg', 1),
+(3, 'Gaseosa Mediana', 'Gaseosa de 22oz (Inca Kola/Coca Cola)', 12.00, 'gaseosa_m.jpg', 2),
+(4, 'Gaseosa Grande', 'Gaseosa de 32oz (Inca Kola/Coca Cola)', 15.00, 'gaseosa_g.jpg', 2),
+(5, 'Hot Dog Clásico', 'Hot Dog simple con papas al hilo', 10.00, 'hotdog_c.jpg', 3),
+(6, 'Nachos con Queso', 'Nachos con salsa de queso cheddar', 18.00, 'nachos_q.jpg', 3),
+(7, 'Combo Pareja', '1 Popcorn Gigante + 2 Gaseosas Medianas', 45.00, 'combo_p.jpg', 4),
+(8, 'Combo Familiar', '2 Popcorn Gigantes + 4 Gaseosas Grandes', 80.00, 'combo_f.jpg', 4),
+(9, 'Agua Mineral', 'Botella de agua sin gas 600ml', 6.00, 'agua.jpg', 2),
+(10, 'Chocolate Sublime', 'Tableta de chocolate Sublime', 5.00, 'sublime.jpg', 5);
 
 -- -- PROMO (5 Promociones)
 INSERT INTO `PROMO` (`id`, `nombre`, `descripcion`, `fecha_inicio`, `fecha_fin`, `tipo`, `valor`, `aplicaA`, `estado`) VALUES
