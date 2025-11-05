@@ -7,6 +7,9 @@ $filtros = [];
 $params = [];
 $types = "";
 
+// Filtro para mostrar solo funciones desde hoy en adelante
+$filtros[] = "pf.fecha >= CURDATE()";
+
 // ======= CIUDAD =======
 if (!empty($_GET['ciudad'])) {
     $filtros[] = "pf.idCiudad = ?";
