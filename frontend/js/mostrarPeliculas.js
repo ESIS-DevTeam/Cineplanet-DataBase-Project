@@ -73,7 +73,7 @@ function mostrarFiltrosDinamicos(peliculas, seleccionados) {
         if (p.ciudad) ciudades.add(JSON.stringify({id: p.idCiudad, nombre: p.ciudad}));
         if (p.nombreCine) cines.add(JSON.stringify({id: p.idCine, nombre: p.nombreCine}));
         if (p.genero) generos.add(JSON.stringify({id: p.idGenero, nombre: p.genero}));
-        if (p.idioma) idiomas.add(JSON.stringify({id: p.idIdioma, nombre: p.idioma}));
+        if (p.idIdioma && p.idioma) idiomas.add(JSON.stringify({id: p.idIdioma, nombre: p.idioma}));
         if (p.formato) formatos.add(JSON.stringify({id: p.idFormato, nombre: p.formato}));
         if (p.restriccionEdad) censuras.add(JSON.stringify({id: p.idRestriccion, nombre: p.restriccionEdad}));
     });
@@ -98,7 +98,7 @@ function renderCheckboxes(contenedorId, opcionesSet, filtroName, seleccionados) 
         const input = document.createElement('input');
         input.type = 'checkbox';
         input.value = opcion.id;
-        input.name = filtroName;
+        input.name = filtroName; // Asegura que el name sea correcto
         if (seleccionadosArr.includes(String(opcion.id))) input.checked = true;
         label.appendChild(input);
         label.appendChild(document.createTextNode(' ' + opcion.nombre));
@@ -111,15 +111,12 @@ function mostrarFiltroFechas(peliculas, seleccionados) {
     const contenedorFecha = document.getElementById('filtro-fecha');
     if (!contenedorFecha) return;
 
-    // Extraer fechas únicas de las funciones de las películas visibles
     const fechasUnicas = new Set();
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
 
     peliculas.forEach(p => {
         if (p.fecha) {
-            // Solo fechas desde hoy en adelante
-            // p.fecha es 'YYYY-MM-DD'
             const [year, month, day] = p.fecha.split('-');
             const fechaFuncion = new Date(year, month - 1, day);
             fechaFuncion.setHours(0, 0, 0, 0);
@@ -132,6 +129,7 @@ function mostrarFiltroFechas(peliculas, seleccionados) {
     const fechasOrdenadas = Array.from(fechasUnicas).sort();
     contenedorFecha.innerHTML = '';
 
+    const diasSemana = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
     const seleccionadosArr = seleccionados && seleccionados.dia
         ? seleccionados.dia.split(',')
         : [];
@@ -141,16 +139,15 @@ function mostrarFiltroFechas(peliculas, seleccionados) {
         const fecha = new Date(year, month - 1, day);
         fecha.setHours(0, 0, 0, 0);
 
-        let textoLabel;
+        const nombreDia = diasSemana[fecha.getDay()];
         const esHoy = fecha.getFullYear() === hoy.getFullYear() &&
                       fecha.getMonth() === hoy.getMonth() &&
                       fecha.getDate() === hoy.getDate();
 
+        let textoLabel;
         if (esHoy) {
-            textoLabel = `hoy`;
+            textoLabel = `hoy ${nombreDia}`;
         } else {
-            const diasSemana = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
-            const nombreDia = diasSemana[fecha.getDay()];
             textoLabel = `${nombreDia} ${fecha.getDate()}`;
         }
 
@@ -181,7 +178,7 @@ function obtenerFiltrosSeleccionados() {
     if (genero.length) filtros.genero = genero.join(',');
     // idioma
     const idioma = Array.from(document.querySelectorAll('input[name="idioma"]:checked')).map(e => e.value);
-    if (idioma.length) filtros.idioma = idioma.join(',');
+    if (idioma.length) filtros.idioma = idioma.join(','); // Asegura que el parámetro sea 'idioma'
     // formato
     const formato = Array.from(document.querySelectorAll('input[name="formato"]:checked')).map(e => e.value);
     if (formato.length) filtros.formato = formato.join(',');
