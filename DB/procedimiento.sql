@@ -287,9 +287,41 @@ BEGIN
     SELECT * FROM FORMATO;
 END$$
 
+-- TIPO_PRODUCTO
+DROP PROCEDURE IF EXISTS tipo_producto_create$$
+CREATE PROCEDURE tipo_producto_create(IN p_nombre VARCHAR(100), OUT p_id INT)
+BEGIN
+    INSERT INTO TIPO_PRODUCTO(nombre) VALUES (p_nombre);
+    SET p_id = LAST_INSERT_ID();
+END$$
+
+DROP PROCEDURE IF EXISTS tipo_producto_get$$
+CREATE PROCEDURE tipo_producto_get(IN p_id INT)
+BEGIN
+    SELECT * FROM TIPO_PRODUCTO WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS tipo_producto_get_all$$
+CREATE PROCEDURE tipo_producto_get_all()
+BEGIN
+    SELECT * FROM TIPO_PRODUCTO;
+END$$
+
+DROP PROCEDURE IF EXISTS tipo_producto_update$$
+CREATE PROCEDURE tipo_producto_update(IN p_id INT, IN p_nombre VARCHAR(100))
+BEGIN
+    UPDATE TIPO_PRODUCTO SET nombre = p_nombre WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS tipo_producto_delete$$
+CREATE PROCEDURE tipo_producto_delete(IN p_id INT)
+BEGIN
+    DELETE FROM TIPO_PRODUCTO WHERE id = p_id;
+END$$
+
 -- PRODUCTO
 DROP PROCEDURE IF EXISTS producto_create$$
-CREATE PROCEDURE producto_create(IN p_nombre VARCHAR(100), IN p_descripcion TEXT, IN p_precio DECIMAL(5,2), IN p_imagen VARCHAR(255), IN p_tipo VARCHAR(50), OUT p_id INT)
+CREATE PROCEDURE producto_create(IN p_nombre VARCHAR(100), IN p_descripcion TEXT, IN p_precio DECIMAL(5,2), IN p_imagen VARCHAR(255), IN p_tipo INT, OUT p_id INT)
 BEGIN
     INSERT INTO PRODUCTO(nombre,descripcion,precio,imagen,tipo) VALUES (p_nombre,p_descripcion,p_precio,p_imagen,p_tipo);
     SET p_id = LAST_INSERT_ID();
@@ -302,7 +334,7 @@ BEGIN
 END$$
 
 DROP PROCEDURE IF EXISTS producto_update$$
-CREATE PROCEDURE producto_update(IN p_id INT, IN p_nombre VARCHAR(100), IN p_descripcion TEXT, IN p_precio DECIMAL(5,2), IN p_imagen VARCHAR(255), IN p_tipo VARCHAR(50))
+CREATE PROCEDURE producto_update(IN p_id INT, IN p_nombre VARCHAR(100), IN p_descripcion TEXT, IN p_precio DECIMAL(5,2), IN p_imagen VARCHAR(255), IN p_tipo INT)
 BEGIN
     UPDATE PRODUCTO SET nombre=p_nombre, descripcion=p_descripcion, precio=p_precio, imagen=p_imagen, tipo=p_tipo WHERE id = p_id;
 END$$
