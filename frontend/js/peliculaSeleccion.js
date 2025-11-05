@@ -100,6 +100,32 @@ async function cargarOpcionesFuncionPelicula() {
       funcionesPorCineGlobal[cine.id] = await funcionesRes.json();
     }
 
+    // Filtrar cines, ciudades y fechas para mostrar solo los que tienen funciones a partir de hoy
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+
+    const cinesConFuncionesFuturas = new Set();
+    allCines.forEach(cine => {
+      const funciones = funcionesPorCineGlobal[cine.id] || {};
+      for (const fechaStr in funciones) {
+        const fecha = new Date(fechaStr + 'T00:00:00');
+        if (fecha >= hoy) {
+          cinesConFuncionesFuturas.add(cine.id);
+          break; // El cine tiene funciones futuras, no necesita seguir buscando
+        }
+      }
+    });
+
+    allCines = allCines.filter(cine => cinesConFuncionesFuturas.has(cine.id));
+    
+    const ciudadesConCinesActivos = new Set(allCines.map(cine => cine.idCiudad));
+    allCiudades = allCiudades.filter(ciudad => ciudadesConCinesActivos.has(ciudad.id));
+
+    allFechas = allFechas.filter(fechaStr => {
+      const fecha = new Date(fechaStr + 'T00:00:00');
+      return fecha >= hoy;
+    }).sort();
+
     actualizarSelects();
     preseleccionarDesdeURL();
     renderDetallesCines();
@@ -310,10 +336,24 @@ async function renderDetallesCines() {
 
     // Agrupar por formato+idioma
     const grupos = {};
-    Object.values(funcionesFiltradas).flat().forEach(funcion => {
-      const key = `${funcion.formato} ${funcion.idioma}`;
-      if (!grupos[key]) grupos[key] = [];
-      grupos[key].push(funcion.hora);
+    const ahora = new Date();
+    const hoyStr = ahora.toISOString().split('T')[0];
+
+    Object.entries(funcionesFiltradas).forEach(([fechaStr, funciones]) => {
+      const esHoy = fechaStr === hoyStr;
+      funciones.forEach(funcion => {
+        if (esHoy) {
+          const [hora, minuto] = funcion.hora.split(':');
+          const horaFuncion = new Date();
+          horaFuncion.setHours(hora, minuto, 0, 0);
+          if (horaFuncion < ahora) {
+            return; // Es hoy pero la hora ya pasó
+          }
+        }
+        const key = `${funcion.formato} ${funcion.idioma}`;
+        if (!grupos[key]) grupos[key] = [];
+        grupos[key].push(funcion.hora);
+      });
     });
 
     // Si no hay funciones, no mostrar el cine
@@ -327,7 +367,7 @@ async function renderDetallesCines() {
       tituloDiv.style.fontWeight = 'bold';
       divGrupo.appendChild(tituloDiv);
 
-      horas.forEach(hora => {
+      horas.sort().forEach(hora => {
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.textContent = hora;
