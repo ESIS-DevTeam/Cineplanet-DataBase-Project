@@ -1,7 +1,11 @@
 let urlCheckboxesMarcados = false;
 
 document.addEventListener('DOMContentLoaded', () => {
-    cargarPeliculasYFiltros();
+    // Primero, lee los filtros de la URL y obtén los valores seleccionados.
+    const filtrosDesdeURL = obtenerFiltrosDesdeURL();
+    // Luego, carga las películas y los filtros usando esos valores.
+    cargarPeliculasYFiltros(filtrosDesdeURL);
+    // Finalmente, añade el listener para futuros cambios.
     document.getElementById('filtros-peliculas').addEventListener('change', onFiltroChange);
 });
 
@@ -20,10 +24,6 @@ function cargarPeliculasYFiltros(seleccionadosPrevios = null) {
             mostrarPeliculas(peliculas);
             mostrarFiltrosDinamicos(peliculas, filtros);
             mostrarFiltroFechas(peliculas, filtros);
-            if (!urlCheckboxesMarcados) {
-                marcarCheckboxesPorURL();
-                urlCheckboxesMarcados = true;
-            }
         });
 }
 
@@ -191,14 +191,16 @@ function obtenerFiltrosSeleccionados() {
     return filtros;
 }
 
-function marcarCheckboxesPorURL() {
+// Nueva función para leer los filtros directamente desde la URL
+function obtenerFiltrosDesdeURL() {
+    const filtros = {};
     const params = new URLSearchParams(window.location.search);
-    params.forEach((value, key) => {
-        const selector = `input[name="${key}"][value="${value}"]`;
-        const checkbox = document.querySelector(selector);
-        if (checkbox) {
-            checkbox.checked = true;
-            checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+    for (const [key, value] of params.entries()) {
+        if (filtros[key]) {
+            filtros[key] += `,${value}`;
+        } else {
+            filtros[key] = value;
         }
-    });
+    }
+    return filtros;
 }
