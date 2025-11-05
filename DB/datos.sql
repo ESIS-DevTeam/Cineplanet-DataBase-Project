@@ -89,17 +89,25 @@ INSERT INTO `PROMO` (`id`, `nombre`, `descripcion`, `fecha_inicio`, `fecha_fin`,
 (5, 'Socio Black', 'Upgrade a Popcorn Gigante gratis', '2025-01-01', '2025-12-31', 'fijo', 3.00, 'productos', 'activa');
 
 -- -- USUARIO (10 Usuarios)
-INSERT INTO `USUARIO` (`id`, `nombre`, `email`, `tipoDocumento`, `numeroDocumento`) VALUES
-(1, 'Ana García Pérez', 'ana.garcia@email.com', 'DNI', '71234567'),
-(2, 'Bruno Torres Ruiz', 'bruno.torres@email.com', 'DNI', '72345678'),
-(3, 'Carla Mendoza Silva', 'carla.mendoza@email.com', 'CE', '01234567'),
-(4, 'David Quispe Luna', 'david.quispe@email.com', 'DNI', '73456789'),
-(5, 'Elena Vargas Solis', 'elena.vargas@email.com', 'DNI', '74567890'),
-(6, 'Franco Castillo Díaz', 'franco.castillo@email.com', 'DNI', '75678901'),
-(7, 'Gabriela Flores Cruz', 'gaby.flores@email.com', 'CE', '02345678'),
-(8, 'Hugo Sánchez Romero', 'hugo.sanchez@email.com', 'DNI', '76789012'),
-(9, 'Inés Chávez Costa', 'ines.chavez@email.com', 'DNI', '77890123'),
-(10, 'Javier Paredes Rojas', 'javier.paredes@email.com', 'DNI', '78901234');
+-- -- TIPO_SOCIO (tipos de socio)
+INSERT INTO `TIPO_SOCIO` (`id`, `nombre`) VALUES
+(1, 'clasico'),
+(2, 'plata'),
+(3, 'oro'),
+(4, 'black');
+
+-- -- USUARIO (10 Usuarios)
+INSERT INTO `USUARIO` (`id`, `nombre`, `email`, `tipoDocumento`, `numeroDocumento`, `tipoSocio`) VALUES
+(1, 'Ana García Pérez', 'ana.garcia@email.com', 'DNI', '71234567', 1),
+(2, 'Bruno Torres Ruiz', 'bruno.torres@email.com', 'DNI', '72345678', 1),
+(3, 'Carla Mendoza Silva', 'carla.mendoza@email.com', 'CE', '01234567', 1),
+(4, 'David Quispe Luna', 'david.quispe@email.com', 'DNI', '73456789', 1),
+(5, 'Elena Vargas Solis', 'elena.vargas@email.com', 'DNI', '74567890', 1),
+(6, 'Franco Castillo Díaz', 'franco.castillo@email.com', 'DNI', '75678901', 1),
+(7, 'Gabriela Flores Cruz', 'gaby.flores@email.com', 'CE', '02345678', 1),
+(8, 'Hugo Sánchez Romero', 'hugo.sanchez@email.com', 'DNI', '76789012', 1),
+(9, 'Inés Chávez Costa', 'ines.chavez@email.com', 'DNI', '77890123', 1),
+(10, 'Javier Paredes Rojas', 'javier.paredes@email.com', 'DNI', '78901234', 1);
 
 -- -----------------------------------------------------
 -- Grupo 2: Dependen de Grupo 1

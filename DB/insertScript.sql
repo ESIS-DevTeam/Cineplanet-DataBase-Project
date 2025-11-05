@@ -30,7 +30,7 @@ CALL pelicula_idioma_add(@pel1, @idioma_es);
 CALL funcion_create(@pel1, @sala1, @fmt2d, '2025-11-01', '18:00:00', 20.00, @idioma_es, 'activa', @func1);
 
 -- 7) Usuario y socio (socio usa mismo id que usuario)
-CALL usuario_create('Juan Test','juan.test@example.com','DNI','20000001', @u1);
+CALL usuario_create('Juan Test','juan.test@example.com','DNI','20000001', 1, @u1);
 CALL socio_create(@u1, 'pass123', 'Lima', 'Lima', 'Miraflores', 'Perez', 'Lopez', 'Cine Prueba', '1990-05-10', '999888777', 'M', 'clasico');
 
 -- 8) Boleta y reserva de asientos (usar los procedimientos)
