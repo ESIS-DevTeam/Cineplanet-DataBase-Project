@@ -1,271 +1,210 @@
--- -----------------------------------------------------
--- Usar la base de datos
--- -----------------------------------------------------
+-- ===========================================
+-- 🔹 DATOS DE EJEMPLO PARA CINEPLANET BD
+-- ===========================================
+
+-- USUARIOS
+INSERT INTO USUARIO (nombre, email, tipoDocumento, numeroDocumento) VALUES
+('Carlos Gómez', 'carlos.gomez@gmail.com', 'DNI', '12345678'),
+('Ana Torres', 'ana.torres@gmail.com', 'DNI', '87654321'),
+('Luis Fernández', 'luis.fernandez@gmail.com', 'DNI', '11223344'),
+('María López', 'maria.lopez@gmail.com', 'DNI', '22334455'),
+('Pedro Ramos', 'pedro.ramos@gmail.com', 'DNI', '33445566'),
+('Lucía Vega', 'lucia.vega@gmail.com', 'DNI', '44556677'),
+('Jorge Silva', 'jorge.silva@gmail.com', 'DNI', '55667788'),
+('Rosa Díaz', 'rosa.diaz@gmail.com', 'DNI', '66778899'),
+('Andrés Castillo', 'andres.castillo@gmail.com', 'DNI', '77889900'),
+('Patricia Ríos', 'patricia.rios@gmail.com', 'DNI', '88990011');
+
+-- CIUDAD
+INSERT INTO CIUDAD (nombre) VALUES
+('Lima'),
+('Arequipa'),
+('Trujillo'),
+('Cusco'),
+('Piura'),
+('Chiclayo'),
+('Huancayo'),
+('Tacna'),
+('Iquitos'),
+('Puno');
+
+-- CINE
+INSERT INTO CINE (nombre, direccion, telefono, email, idCiudad) VALUES
+('Cineplanet San Miguel', 'Av. La Marina 2000', '012345678', 'sanmiguel@cineplanet.com', 1),
+('Cineplanet Arequipa Mall', 'Av. Ejército 1000', '054123456', 'arequipa@cineplanet.com', 2),
+('Cineplanet Real Plaza Trujillo', 'Av. Mansiche 777', '044987654', 'trujillo@cineplanet.com', 3),
+('Cineplanet Cusco', 'Av. El Sol 300', '084654321', 'cusco@cineplanet.com', 4),
+('Cineplanet Piura', 'Av. Grau 456', '073123123', 'piura@cineplanet.com', 5),
+('Cineplanet Chiclayo', 'Av. Balta 789', '074456789', 'chiclayo@cineplanet.com', 6),
+('Cineplanet Huancayo', 'Av. Ferrocarril 100', '064789456', 'huancayo@cineplanet.com', 7),
+('Cineplanet Tacna', 'Av. Bolognesi 900', '052963258', 'tacna@cineplanet.com', 8),
+('Cineplanet Iquitos', 'Av. Mariscal Cáceres 400', '065741852', 'iquitos@cineplanet.com', 9),
+('Cineplanet Puno', 'Jr. Lima 800', '051123987', 'puno@cineplanet.com', 10);
+
+-- GENERO
+INSERT INTO GENERO (nombre) VALUES
+('Acción'),
+('Comedia'),
+('Drama'),
+('Terror'),
+('Aventura'),
+('Animación'),
+('Romance'),
+('Ciencia Ficción'),
+('Fantasía'),
+('Documental');
+
+-- RESTRICCION
+INSERT INTO RESTRICCION (nombre) VALUES
+('APT'),
+('14'),
+('18'),
+('7'),
+('13'),
+('PG'),
+('R'),
+('NR'),
+('ATP'),
+('B15');
+
+-- FORMATO
+INSERT INTO FORMATO (nombre) VALUES
+('2D'),
+('3D'),
+('4DX'),
+('IMAX'),
+('VIP'),
+('SUBTITULADO'),
+('DOBLADO'),
+('HD'),
+('DIGITAL'),
+('STANDARD');
+
+-- IDIOMA
+INSERT INTO IDIOMA (nombre) VALUES
+('Español'),
+('Inglés'),
+('Francés'),
+('Portugués'),
+('Alemán'),
+('Italiano'),
+('Japonés'),
+('Coreano'),
+('Chino'),
+('Hindi');
+
+-- PRODUCTO
+INSERT INTO PRODUCTO (nombre, descripcion, precio, imagen, tipo) VALUES
+('Cancha Grande', 'Cancha de maíz grande', 15.00, 'cancha_grande.jpg', 'comida'),
+('Cancha Mediana', 'Cancha de maíz mediana', 10.00, 'cancha_mediana.jpg', 'comida'),
+('Canchita Pequeña', 'Cancha de maíz pequeña', 7.00, 'cancha_pequena.jpg', 'comida'),
+('Gaseosa Grande', 'Bebida de 1L', 12.00, 'gaseosa_grande.jpg', 'bebida'),
+('Gaseosa Mediana', 'Bebida de 500ml', 8.00, 'gaseosa_mediana.jpg', 'bebida'),
+('Hot Dog', 'Pan con salchicha', 9.00, 'hotdog.jpg', 'comida'),
+('Nachos', 'Con queso y guacamole', 14.00, 'nachos.jpg', 'comida'),
+('Combo Familiar', '2 Canchas + 2 Gaseosas + Nachos', 40.00, 'combo_familiar.jpg', 'combo'),
+('Combo Pareja', 'Cancha + 2 Gaseosas', 25.00, 'combo_pareja.jpg', 'combo'),
+('Agua Mineral', 'Botella de agua 600ml', 6.00, 'agua.jpg', 'bebida');
+
+-- PROMO
+INSERT INTO PROMO (nombre, descripcion, fecha_inicio, fecha_fin, tipo, valor, aplicaA, estado) VALUES
+('Promo Lunes', '20% en todas las funciones los lunes', '2025-01-01', '2025-12-31', 'porcentaje', 20, 'funciones', 'activa'),
+('Combo Amigos', 'Descuento en combo familiar', '2025-01-01', '2025-12-31', 'fijo', 5, 'productos', 'activa'),
+('Miércoles Loco', '2x1 en entradas los miércoles', '2025-01-01', '2025-12-31', 'porcentaje', 50, 'funciones', 'activa'),
+('Promo Estudiante', '10% de descuento mostrando carnet', '2025-01-01', '2025-12-31', 'porcentaje', 10, 'todo', 'activa'),
+('Black Week', 'Descuento general por Black Week', '2025-11-20', '2025-11-30', 'porcentaje', 25, 'todo', 'activa'),
+('Cumple Planet', 'Descuento por cumpleaños', '2025-01-01', '2025-12-31', 'fijo', 8, 'todo', 'activa'),
+('Promo Verano', 'Descuento especial en enero', '2025-01-01', '2025-01-31', 'porcentaje', 15, 'funciones', 'activa'),
+('Noche de Parejas', 'Entradas 2x1 después de las 8pm', '2025-02-01', '2025-02-28', 'porcentaje', 50, 'funciones', 'activa'),
+('Promo Infantil', 'Niños 50% en funciones APT', '2025-01-01', '2025-12-31', 'porcentaje', 50, 'funciones', 'activa'),
+('Mega Combo', 'Descuento de 10 en combos familiares', '2025-01-01', '2025-12-31', 'fijo', 10, 'productos', 'activa');
+
+-- SOCIOS (ligados a los primeros 10 usuarios)
+INSERT INTO SOCIO (id, password, departamento, provincia, distrito, apellidoPaterno, apellidoMaterno, cineplanetFavorito, fechaNacimiento, celular, genero, grado)
+VALUES
+(1, '1234', 'Lima', 'Lima', 'San Miguel', 'Gómez', 'Ruiz', 'Cineplanet San Miguel', '1995-03-10', '999111222', 'M', 'oro'),
+(2, 'abcd', 'Arequipa', 'Arequipa', 'Cercado', 'Torres', 'Pérez', 'Cineplanet Arequipa Mall', '1997-06-21', '988777555', 'F', 'plata'),
+(3, 'pass3', 'La Libertad', 'Trujillo', 'Centro', 'Fernández', 'Gómez', 'Cineplanet Real Plaza Trujillo', '1990-01-15', '977666555', 'M', 'clasico'),
+(4, 'pass4', 'Cusco', 'Cusco', 'Wanchaq', 'López', 'Soto', 'Cineplanet Cusco', '1989-09-09', '955888444', 'F', 'black'),
+(5, 'pass5', 'Piura', 'Piura', 'Castilla', 'Ramos', 'Flores', 'Cineplanet Piura', '1998-11-11', '933222111', 'M', 'plata'),
+(6, 'pass6', 'Lambayeque', 'Chiclayo', 'Centro', 'Vega', 'Mendoza', 'Cineplanet Chiclayo', '1993-05-03', '966777888', 'F', 'oro'),
+(7, 'pass7', 'Junín', 'Huancayo', 'El Tambo', 'Silva', 'Reyes', 'Cineplanet Huancayo', '1994-07-30', '955999111', 'M', 'clasico'),
+(8, 'pass8', 'Tacna', 'Tacna', 'Gregorio Albarracín', 'Díaz', 'Campos', 'Cineplanet Tacna', '2000-02-14', '977333444', 'F', 'plata'),
+(9, 'pass9', 'Loreto', 'Iquitos', 'Punchana', 'Castillo', 'Vargas', 'Cineplanet Iquitos', '1992-12-25', '966111777', 'M', 'black'),
+(10, 'pass10', 'Puno', 'Puno', 'Centro', 'Ríos', 'Salas', 'Cineplanet Puno', '1996-10-05', '955222333', 'F', 'oro');
+
+-- SALAS
+INSERT INTO SALA (nombre, capacidad, tipo, idCine) VALUES
+('Sala 1', 80, '2D', 1),
+('Sala 2', 100, '3D', 1),
+('Sala 3', 60, 'VIP', 2),
+('Sala 4', 120, 'IMAX', 3),
+('Sala 5', 70, 'Standard', 4),
+('Sala 6', 90, '4DX', 5),
+('Sala 7', 110, '2D', 6),
+('Sala 8', 100, '3D', 7),
+('Sala 9', 120, '2D', 8),
+('Sala 10', 80, 'VIP', 9);
+
+-- PLANO_SALA (solo 2 filas por sala para ejemplo)
+INSERT INTO PLANO_SALA (idSala, fila, numero, tipo) VALUES
+(1, 'A', 1, 'normal'), (1, 'A', 2, 'vip'),
+(2, 'B', 1, 'normal'), (2, 'B', 2, 'vip'),
+(3, 'C', 1, 'normal'), (3, 'C', 2, 'vip'),
+(4, 'D', 1, 'normal'), (4, 'D', 2, 'vip'),
+(5, 'E', 1, 'normal'), (5, 'E', 2, 'vip'),
+(6, 'F', 1, 'normal'), (6, 'F', 2, 'vip'),
+(7, 'G', 1, 'normal'), (7, 'G', 2, 'vip'),
+(8, 'H', 1, 'normal'), (8, 'H', 2, 'vip'),
+(9, 'I', 1, 'normal'), (9, 'I', 2, 'vip'),
+(10, 'J', 1, 'normal'), (10, 'J', 2, 'vip');
+
+-- PELICULA
+INSERT INTO PELICULA (nombre, genero, duracion, restriccion, restriccionComercial, sinopsis, autor, trailer, portada, estado) VALUES
+('Avengers: Endgame', 1, 180, 1, 1, 'Los héroes enfrentan a Thanos.', 'Marvel Studios', 'https://youtu.be/TcMBFSGVi1c', 'avengers.jpg', 'activa'),
+('Toy Story 4', 6, 100, 1, 1, 'Woody y Buzz viven una nueva aventura.', 'Pixar', 'https://youtu.be/wmiIUN-7qhE', 'toystory4.jpg', 'activa'),
+('It: Capítulo 2', 4, 170, 3, 1, 'Regresa Pennywise.', 'Warner Bros', 'https://youtu.be/zqUopiAYdRg', 'it2.jpg', 'activa'),
+('Titanic', 7, 195, 1, 1, 'Una historia de amor en el Titanic.', 'James Cameron', 'https://youtu.be/kVrqfYjkTdQ', 'titanic.jpg', 'activa'),
+('Avatar', 5, 160, 1, 1, 'Una aventura en Pandora.', 'James Cameron', 'https://youtu.be/5PSNL1qE6VY', 'avatar.jpg', 'activa'),
+('John Wick 4', 1, 150, 2, 1, 'John Wick continúa su venganza.', 'Lionsgate', 'https://youtu.be/qEVUtrk8_B4', 'johnwick4.jpg', 'activa'),
+('Spider-Man: No Way Home', 8, 150, 2, 1, 'El multiverso se abre.', 'Marvel Studios', 'https://youtu.be/JfVOs4VSpmA', 'spiderman.jpg', 'activa'),
+('Coco', 6, 110, 1, 1, 'Un niño viaja al mundo de los muertos.', 'Pixar', 'https://youtu.be/Ga6RYejo6Hk', 'coco.jpg', 'activa'),
+('Jurassic World', 5, 125, 2, 1, 'Dinosaurios vuelven a la vida.', 'Universal', 'https://youtu.be/RFinNxS5KN4', 'jurassic.jpg', 'activa'),
+('El Conjuro', 4, 112, 3, 1, 'Basado en hechos reales.', 'James Wan', 'https://youtu.be/k10ETZ41q5o', 'conjuro.jpg', 'activa');
+
+-- PELICULA_FORMATO
+INSERT INTO PELICULA_FORMATO (idPelicula, idFormato) VALUES
+(1,1),(1,2),(2,1),(3,2),(4,1),(5,4),(6,2),(7,1),(8,1),(9,3),(10,2);
+
+-- PELICULA_IDIOMA
+INSERT INTO PELICULA_IDIOMA (idPelicula, idIdioma) VALUES
+(1,1),(1,2),(2,1),(3,2),(4,1),(5,2),(6,2),(7,1),(8,1),(9,2),(10,2);
+
+-- FUNCION
+INSERT INTO FUNCION (idPelicula, idSala, idFormato, fecha, hora, precio, idIdioma, estado) VALUES
+(1,1,1,DATE_ADD(CURDATE(), INTERVAL FLOOR(RAND() * 10) DAY),'18:00:00',25.00,1,'activa'),
+(2,2,2,DATE_ADD(CURDATE(), INTERVAL FLOOR(RAND() * 10) DAY),'16:00:00',20.00,1,'activa'),
+(3,3,2,DATE_ADD(CURDATE(), INTERVAL FLOOR(RAND() * 10) DAY),'21:00:00',30.00,2,'activa'),
+(4,4,1,DATE_ADD(CURDATE(), INTERVAL FLOOR(RAND() * 10) DAY),'19:00:00',18.00,1,'activa'),
+(5,5,4,DATE_ADD(CURDATE(), INTERVAL FLOOR(RAND() * 10) DAY),'20:30:00',28.00,2,'activa'),
+(6,6,2,DATE_ADD(CURDATE(), INTERVAL FLOOR(RAND() * 10) DAY),'22:00:00',27.00,2,'activa'),
+(7,7,1,DATE_ADD(CURDATE(), INTERVAL FLOOR(RAND() * 10) DAY),'17:00:00',22.00,1,'activa'),
+(8,8,1,DATE_ADD(CURDATE(), INTERVAL FLOOR(RAND() * 10) DAY),'15:00:00',20.00,1,'activa'),
+(9,9,3,DATE_ADD(CURDATE(), INTERVAL FLOOR(RAND() * 10) DAY),'18:30:00',26.00,2,'activa'),
+(10,10,2,DATE_ADD(CURDATE(), INTERVAL FLOOR(RAND() * 10) DAY),'23:00:00',24.00,2,'activa');
 
 
--- Deshabilitar temporalmente la revisión de claves foráneas para cargar datos
-SET FOREIGN_KEY_CHECKS=0;
+-- BOLETA
+INSERT INTO BOLETA (idUsuario, fecha, subtotal, descuentoTotal, total) VALUES
+(1,'2025-11-05',50,5,45),
+(2,'2025-11-05',60,10,50),
+(3,'2025-11-05',40,0,40),
+(4,'2025-11-05',70,7,63),
+(5,'2025-11-05',80,10,70),
+(6,'2025-11-05',30,0,30),
+(7,'2025-11-05',55,5,50),
+(8,'2025-11-05',60,10,50),
+(9,'2025-11-05',45,5,40),
+(10,'2025-11-05',90,15,75);
 
--- -----------------------------------------------------
--- Grupo 1: Tablas sin dependencias
--- -----------------------------------------------------
-
--- -- CIUDAD (10 Ciudades Peruanas)
-INSERT INTO `CIUDAD` (`id`, `nombre`) VALUES
-(1, 'Lima'),
-(2, 'Arequipa'),
-(3, 'Trujillo'),
-(4, 'Cusco'),
-(5, 'Piura'),
-(6, 'Chiclayo'),
-(7, 'Huancayo'),
-(8, 'Iquitos'),
-(9, 'Tacna'),
-(10, 'Pucallpa');
-
--- -- GENERO (10 Géneros de películas)
-INSERT INTO `GENERO` (`id`, `nombre`) VALUES
-(1, 'Acción'),
-(2, 'Comedia'),
-(3, 'Drama'),
-(4, 'Ciencia Ficción'),
-(5, 'Terror'),
-(6, 'Fantasía'),
-(7, 'Animación'),
-(8, 'Suspenso'),
-(9, 'Documental'),
-(10, 'Romance');
-
--- -- RESTRICCION (Clasificaciones comunes)
-INSERT INTO `RESTRICCION` (`id`, `nombre`) VALUES
-(1, 'APT'),
-(2, 'PG (Supervisión)'),
-(3, '+14'),
-(4, '+18');
-
--- -- FORMATO (5 Formatos de película)
-INSERT INTO `FORMATO` (`id`, `nombre`) VALUES
-(1, '2D'),
-(2, '3D'),
-(3, '4DX'),
-(4, 'ScreenX'),
-(5, 'Prime');
-
--- -- IDIOMA (5 Idiomas/subtítulos)
-INSERT INTO `IDIOMA` (`id`, `nombre`) VALUES
-(1, 'ESP'),
-(2, 'SUB'),
-(3, 'ESP (Doblada)'),
-(4, 'ENG (Original)'),
-(5, 'QUE (Quechua)');
-
--- -- PRODUCTO (10 Productos de dulcería)
-INSERT INTO `PRODUCTO` (`id`, `nombre`, `descripcion`, `precio`, `imagen`, `tipo`) VALUES
-(1, 'Popcorn Gigante Salado', 'Cancha salada en balde gigante', 25.50, 'popcorn_g_s.jpg', 'Popcorn'),
-(2, 'Popcorn Gigante Dulce', 'Cancha dulce en balde gigante', 25.50, 'popcorn_g_d.jpg', 'Popcorn'),
-(3, 'Gaseosa Mediana', 'Gaseosa de 22oz (Inca Kola/Coca Cola)', 12.00, 'gaseosa_m.jpg', 'Bebida'),
-(4, 'Gaseosa Grande', 'Gaseosa de 32oz (Inca Kola/Coca Cola)', 15.00, 'gaseosa_g.jpg', 'Bebida'),
-(5, 'Hot Dog Clásico', 'Hot Dog simple con papas al hilo', 10.00, 'hotdog_c.jpg', 'Snack'),
-(6, 'Nachos con Queso', 'Nachos con salsa de queso cheddar', 18.00, 'nachos_q.jpg', 'Snack'),
-(7, 'Combo Pareja', '1 Popcorn Gigante + 2 Gaseosas Medianas', 45.00, 'combo_p.jpg', 'Combo'),
-(8, 'Combo Familiar', '2 Popcorn Gigantes + 4 Gaseosas Grandes', 80.00, 'combo_f.jpg', 'Combo'),
-(9, 'Agua Mineral', 'Botella de agua sin gas 600ml', 6.00, 'agua.jpg', 'Bebida'),
-(10, 'Chocolate Sublime', 'Tableta de chocolate Sublime', 5.00, 'sublime.jpg', 'Dulce');
-
--- -- PROMO (5 Promociones)
-INSERT INTO `PROMO` (`id`, `nombre`, `descripcion`, `fecha_inicio`, `fecha_fin`, `tipo`, `valor`, `aplicaA`, `estado`) VALUES
-(1, 'Martes 2x1', '2x1 en entradas 2D y 3D los martes', '2025-01-01', '2025-12-31', 'porcentaje', 50, 'funciones', 'activa'),
-(2, 'Combo Verano', 'Ahorra S/ 5 en tu Combo Pareja', '2025-01-15', '2025-03-31', 'fijo', 5.00, 'productos', 'activa'),
-(3, 'Estreno Jueves', '10% dscto. en estrenos (solo Jueves)', '2025-01-01', '2025-12-31', 'porcentaje', 10, 'funciones', 'activa'),
-(4, 'Cyber Planet', '30% dscto. en todo comprando online', '2025-11-10', '2025-11-12', 'porcentaje', 30, 'todo', 'inactiva'),
-(5, 'Socio Black', 'Upgrade a Popcorn Gigante gratis', '2025-01-01', '2025-12-31', 'fijo', 3.00, 'productos', 'activa');
-
--- -- USUARIO (10 Usuarios)
-INSERT INTO `USUARIO` (`id`, `nombre`, `email`, `tipoDocumento`, `numeroDocumento`) VALUES
-(1, 'Ana García Pérez', 'ana.garcia@email.com', 'DNI', '71234567'),
-(2, 'Bruno Torres Ruiz', 'bruno.torres@email.com', 'DNI', '72345678'),
-(3, 'Carla Mendoza Silva', 'carla.mendoza@email.com', 'CE', '01234567'),
-(4, 'David Quispe Luna', 'david.quispe@email.com', 'DNI', '73456789'),
-(5, 'Elena Vargas Solis', 'elena.vargas@email.com', 'DNI', '74567890'),
-(6, 'Franco Castillo Díaz', 'franco.castillo@email.com', 'DNI', '75678901'),
-(7, 'Gabriela Flores Cruz', 'gaby.flores@email.com', 'CE', '02345678'),
-(8, 'Hugo Sánchez Romero', 'hugo.sanchez@email.com', 'DNI', '76789012'),
-(9, 'Inés Chávez Costa', 'ines.chavez@email.com', 'DNI', '77890123'),
-(10, 'Javier Paredes Rojas', 'javier.paredes@email.com', 'DNI', '78901234');
-
--- -----------------------------------------------------
--- Grupo 2: Dependen de Grupo 1
--- -----------------------------------------------------
-
--- -- CINE (10 Cines, dependen de CIUDAD)
-INSERT INTO `CINE` (`id`, `nombre`, `direccion`, `telefono`, `email`, `idCiudad`) VALUES
-(1, 'Cineplanet Alcázar', 'Av. Santa Cruz 814, Miraflores', '016104545', 'alcazar@cineplanet.com.pe', 1),
-(2, 'Cineplanet San Miguel', 'Av. La Marina 2000, San Miguel', '016104545', 'sanmiguel@cineplanet.com.pe', 1),
-(3, 'Cineplanet Mall Aventura Arequipa', 'Av. Porongoche 500, Paucarpata', '054605555', 'arequipa@cineplanet.com.pe', 2),
-(4, 'Cineplanet Real Plaza Trujillo', 'Av. César Vallejo Oeste 1345', '044605555', 'trujillo@cineplanet.com.pe', 3),
-(5, 'Cineplanet Real Plaza Cusco', 'Av. Collasuyo 2964', '084605555', 'cusco@cineplanet.com.pe', 4),
-(6, 'Cineplanet Real Plaza Piura', 'Av. Sánchez Cerro 234', '073605555', 'piura@cineplanet.com.pe', 5),
-(7, 'Cineplanet Real Plaza Chiclayo', 'Calle Miguel de Cervantes 300', '074605555', 'chiclayo@cineplanet.com.pe', 6),
-(8, 'Cineplanet Real Plaza Huancayo', 'Av. Ferrocarril 1035', '064605555', 'huancayo@cineplanet.com.pe', 7),
-(9, 'Cineplanet Mall Aventura Tacna', 'Av. Panamericana 1500', '052605555', 'tacna@cineplanet.com.pe', 9),
-(10, 'Cineplanet Real Plaza Pucallpa', 'Av. Centenario Km 4.3', '061605555', 'pucallpa@cineplanet.com.pe', 10);
-
--- -- PELICULA (10 Películas, dependen de GENERO y RESTRICCION)
--- -- PELICULA (10 Películas, dependen de GENERO y RESTRICCION)
-INSERT INTO `PELICULA` (`id`, `nombre`, `genero`, `duracion`, `restriccion`, `restriccionComercial`, `sinopsis`, `autor`, `trailer`, `portada`, `estado`) VALUES
-(1, 'El Amanecer del Guardián', 1, 140, 3, TRUE,  'Un héroe solitario debe salvar la ciudad...', 'Dir. Juan Pérez', 'trailer1.mp4', 'portada1.jpg', 'activa'),
-(2, 'Risas en la Oficina', 2, 95, 1, FALSE, 'Las locuras de un grupo de oficinistas.', 'Dir. Ana López', 'trailer2.mp4', 'portada2.jpg', 'activa'),
-(3, 'El Último Viaje', 3, 120, 2, FALSE, 'Un drama familiar sobre la reconciliación.', 'Dir. Carlos Solano', 'trailer3.mp4', 'portada3.jpg', 'activa'),
-(4, 'Crónicas de Marte', 4, 150, 3, TRUE,  'Exploradores descubren vida en Marte.', 'Dir. Lucía Torres', 'trailer4.mp4', 'portada4.jpg', 'activa'),
-(5, 'La Casa del Eco', 5, 100, 4, TRUE,  'Una familia es atormentada por ecos del pasado.', 'Dir. Miguel Ruiz', 'trailer5.mp4', 'portada5.jpg', 'activa'),
-(6, 'El Reino de las Nubes', 6, 110, 1, FALSE, 'Una princesa busca el reino perdido.', 'Dir. Sofia Chan', 'trailer6.mp4', 'portada6.jpg', 'activa'),
-(7, 'Misión: Rescate de Mascotas', 7, 90, 1, FALSE, 'Un grupo de animales parlanchines...', 'Dir. David Kim', 'trailer7.mp4', 'portada7.jpg', 'activa'),
-(8, 'Código Sombra', 8, 130, 3, TRUE,  'Un espía debe detener un complot global.', 'Dir. Elena Frost', 'trailer8.mp4', 'portada8.jpg', 'activa'),
-(9, 'El Corazón del Amazonas', 9, 85, 1, FALSE, 'Documental sobre la vida en el Amazonas.', 'Dir. Pedro Morales', 'trailer9.mp4', 'portada9.jpg', 'activa'),
-(10, 'Amor bajo la Lluvia', 10, 105, 2, FALSE, 'Dos extraños se enamoran en un día lluvioso.', 'Dir. Gabriela Ríos', 'trailer10.mp4', 'portada10.jpg', 'activa');
-
-
--- -- SOCIO (10 Socios, dependen de USUARIO)
-INSERT INTO `SOCIO` (`id`, `password`, `departamento`, `provincia`, `distrito`, `apellidoPaterno`, `apellidoMaterno`, `cineplanetFavorito`, `fechaNacimiento`, `celular`, `genero`, `grado`) VALUES
-(1, 'hash_pass_123', 'Lima', 'Lima', 'Miraflores', 'García', 'Pérez', 'Alcázar', '1990-05-15', '987654321', 'Femenino', 'oro'),
-(2, 'hash_pass_456', 'Lima', 'Lima', 'San Miguel', 'Torres', 'Ruiz', 'San Miguel', '1985-11-20', '987654322', 'Masculino', 'plata'),
-(3, 'hash_pass_789', 'Lima', 'Lima', 'Surco', 'Mendoza', 'Silva', 'Alcázar', '1995-02-10', '987654323', 'Femenino', 'clasico'),
-(4, 'hash_pass_101', 'Arequipa', 'Arequipa', 'Paucarpata', 'Quispe', 'Luna', 'Mall Aventura Arequipa', '1992-08-30', '987654324', 'Masculino', 'black'),
-(5, 'hash_pass_112', 'La Libertad', 'Trujillo', 'Trujillo', 'Vargas', 'Solis', 'Real Plaza Trujillo', '1998-12-01', '987654325', 'Femenino', 'clasico'),
-(6, 'hash_pass_131', 'Piura', 'Piura', 'Piura', 'Castillo', 'Díaz', 'Real Plaza Piura', '2000-03-25', '987654326', 'Masculino', 'plata'),
-(7, 'hash_pass_141', 'Lima', 'Lima', 'La Molina', 'Flores', 'Cruz', 'San Miguel', '1993-07-07', '987654327', 'Femenino', 'oro'),
-(8, 'hash_pass_151', 'Cusco', 'Cusco', 'Cusco', 'Sánchez', 'Romero', 'Real Plaza Cusco', '1988-01-18', '987654328', 'Masculino', 'clasico'),
-(9, 'hash_pass_161', 'Tacna', 'Tacna', 'Tacna', 'Chávez', 'Costa', 'Mall Aventura Tacna', '1991-06-12', '987654329', 'Femenino', 'black'),
-(10, 'hash_pass_171', 'Lima', 'Lima', 'Pueblo Libre', 'Paredes', 'Rojas', 'San Miguel', '1997-09-05', '987654330', 'Masculino', 'plata');
-
--- -----------------------------------------------------
--- Grupo 3: Dependen de Grupo 2
--- -----------------------------------------------------
-
--- -- SALA (10 Salas, dependen de CINE)
-INSERT INTO `SALA` (`id`, `nombre`, `capacidad`, `tipo`, `idCine`) VALUES
-(1, 'Sala 1', 150, 'Regular', 1),
-(2, 'Sala 2', 150, 'Regular', 1),
-(3, 'Sala 3 (4DX)', 80, '4DX', 1),
-(4, 'Sala 1', 200, 'Regular', 2),
-(5, 'Sala 2', 200, 'Regular', 2),
-(6, 'Sala Prime 1', 60, 'Prime', 2),
-(7, 'Sala 1', 180, 'Regular', 3),
-(8, 'Sala 2', 180, 'Regular', 3),
-(9, 'Sala 1', 160, 'Regular', 4),
-(10, 'Sala 1 (ScreenX)', 100, 'ScreenX', 5);
-
--- -- PELICULA_FORMATO (10 links, dependen de PELICULA y FORMATO)
-INSERT INTO `PELICULA_FORMATO` (`idPelicula`, `idFormato`) VALUES
-(1, 1), (1, 2), (1, 3), -- Película 1 en 2D, 3D y 4DX
-(2, 1), -- Película 2 solo en 2D
-(3, 1), -- Película 3 solo en 2D
-(4, 1), (4, 2), -- Película 4 en 2D y 3D
-(5, 1), -- Película 5 solo en 2D
-(7, 1), (7, 2), -- Película 7 en 2D y 3D
-(8, 1), (8, 4), -- Película 8 en 2D y ScreenX
-(10, 1), (10, 5); -- Película 10 en 2D y Prime
-
--- -- PELICULA_IDIOMA (10 links, dependen de PELICULA y IDIOMA)
-INSERT INTO `PELICULA_IDIOMA` (`idPelicula`, `idIdioma`) VALUES
-(1, 1), (1, 2), -- Película 1 en ESP y SUB
-(2, 3), -- Película 2 Doblada
-(3, 1), (3, 2), -- Película 3 en ESP y SUB
-(4, 2), (4, 4), -- Película 4 en SUB y ENG
-(5, 2), -- Película 5 en SUB
-(6, 3), -- Película 6 Doblada
-(7, 3), -- Película 7 Doblada
-(8, 2), (8, 4), -- Película 8 en SUB y ENG
-(9, 1), (9, 5), -- Película 9 en ESP y Quechua
-(10, 3); -- Película 10 Doblada
-
--- -----------------------------------------------------
--- Grupo 4: Dependen de Grupo 3
--- -----------------------------------------------------
-
--- -- ASIENTO (10 Asientos para Sala 1, dependen de SALA)
--- (En un caso real, aquí irían cientos de asientos por sala)
-INSERT INTO `ASIENTO` (`id`, `idSala`, `fila`, `numero`, `tipo`) VALUES
-(1, 1, 'A', 1, 'normal'),
-(2, 1, 'A', 2, 'normal'),
-(3, 1, 'A', 3, 'normal'),
-(4, 1, 'A', 4, 'normal'),
-(5, 1, 'A', 5, 'discapacidad'),
-(6, 1, 'B', 1, 'normal'),
-(7, 1, 'B', 2, 'normal'),
-(8, 1, 'B', 3, 'normal'),
-(9, 1, 'B', 4, 'normal'),
-(10, 1, 'B', 5, 'normal');
-
--- -- FUNCION (10 Funciones, dependen de PELICULA, SALA, FORMATO, IDIOMA)
--- (Usaremos Sala 1 (id=1) para las primeras funciones, para poder usar los asientos creados)
-INSERT INTO `FUNCION` (`id`, `idPelicula`, `idSala`, `idFormato`, `fecha`, `hora`, `precio`, `idIdioma`, `estado`) VALUES
-(1, 1, 1, 3, CURDATE(), '15:00:00', 45.00, 1, 'activa'), -- Pel 1, Sala 1 (4DX), Hoy 3pm, ESP
-(2, 1, 1, 3, CURDATE(), '18:00:00', 45.00, 2, 'activa'), -- Pel 1, Sala 1 (4DX), Hoy 6pm, SUB
-(3, 7, 1, 1, CURDATE(), '13:00:00', 20.00, 3, 'activa'), -- Pel 7, Sala 1 (2D), Hoy 1pm, DOBLADA
-(4, 4, 2, 2, CURDATE(), '16:00:00', 30.00, 2, 'activa'), -- Pel 4, Sala 2 (3D), Hoy 4pm, SUB
-(5, 8, 10, 4, CURDATE(), '20:00:00', 50.00, 4, 'activa'), -- Pel 8, Sala 10 (ScreenX), Hoy 8pm, ENG
-(6, 10, 6, 5, CURDATE(), '21:00:00', 55.00, 3, 'activa'), -- Pel 10, Sala 6 (Prime), Hoy 9pm, DOBLADA
-(7, 5, 4, 1, CURDATE()+1, '22:00:00', 22.00, 2, 'activa'), -- Pel 5, Sala 4 (2D), Mañana 10pm, SUB
-(8, 2, 5, 1, CURDATE()+1, '19:00:00', 22.00, 3, 'activa'), -- Pel 2, Sala 5 (2D), Mañana 7pm, DOBLADA
-(9, 1, 1, 3, CURDATE()+1, '15:00:00', 45.00, 1, 'activa'), -- Pel 1, Sala 1 (4DX), Mañana 3pm, ESP
-(10, 3, 7, 1, CURDATE(), '17:00:00', 18.00, 1, 'activa'); -- Pel 3, Sala 7 (2D), Hoy 5pm, ESP
-
--- -----------------------------------------------------
--- Grupo 5: Transacciones (Dependen de USUARIO, FUNCION, PRODUCTO, PROMO)
--- -----------------------------------------------------
-
--- -- BOLETA (10 Boletas, dependen de USUARIO)
--- (Los totales se calcularán automáticamente por los triggers al insertar en las tablas de detalle)
-INSERT INTO `BOLETA` (`id`, `idUsuario`, `fecha`) VALUES
-(1, 1, CURDATE()), -- Ana Garcia
-(2, 2, CURDATE()), -- Bruno Torres
-(3, 3, CURDATE()), -- Carla Mendoza
-(4, 4, CURDATE()), -- David Quispe
-(5, 5, CURDATE()), -- Elena Vargas
-(6, 6, CURDATE()), -- Franco Castillo
-(7, 7, CURDATE()), -- Gabriela Flores
-(8, 8, CURDATE()), -- Hugo Sánchez
-(9, 9, CURDATE()), -- Inés Chávez
-(10, 10, CURDATE()); -- Javier Paredes
-
--- -- FUNCIONES_BOLETA (Detalle de funciones por boleta)
--- (Esto registrará el item 'Entrada' en la boleta)
-INSERT INTO `FUNCIONES_BOLETA` (`idBoleta`, `idFuncion`, `cantidad`, `precioUnitario`) VALUES
-(1, 1, 2, 45.00), -- Boleta 1, 2 entradas para Función 1 (Precio 45 c/u)
-(2, 3, 1, 20.00), -- Boleta 2, 1 entrada para Función 3 (Precio 20)
-(3, 2, 4, 45.00), -- Boleta 3, 4 entradas para Función 2 (Precio 45 c/u)
-(4, 6, 2, 55.00), -- Boleta 4, 2 entradas para Función 6 (Precio 55 c/u)
-(5, 5, 1, 50.00), -- Boleta 5, 1 entrada para Función 5 (Precio 50)
-(7, 10, 2, 18.00); -- Boleta 7, 2 entradas para Función 10 (Precio 18 c/u)
-
--- -- BOLETA_ASIENTO (Asientos específicos vendidos. Depende de BOLETA, FUNCION, ASIENTO)
--- (Debe coincidir con FUNCIONES_BOLETA. Todos estos son en Sala 1 (id=1))
-INSERT INTO `BOLETA_ASIENTO` (`idBoleta`, `idFuncion`, `idAsiento`, `precioUnitario`) VALUES
-(1, 1, 1, 45.00), -- Boleta 1, Funcion 1, Asiento A1 (ID 1)
-(1, 1, 2, 45.00), -- Boleta 1, Funcion 1, Asiento A2 (ID 2)
-(2, 3, 6, 20.00), -- Boleta 2, Funcion 3, Asiento B1 (ID 6)
-(3, 2, 7, 45.00), -- Boleta 3, Funcion 2, Asiento B2 (ID 7)
-(3, 2, 8, 45.00), -- Boleta 3, Funcion 2, Asiento B3 (ID 8)
-(3, 2, 9, 45.00), -- Boleta 3, Funcion 2, Asiento B4 (ID 9)
-(3, 2, 10, 45.00); -- Boleta 3, Funcion 2, Asiento B5 (ID 10)
-
--- -- PRODUCTOS_BOLETA (Detalle de productos por boleta)
-INSERT INTO `PRODUCTOS_BOLETA` (`idBoleta`, `idProducto`, `cantidad`, `precioUnitario`) VALUES
-(1, 7, 1, 45.00), -- Boleta 1 (Ana) compró 1 Combo Pareja
-(2, 1, 1, 25.50), -- Boleta 2 (Bruno) compró 1 Popcorn Gigante Salado
-(2, 3, 1, 12.00), -- Boleta 2 (Bruno) también compró 1 Gaseosa Mediana
-(4, 8, 1, 80.00), -- Boleta 4 (David) compró 1 Combo Familiar
-(6, 3, 2, 12.00), -- Boleta 6 (Franco) compró 2 Gaseosas Medianas (solo dulcería)
-(8, 10, 5, 5.00), -- Boleta 8 (Hugo) compró 5 Chocolates (solo dulcería)
-(10, 6, 1, 18.00); -- Boleta 10 (Javier) compró 1 Nachos (solo dulcería)
-
--- -- PROMO_BOLETA (Promociones aplicadas a boletas)
-INSERT INTO `PROMO_BOLETA` (`idBoleta`, `idPromo`, `montoDescuento`, `detalle`) VALUES
-(1, 1, 0, 'Martes 2x1'), -- Boleta 1 (Ana) usó Martes 2x1. El SP calculará el monto.
-(4, 5, 0, 'Socio Black'), -- Boleta 4 (David, Socio Black) usó promo Socio.
-(6, 2, 0, 'Combo Verano'); -- Boleta 6 (Franco) no compró combo pareja, pero aplicamos promo (el SP debería ignorarla si no aplica)
-
-
--- Reactivar la revisión de claves foráneas
-SET FOREIGN_KEY_CHECKS=1;
+-- BOLETA

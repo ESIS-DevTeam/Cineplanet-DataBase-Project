@@ -12,8 +12,12 @@
         #plano-container { margin-top: 2em; }
         .asiento { width: 30px; height: 30px; border: 1px solid #ccc; display: inline-block; margin: 2px; text-align: center; line-height: 30px; cursor: pointer; user-select: none; }
         .asiento.tipo-vip { background-color: gold; }
-        .asiento.tipo-discapacidad { background-color: lightblue; }
+        .asiento.tipo-discapacidad { background-color: #4fc3f7; } /* azul claro */
+        .asiento.tipo-pasillo { background-color: #bdbdbd; }      /* gris */
+        .asiento.tipo-normal { background-color: #fff; }          /* blanco */
         .fila-letra { font-weight: bold; margin-right: 1em; }
+        .leyenda-asientos { margin: 1em 0; }
+        .leyenda-asientos span { display: inline-block; width: 24px; height: 24px; border: 1px solid #ccc; margin-right: 6px; vertical-align: middle; }
     </style>
 </head>
 <body>
@@ -44,6 +48,21 @@
                 <input type="number" id="columnas" min="1" max="30" required>
                 <button type="submit">Generar Grilla</button>
             </form>
+            <div class="leyenda-asientos">
+                <strong>Leyenda:</strong>
+                <span style="background:#fff; border:1px solid #ccc;"></span> Normal
+                <span style="background:#4fc3f7; border:1px solid #ccc;"></span> Discapacidad
+                <span style="background:#bdbdbd; border:1px solid #ccc;"></span> Pasillo
+            </div>
+            <div style="margin: 1em 0;">
+                <label>Tipo especial para modificar:</label>
+                <input type="radio" name="tipo-asiento" id="tipo-none" value="" checked>
+                <label for="tipo-none">Normal</label>
+                <input type="radio" name="tipo-asiento" id="tipo-discapacidad" value="discapacidad">
+                <label for="tipo-discapacidad">Discapacidad</label>
+                <input type="radio" name="tipo-asiento" id="tipo-pasillo" value="pasillo">
+                <label for="tipo-pasillo">Pasillo</label>
+            </div>
             <div id="grilla-asientos" style="margin-top: 1em;"></div>
             <button id="guardar-plano" style="display: none; margin-top: 1em;">Guardar Plano</button>
         </div>
@@ -57,6 +76,7 @@
         let cinesGlobal = [];
         let ciudadesGlobal = [];
         let salaSeleccionadaId = null;
+        let tipoAsientoSeleccionado = '';
 
         async function cargarCiudadesYCines() {
             try {
@@ -144,17 +164,28 @@
                 const res = await fetch(`http://localhost/Cineplanet-DataBase-Project/backend/api/getPlanoSalaPorSala.php?idSala=${idSala}`);
                 const asientos = await res.json();
                 if (Array.isArray(asientos) && asientos.length > 0) {
-                    // Mostrar plano existente
+                    // Detectar filas y columnas
                     const filasSet = new Set(asientos.map(a => a.fila));
                     const columnasSet = new Set(asientos.map(a => a.numero));
                     const filas = filasSet.size;
                     const columnas = columnasSet.size;
+                    // Asignar valores a los inputs
+                    document.getElementById('filas').value = filas;
+                    document.getElementById('columnas').value = columnas;
                     generarGrilla(filas, columnas, asientos);
                 }
             } catch (error) {
                 // Si no hay plano, no hacer nada (se genera uno nuevo)
+                document.getElementById('filas').value = '';
+                document.getElementById('columnas').value = '';
             }
         }
+
+        document.querySelectorAll('input[name="tipo-asiento"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                tipoAsientoSeleccionado = this.value;
+            });
+        });
 
         function generarGrilla(filas, columnas, asientosExistentes = null) {
             const grillaContainer = document.getElementById('grilla-asientos');
@@ -170,45 +201,29 @@
 
                 for (let j = 1; j <= columnas; j++) {
                     const asiento = document.createElement('div');
-                    asiento.className = 'asiento';
+                    asiento.className = 'asiento tipo-normal';
                     asiento.textContent = j;
                     asiento.dataset.fila = letrasFilas[i];
                     asiento.dataset.numero = j;
                     asiento.dataset.tipo = 'normal';
 
-                    // Si existe plano, cargar tipo
+                    // Si existe plano, cargar tipo y color
                     if (asientosExistentes) {
                         const existente = asientosExistentes.find(a => a.fila === letrasFilas[i] && a.numero == j);
                         if (existente) {
                             asiento.dataset.tipo = existente.tipo;
-                            asiento.classList.remove('tipo-normal', 'tipo-discapacidad', 'tipo-pasillo');
-                            if (existente.tipo !== 'normal') asiento.classList.add(`tipo-${existente.tipo}`);
+                            asiento.className = 'asiento tipo-' + existente.tipo;
                         }
                     }
 
-                    // Click izquierdo: alterna entre normal y pasillo
+                    // Click izquierdo: asigna el tipo seleccionado, si no, vuelve a normal
                     asiento.addEventListener('click', () => {
-                        if (asiento.dataset.tipo === 'normal') {
-                            asiento.dataset.tipo = 'pasillo';
-                            asiento.classList.remove('tipo-normal', 'tipo-discapacidad');
-                            asiento.classList.add('tipo-pasillo');
-                        } else if (asiento.dataset.tipo === 'pasillo') {
+                        if (tipoAsientoSeleccionado === 'discapacidad' || tipoAsientoSeleccionado === 'pasillo') {
+                            asiento.dataset.tipo = tipoAsientoSeleccionado; // esto será 'pasillo' exactamente
+                            asiento.className = 'asiento tipo-' + tipoAsientoSeleccionado;
+                        } else {
                             asiento.dataset.tipo = 'normal';
-                            asiento.classList.remove('tipo-pasillo', 'tipo-discapacidad');
-                        }
-                    });
-
-                    // Click derecho: alterna normal -> discapacidad -> pasillo -> normal
-                    asiento.addEventListener('contextmenu', (e) => {
-                        e.preventDefault();
-                        const tipos = ['normal', 'discapacidad', 'pasillo'];
-                        const tipoActual = asiento.dataset.tipo;
-                        const indexActual = tipos.indexOf(tipoActual);
-                        const nuevoTipo = tipos[(indexActual + 1) % tipos.length];
-                        asiento.dataset.tipo = nuevoTipo;
-                        asiento.classList.remove('tipo-normal', 'tipo-discapacidad', 'tipo-pasillo');
-                        if (nuevoTipo !== 'normal') {
-                            asiento.classList.add(`tipo-${nuevoTipo}`);
+                            asiento.className = 'asiento tipo-normal';
                         }
                     });
 
@@ -232,11 +247,12 @@
                 return;
             }
             const asientos = document.querySelectorAll('#grilla-asientos .asiento');
+            // Enviar TODOS los asientos, incluyendo tipo "pasillo"
             const plano = Array.from(asientos).map(asiento => ({
                 idSala: salaSeleccionadaId,
                 fila: asiento.dataset.fila,
                 numero: parseInt(asiento.dataset.numero),
-                tipo: asiento.dataset.tipo
+                tipo: asiento.dataset.tipo // esto será 'normal', 'discapacidad' o 'pasillo'
             }));
 
             // Enviar a la API para crear o actualizar plano
