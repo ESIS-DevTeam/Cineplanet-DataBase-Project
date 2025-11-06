@@ -18,6 +18,17 @@
         .fila-letra { font-weight: bold; margin-right: 1em; }
         .leyenda-asientos { margin: 1em 0; }
         .leyenda-asientos span { display: inline-block; width: 24px; height: 24px; border: 1px solid #ccc; margin-right: 6px; vertical-align: middle; }
+        #overlay-bloqueo {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255,255,255,0.7);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            color: #333;
+        }
     </style>
 </head>
 <body>
@@ -71,6 +82,10 @@
     <footer>
         <p>&copy; 2023 Panel de Administración de Cineplanet</p>
     </footer>
+
+    <div id="overlay-bloqueo">
+        <span id="overlay-mensaje">Guardando plano...</span>
+    </div>
 
     <script>
         let cinesGlobal = [];
@@ -241,21 +256,30 @@
             generarGrilla(filas, columnas);
         });
 
+        function mostrarBloqueo(mensaje = "Guardando plano...") {
+            const overlay = document.getElementById('overlay-bloqueo');
+            document.getElementById('overlay-mensaje').textContent = mensaje;
+            overlay.style.display = 'flex';
+        }
+        function ocultarBloqueo() {
+            document.getElementById('overlay-bloqueo').style.display = 'none';
+        }
+
         document.getElementById('guardar-plano').addEventListener('click', async function() {
             if (!salaSeleccionadaId) {
                 alert('Por favor, selecciona una sala primero.');
                 return;
             }
             const asientos = document.querySelectorAll('#grilla-asientos .asiento');
-            // Enviar TODOS los asientos, incluyendo tipo "pasillo"
             const plano = Array.from(asientos).map(asiento => ({
                 idSala: salaSeleccionadaId,
                 fila: asiento.dataset.fila,
                 numero: parseInt(asiento.dataset.numero),
-                tipo: asiento.dataset.tipo // esto será 'normal', 'discapacidad' o 'pasillo'
+                tipo: asiento.dataset.tipo
             }));
 
-            // Enviar a la API para crear o actualizar plano
+            mostrarBloqueo();
+
             try {
                 const response = await fetch('http://localhost/Cineplanet-DataBase-Project/backend/api/guardarPlanoSala.php', {
                     method: 'POST',
@@ -264,11 +288,16 @@
                 });
                 const result = await response.json();
                 if (response.ok) {
-                    alert('Plano de sala guardado/modificado con éxito.');
+                    mostrarBloqueo("Plano de sala guardado/modificado con éxito.");
+                    setTimeout(() => {
+                        ocultarBloqueo();
+                    }, 1500);
                 } else {
+                    ocultarBloqueo();
                     throw new Error(result.error || 'Error al guardar el plano.');
                 }
             } catch (error) {
+                ocultarBloqueo();
                 console.error('Error al guardar:', error);
                 alert(error.message);
             }
