@@ -750,3 +750,33 @@ CREATE PROCEDURE restriccion_delete(IN p_id INT)
 BEGIN
     DELETE FROM RESTRICCION WHERE id = p_id;
 END$$
+
+-- NUEVO: funcion_info_completa
+DROP PROCEDURE IF EXISTS funcion_info_completa$$
+CREATE PROCEDURE funcion_info_completa(IN p_idFuncion INT)
+BEGIN
+    SELECT
+        f.id AS idFuncion,
+        f.idSala,
+        f.fecha,
+        f.hora,
+        f.idFormato,
+        f.idIdioma,
+        f.idPelicula,
+        f.estado,
+        s.nombre AS nombreSala,
+        c.nombre AS nombreCine,
+        p.nombre AS nombrePelicula,
+        p.portada AS portada,
+        fo.nombre AS formato,
+        i.nombre AS idioma
+    FROM FUNCION f
+    JOIN SALA s ON f.idSala = s.id
+    JOIN CINE c ON s.idCine = c.id
+    JOIN PELICULA p ON f.idPelicula = p.id
+    JOIN FORMATO fo ON f.idFormato = fo.id
+    LEFT JOIN IDIOMA i ON f.idIdioma = i.id
+    WHERE f.id = p_idFuncion
+    LIMIT 1;
+END$$
+DELIMITER ;

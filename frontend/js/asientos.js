@@ -6,14 +6,61 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // Obtener idSala desde la función
-    let idSala = null;
+    // Obtener datos completos de la función y película
+    let infoFuncion = null;
     try {
-        const resFuncion = await fetch(`http://localhost/Cineplanet-DataBase-Project/backend/api/getFuncion.php?id=${idFuncion}`);
-        const funcion = await resFuncion.json();
-        idSala = funcion.idSala;
+        const resInfo = await fetch(`http://localhost/Cineplanet-DataBase-Project/backend/api/getInfoFuncionCompleta.php?idFuncion=${idFuncion}`);
+        infoFuncion = await resInfo.json();
     } catch {
-        document.getElementById('asientos-container').textContent = 'Error al obtener la función.';
+        // Si falla, muestra error y no dibuja nada
+        document.getElementById('asientos-container').textContent = 'Error al obtener la información de la función.';
+        return;
+    }
+
+    // Mostrar información arriba de los asientos
+    const infoDiv = document.createElement('div');
+    infoDiv.style.marginBottom = '2em';
+
+    // Formatear fecha
+    let fechaTexto = '';
+    if (infoFuncion && infoFuncion.fecha) {
+        const fechaObj = new Date(infoFuncion.fecha + 'T00:00:00');
+        const hoy = new Date();
+        hoy.setHours(0,0,0,0);
+        if (fechaObj.getTime() === hoy.getTime()) {
+            fechaTexto = `Hoy, ${fechaObj.getDate()} de ${fechaObj.toLocaleString('es-ES', { month: 'short' })} de ${fechaObj.getFullYear()}`;
+        } else {
+            const diasSemana = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+            fechaTexto = `${diasSemana[fechaObj.getDay()]}, ${fechaObj.getDate()} de ${fechaObj.toLocaleString('es-ES', { month: 'short' })} de ${fechaObj.getFullYear()}`;
+        }
+    }
+
+    infoDiv.innerHTML = `
+        <div style="text-align:center;">
+            ${infoFuncion.portada ? `<img src="${infoFuncion.portada}" alt="Portada" style="width:140px;height:140px;border-radius:50%;object-fit:cover;">` : ''}
+        </div>
+        <h2 style="font-weight:bold; margin:0.5em 0;">${infoFuncion.nombrePelicula || ''}</h2>
+        <div style="margin-bottom:0.5em;">${infoFuncion.formato || ''}${infoFuncion.formato && infoFuncion.idioma ? ', ' : ''}${infoFuncion.idioma || ''}</div>
+        <div style="font-weight:bold; margin-bottom:0.5em;">${infoFuncion.nombreCine || ''}</div>
+        <div style="margin-bottom:0.3em;">
+            <span>📅 ${fechaTexto}</span>
+        </div>
+        <div style="margin-bottom:0.3em;">
+            <span>🕒 ${infoFuncion.hora || ''}</span>
+        </div>
+        <div>
+            <span>🏢 ${infoFuncion.nombreSala || ''}</span>
+        </div>
+        <hr style="margin:1em 0;">
+    `;
+    const container = document.getElementById('asientos-container');
+    container.innerHTML = '';
+    container.appendChild(infoDiv);
+
+    // Obtener idSala desde la función
+    let idSala = infoFuncion.idSala;
+    if (!idSala) {
+        container.textContent = 'Error al obtener la sala de la función.';
         return;
     }
 
@@ -23,7 +70,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const resPlano = await fetch(`http://localhost/Cineplanet-DataBase-Project/backend/api/getPlanoSalaPorSala.php?idSala=${idSala}`);
         asientosPlano = await resPlano.json();
     } catch {
-        document.getElementById('asientos-container').textContent = 'Error al obtener el plano de sala.';
+        container.textContent = 'Error al obtener el plano de sala.';
         return;
     }
 
@@ -43,9 +90,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const filas = Array.from(filasSet).sort();
     const columnas = Array.from(columnasSet).sort((a, b) => a - b);
 
-    const container = document.getElementById('asientos-container');
-    container.innerHTML = '';
-
+    // Dibuja la grilla de asientos
     for (const fila of filas) {
         const filaDiv = document.createElement('div');
         const filaLetra = document.createElement('span');
@@ -53,10 +98,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         filaLetra.textContent = fila;
         filaDiv.appendChild(filaLetra);
 
+        let numLogico = 1;
         for (const numero of columnas) {
             const asientoObj = asientosPlano.find(a => a.fila === fila && a.numero == numero);
             if (!asientoObj) {
-                // Si no existe asiento, dibuja espacio vacío
                 const espacio = document.createElement('div');
                 espacio.className = 'asiento';
                 espacio.style.visibility = 'hidden';
@@ -64,7 +109,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 continue;
             }
             if (asientoObj.tipo === 'pasillo') {
-                // Dibuja espacio vacío para el pasillo
                 const espacio = document.createElement('div');
                 espacio.className = 'asiento';
                 espacio.style.visibility = 'hidden';
@@ -74,7 +118,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             const asientoDiv = document.createElement('div');
             asientoDiv.className = 'asiento tipo-' + asientoObj.tipo;
-            asientoDiv.textContent = numero;
+            if (asientoObj.tipo === 'discapacidad') {
+                asientoDiv.textContent = '0';
+            } else {
+                asientoDiv.textContent = numLogico;
+                numLogico++;
+            }
             asientoDiv.dataset.idPlanoSala = asientoObj.id;
 
             if (ocupados.has(asientoObj.id)) {
