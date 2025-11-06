@@ -11,7 +11,6 @@
         #ciudades-cines-list, #salas-list { border: 1px solid #ccc; padding: 1em; min-width: 300px; }
         #plano-container { margin-top: 2em; }
         .asiento { width: 30px; height: 30px; border: 1px solid #ccc; display: inline-block; margin: 2px; text-align: center; line-height: 30px; cursor: pointer; user-select: none; }
-        .asiento.disponible-false { background-color: #eee; }
         .asiento.tipo-vip { background-color: gold; }
         .asiento.tipo-discapacidad { background-color: lightblue; }
         .fila-letra { font-weight: bold; margin-right: 1em; }
@@ -117,12 +116,14 @@
                         const a = document.createElement('a');
                         a.href = '#';
                         a.textContent = `${sala.nombre} (Tipo: ${sala.tipo})`;
-                        a.onclick = (e) => {
+                        a.onclick = async (e) => {
                             e.preventDefault();
                             salaSeleccionadaId = sala.id;
                             document.getElementById('plano-container').style.display = 'block';
                             document.getElementById('grilla-asientos').innerHTML = '';
                             document.getElementById('guardar-plano').style.display = 'none';
+                            // Consultar si ya existe plano para la sala
+                            await cargarPlanoSalaExistente(sala.id);
                         };
                         li.appendChild(a);
                         ul.appendChild(li);
@@ -138,14 +139,24 @@
             }
         }
 
-        document.getElementById('form-definir-plano').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const filas = parseInt(document.getElementById('filas').value);
-            const columnas = parseInt(document.getElementById('columnas').value);
-            generarGrilla(filas, columnas);
-        });
+        async function cargarPlanoSalaExistente(idSala) {
+            try {
+                const res = await fetch(`http://localhost/Cineplanet-DataBase-Project/backend/api/getPlanoSalaPorSala.php?idSala=${idSala}`);
+                const asientos = await res.json();
+                if (Array.isArray(asientos) && asientos.length > 0) {
+                    // Mostrar plano existente
+                    const filasSet = new Set(asientos.map(a => a.fila));
+                    const columnasSet = new Set(asientos.map(a => a.numero));
+                    const filas = filasSet.size;
+                    const columnas = columnasSet.size;
+                    generarGrilla(filas, columnas, asientos);
+                }
+            } catch (error) {
+                // Si no hay plano, no hacer nada (se genera uno nuevo)
+            }
+        }
 
-        function generarGrilla(filas, columnas) {
+        function generarGrilla(filas, columnas, asientosExistentes = null) {
             const grillaContainer = document.getElementById('grilla-asientos');
             grillaContainer.innerHTML = '';
             const letrasFilas = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -164,25 +175,38 @@
                     asiento.dataset.fila = letrasFilas[i];
                     asiento.dataset.numero = j;
                     asiento.dataset.tipo = 'normal';
-                    asiento.dataset.disponible = 'true';
-                    
+
+                    // Si existe plano, cargar tipo
+                    if (asientosExistentes) {
+                        const existente = asientosExistentes.find(a => a.fila === letrasFilas[i] && a.numero == j);
+                        if (existente) {
+                            asiento.dataset.tipo = existente.tipo;
+                            asiento.classList.remove('tipo-normal', 'tipo-discapacidad', 'tipo-pasillo');
+                            if (existente.tipo !== 'normal') asiento.classList.add(`tipo-${existente.tipo}`);
+                        }
+                    }
+
+                    // Click izquierdo: alterna entre normal y pasillo
                     asiento.addEventListener('click', () => {
-                        // Ciclo simple: disponible -> no disponible
-                        const disponible = asiento.dataset.disponible === 'true';
-                        asiento.dataset.disponible = !disponible;
-                        asiento.classList.toggle('disponible-false', disponible);
+                        if (asiento.dataset.tipo === 'normal') {
+                            asiento.dataset.tipo = 'pasillo';
+                            asiento.classList.remove('tipo-normal', 'tipo-discapacidad');
+                            asiento.classList.add('tipo-pasillo');
+                        } else if (asiento.dataset.tipo === 'pasillo') {
+                            asiento.dataset.tipo = 'normal';
+                            asiento.classList.remove('tipo-pasillo', 'tipo-discapacidad');
+                        }
                     });
 
+                    // Click derecho: alterna normal -> discapacidad -> pasillo -> normal
                     asiento.addEventListener('contextmenu', (e) => {
-                        // Ciclo con click derecho: normal -> vip -> discapacidad -> normal
                         e.preventDefault();
-                        const tipos = ['normal', 'vip', 'discapacidad'];
+                        const tipos = ['normal', 'discapacidad', 'pasillo'];
                         const tipoActual = asiento.dataset.tipo;
                         const indexActual = tipos.indexOf(tipoActual);
                         const nuevoTipo = tipos[(indexActual + 1) % tipos.length];
-                        
                         asiento.dataset.tipo = nuevoTipo;
-                        asiento.classList.remove('tipo-normal', 'tipo-vip', 'tipo-discapacidad');
+                        asiento.classList.remove('tipo-normal', 'tipo-discapacidad', 'tipo-pasillo');
                         if (nuevoTipo !== 'normal') {
                             asiento.classList.add(`tipo-${nuevoTipo}`);
                         }
@@ -195,6 +219,13 @@
             document.getElementById('guardar-plano').style.display = 'block';
         }
 
+        document.getElementById('form-definir-plano').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const filas = parseInt(document.getElementById('filas').value);
+            const columnas = parseInt(document.getElementById('columnas').value);
+            generarGrilla(filas, columnas);
+        });
+
         document.getElementById('guardar-plano').addEventListener('click', async function() {
             if (!salaSeleccionadaId) {
                 alert('Por favor, selecciona una sala primero.');
@@ -205,24 +236,19 @@
                 idSala: salaSeleccionadaId,
                 fila: asiento.dataset.fila,
                 numero: parseInt(asiento.dataset.numero),
-                tipo: asiento.dataset.tipo,
-                disponible: asiento.dataset.disponible === 'true' ? 1 : 0
+                tipo: asiento.dataset.tipo
             }));
 
-            console.log('Enviando plano:', plano);
-            alert('Funcionalidad de guardado no implementada en este ejemplo. Revisa la consola para ver los datos a enviar.');
-            
-            // Lógica para enviar a la API
-            /*
+            // Enviar a la API para crear o actualizar plano
             try {
-                const response = await fetch('URL_API_PARA_CREAR_PLANO', {
+                const response = await fetch('http://localhost/Cineplanet-DataBase-Project/backend/api/guardarPlanoSala.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(plano)
                 });
                 const result = await response.json();
                 if (response.ok) {
-                    alert('Plano de sala guardado con éxito.');
+                    alert('Plano de sala guardado/modificado con éxito.');
                 } else {
                     throw new Error(result.error || 'Error al guardar el plano.');
                 }
@@ -230,7 +256,6 @@
                 console.error('Error al guardar:', error);
                 alert(error.message);
             }
-            */
         });
 
         document.addEventListener('DOMContentLoaded', () => {

@@ -122,8 +122,7 @@ CREATE TABLE PLANO_SALA (
     idSala INT NOT NULL,
     fila CHAR(1) NOT NULL,     -- letra (A, B, C, ...)
     numero INT NOT NULL,       -- número del asiento (1, 2, 3, ...)
-    tipo ENUM('normal','discapacidad','vip') DEFAULT 'normal',
-    disponible TINYINT(1) DEFAULT 1,  -- 1 = asiento válido, 0 = pasillo o hueco
+    tipo ENUM('normal','discapacidad','pasillo') DEFAULT 'normal',
     FOREIGN KEY (idSala) REFERENCES SALA(id) ON DELETE CASCADE,
     CONSTRAINT uq_asiento_sala UNIQUE (idSala, fila, numero)
 );

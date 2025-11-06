@@ -374,9 +374,9 @@ END$$
 -- PLANO_SALA CRUD (antes ASIENTO)
 DROP PROCEDURE IF EXISTS plano_sala_create$$
 CREATE PROCEDURE plano_sala_create(
-    IN p_idSala INT, IN p_fila CHAR(1), IN p_numero INT, IN p_tipo ENUM('normal','discapacidad','vip'), IN p_disponible TINYINT(1), OUT p_id INT)
+    IN p_idSala INT, IN p_fila CHAR(1), IN p_numero INT, IN p_tipo ENUM('normal','discapacidad','pasillo'), OUT p_id INT)
 BEGIN
-    INSERT INTO PLANO_SALA(idSala,fila,numero,tipo,disponible) VALUES (p_idSala,p_fila,p_numero,p_tipo,p_disponible);
+    INSERT INTO PLANO_SALA(idSala,fila,numero,tipo) VALUES (p_idSala,p_fila,p_numero,p_tipo);
     SET p_id = LAST_INSERT_ID();
 END$$
 
@@ -393,9 +393,9 @@ BEGIN
 END$$
 
 DROP PROCEDURE IF EXISTS plano_sala_update$$
-CREATE PROCEDURE plano_sala_update(IN p_id INT, IN p_fila CHAR(1), IN p_numero INT, IN p_tipo ENUM('normal','discapacidad','vip'), IN p_disponible TINYINT(1))
+CREATE PROCEDURE plano_sala_update(IN p_id INT, IN p_fila CHAR(1), IN p_numero INT, IN p_tipo ENUM('normal','discapacidad','pasillo'))
 BEGIN
-    UPDATE PLANO_SALA SET fila = p_fila, numero = p_numero, tipo = p_tipo, disponible = p_disponible WHERE id = p_id;
+    UPDATE PLANO_SALA SET fila = p_fila, numero = p_numero, tipo = p_tipo WHERE id = p_id;
 END$$
 
 DROP PROCEDURE IF EXISTS plano_sala_delete$$

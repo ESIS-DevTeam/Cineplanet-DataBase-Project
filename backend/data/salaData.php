@@ -1,9 +1,9 @@
 <?php
-require_once "conexion.php";
+require_once __DIR__ . '/../config/conexion.php';
 
 class SalaData {
     public static function getSalasByCine($idCine) {
-        $db = new Conexion();
+        $db = conexion::conectar();
         $stmt = $db->prepare("CALL sala_get_by_cine(?)");
         $stmt->bind_param("i", $idCine);
         $stmt->execute();
@@ -13,7 +13,7 @@ class SalaData {
             $salas[] = $row;
         }
         $stmt->close();
-        $db->close();
+        // No cerrar $db porque es conexión estática
         return $salas;
     }
 
