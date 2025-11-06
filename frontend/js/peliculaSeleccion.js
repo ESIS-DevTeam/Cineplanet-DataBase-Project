@@ -372,6 +372,18 @@ async function renderDetallesCines() {
         btn.type = 'button';
         btn.textContent = hora;
         btn.style.marginRight = '0.5em';
+        // Redirigir a asientos.html con idPelicula y idFuncion
+        btn.addEventListener('click', () => {
+          // Buscar la función correspondiente
+          const funcionesLista = funcionesPorFecha[fechaSeleccionada || Object.keys(funcionesPorFecha)[0]];
+          const funcionObj = funcionesLista.find(f => f.hora === hora);
+          if (funcionObj && funcionObj.id) {
+            const params = new URLSearchParams();
+            params.set('pelicula', idPelicula);
+            params.set('funcion', funcionObj.id); // usa 'id', no 'idFuncion'
+            window.location.href = `asientos.html?${params.toString()}`;
+          }
+        });
         divGrupo.appendChild(btn);
       });
 

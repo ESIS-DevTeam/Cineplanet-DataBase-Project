@@ -14,6 +14,7 @@ if (!$idPelicula || !$idCine) {
 
 // Usar la vista peliculas_filtro para extraer formatos, horas y idiomas por cine y película
 $sql = "SELECT 
+            idFuncion AS id,  -- Asegúrate que la vista tenga este campo, o usa FUNCION.id
             fecha,
             hora,
             formato,
@@ -35,6 +36,7 @@ while ($row = $result->fetch_assoc()) {
         $funcionesPorFecha[$fecha] = [];
     }
     $funcionesPorFecha[$fecha][] = [
+        "id" => $row['id'], // <-- este campo es clave para el frontend
         "hora" => $row['hora'],
         "formato" => $row['formato'],
         "idioma" => $row['idioma']

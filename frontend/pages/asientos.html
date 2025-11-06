@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seleccionar Asientos</title>
+    <style>
+        body { font-family: sans-serif; }
+        #asientos-container { margin: 2em auto; max-width: 800px; }
+        .fila-letra { font-weight: bold; margin-right: 1em; }
+        .asiento { width: 30px; height: 30px; border: 1px solid #ccc; display: inline-block; margin: 2px; text-align: center; line-height: 30px; user-select: none; }
+        .asiento.tipo-normal { background: #fff; }
+        .asiento.tipo-discapacidad { background: #4fc3f7; }
+        .asiento.ocupado { background: #e57373; cursor: not-allowed; }
+        .leyenda-asientos { margin: 1em 0; }
+        .leyenda-asientos span { display: inline-block; width: 24px; height: 24px; border: 1px solid #ccc; margin-right: 6px; vertical-align: middle; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Selecciona tus asientos</h1>
+    </header>
+    <main>
+        <div class="leyenda-asientos">
+            <strong>Leyenda:</strong>
+            <span style="background:#fff; border:1px solid #ccc;"></span> Normal
+            <span style="background:#4fc3f7; border:1px solid #ccc;"></span> Discapacidad
+            <span style="background:#e57373; border:1px solid #ccc;"></span> Ocupado
+        </div>
+        <div id="asientos-container"></div>
+    </main>
+    <script src="../js/asientos.js"></script>
+</body>
+</html>
