@@ -101,6 +101,9 @@ CREATE TABLE SOCIO (
     fechaNacimiento DATE,
     celular VARCHAR(20),
     genero VARCHAR(10),
+    puntos INT DEFAULT 0,
+    visitas INT DEFAULT 0,  -- 🔹 nuevo: cantidad total de visitas registradas
+    empleado TINYINT(1) DEFAULT 0,
     grado ENUM('clasico','plata','oro','black') NOT NULL DEFAULT 'clasico',
     FOREIGN KEY (id) REFERENCES USUARIO(id) ON DELETE CASCADE
 );
@@ -152,23 +155,31 @@ CREATE TABLE PELICULA_IDIOMA (
     FOREIGN KEY (idIdioma) REFERENCES IDIOMA(id) ON DELETE CASCADE
 );
 
-DROP TABLE IF EXISTS FUNCION;
-CREATE TABLE FUNCION (
+DROP TABLE IF EXISTS PROMO;
+CREATE TABLE PROMO (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    idPelicula INT NOT NULL,
-    idSala INT NOT NULL,
-    idFormato INT NOT NULL,
-    fecha DATE NOT NULL,
-    hora TIME NOT NULL,
-    precio DECIMAL(6,2) NOT NULL,
-    -- cada función tiene un solo idioma (idIdioma puede ser NULL si no se especifica)
-    idIdioma INT NULL,
-    estado ENUM('activa', 'inactiva') DEFAULT 'activa',
-    FOREIGN KEY (idPelicula) REFERENCES PELICULA(id) ON DELETE CASCADE,
-    FOREIGN KEY (idSala) REFERENCES SALA(id) ON DELETE CASCADE,
-    FOREIGN KEY (idFormato) REFERENCES FORMATO(id) ON DELETE CASCADE,
-    FOREIGN KEY (idIdioma) REFERENCES IDIOMA(id) ON DELETE SET NULL
+    nombre VARCHAR(100) NOT NULL,
+    descripcion TEXT,
+    fecha_inicio DATE,
+    fecha_fin DATE,
+    -- tipo de promo: porcentaje (valor = 10 => 10%) o fijo (valor = 5 => 5 unidades monetarias)
+    tipo ENUM('porcentaje','fijo') DEFAULT 'fijo',
+    valor DECIMAL(10,2) DEFAULT 0,
+    -- aplicaA indica si la promo se aplica a todos los items, solo productos o solo funciones
+    aplicaA ENUM('todo','productos','funciones') DEFAULT 'todo',
+
+    -- NUEVO: control de destinatarios
+    requiereSocio TINYINT(1) DEFAULT 0,        -- 1 si solo aplica a socios
+    gradoMinimo ENUM('clasico','plata','oro','black') NULL,  -- nivel mínimo si aplica
+    requiereEmpleado TINYINT(1) DEFAULT 0,     -- 1 si es exclusiva para empleados
+    combinable TINYINT(1) DEFAULT 1,           -- 0 si no se puede combinar con otras
+
+    -- NUEVO: requisitos de puntos para canjear
+    requierePuntos TINYINT(1) DEFAULT 0,       -- 1 si se canjea con puntos
+    puntosNecesarios INT DEFAULT NULL,          -- puntos requeridos (si aplica)
+    estado ENUM('activa', 'inactiva') DEFAULT 'activa'
 );
+
 
 DROP TABLE IF EXISTS BOLETA;
 CREATE TABLE BOLETA (
@@ -218,4 +229,5 @@ CREATE TABLE PROMO_BOLETA (
     FOREIGN KEY (idBoleta) REFERENCES BOLETA(id) ON DELETE CASCADE,
     FOREIGN KEY (idPromo) REFERENCES PROMO(id) ON DELETE CASCADE
 );
+
 

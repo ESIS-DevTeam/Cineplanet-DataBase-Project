@@ -171,12 +171,14 @@ CREATE PROCEDURE socio_create(
     IN p_fechaNacimiento DATE,
     IN p_celular VARCHAR(20),
     IN p_genero VARCHAR(10),
+    IN p_puntos INT,
+    IN p_visitas INT,
+    IN p_empleado TINYINT(1),
     IN p_grado ENUM('clasico','plata','oro','black')
 )
 BEGIN
-    -- Asumimos que el usuario ya existe; el id del socio es el mismo que el id de usuario
-    INSERT INTO SOCIO(id,password,departamento,provincia,distrito,apellidoPaterno,apellidoMaterno,cineplanetFavorito,fechaNacimiento,celular,genero,grado)
-    VALUES (p_idUsuario,p_password,p_departamento,p_provincia,p_distrito,p_apellidoPaterno,p_apellidoMaterno,p_cineplanetFavorito,p_fechaNacimiento,p_celular,p_genero,p_grado);
+    INSERT INTO SOCIO(id,password,departamento,provincia,distrito,apellidoPaterno,apellidoMaterno,cineplanetFavorito,fechaNacimiento,celular,genero,puntos,visitas,empleado,grado)
+    VALUES (p_idUsuario,p_password,p_departamento,p_provincia,p_distrito,p_apellidoPaterno,p_apellidoMaterno,p_cineplanetFavorito,p_fechaNacimiento,p_celular,p_genero,p_puntos,p_visitas,p_empleado,p_grado);
 END$$
 
 DROP PROCEDURE IF EXISTS socio_get$$
@@ -198,10 +200,13 @@ CREATE PROCEDURE socio_update(
     IN p_fechaNacimiento DATE,
     IN p_celular VARCHAR(20),
     IN p_genero VARCHAR(10),
+    IN p_puntos INT,
+    IN p_visitas INT,
+    IN p_empleado TINYINT(1),
     IN p_grado ENUM('clasico','plata','oro','black')
 )
 BEGIN
-    UPDATE SOCIO SET password = p_password, departamento = p_departamento, provincia = p_provincia, distrito = p_distrito, apellidoPaterno = p_apellidoPaterno, apellidoMaterno = p_apellidoMaterno, cineplanetFavorito = p_cineplanetFavorito, fechaNacimiento = p_fechaNacimiento, celular = p_celular, genero = p_genero, grado = p_grado WHERE id = p_id;
+    UPDATE SOCIO SET password = p_password, departamento = p_departamento, provincia = p_provincia, distrito = p_distrito, apellidoPaterno = p_apellidoPaterno, apellidoMaterno = p_apellidoMaterno, cineplanetFavorito = p_cineplanetFavorito, fechaNacimiento = p_fechaNacimiento, celular = p_celular, genero = p_genero, puntos = p_puntos, visitas = p_visitas, empleado = p_empleado, grado = p_grado WHERE id = p_id;
 END$$
 
 DROP PROCEDURE IF EXISTS socio_delete$$
@@ -315,9 +320,26 @@ END$$
 
 -- PROMO
 DROP PROCEDURE IF EXISTS promo_create$$
-CREATE PROCEDURE promo_create(IN p_nombre VARCHAR(100), IN p_descripcion TEXT, IN p_fecha_inicio DATE, IN p_fecha_fin DATE, IN p_tipo ENUM('porcentaje','fijo'), IN p_valor DECIMAL(10,2), IN p_aplicaA ENUM('todo','productos','funciones'), IN p_estado ENUM('activa','inactiva'), OUT p_id INT)
+CREATE PROCEDURE promo_create(
+    IN p_nombre VARCHAR(100),
+    IN p_descripcion TEXT,
+    IN p_fecha_inicio DATE,
+    IN p_fecha_fin DATE,
+    IN p_tipo ENUM('porcentaje','fijo'),
+    IN p_valor DECIMAL(10,2),
+    IN p_aplicaA ENUM('todo','productos','funciones'),
+    IN p_requiereSocio TINYINT(1),
+    IN p_gradoMinimo ENUM('clasico','plata','oro','black'),
+    IN p_requiereEmpleado TINYINT(1),
+    IN p_combinable TINYINT(1),
+    IN p_requierePuntos TINYINT(1),
+    IN p_puntosNecesarios INT,
+    IN p_estado ENUM('activa','inactiva'),
+    OUT p_id INT
+)
 BEGIN
-    INSERT INTO PROMO(nombre,descripcion,fecha_inicio,fecha_fin,tipo,valor,aplicaA,estado) VALUES (p_nombre,p_descripcion,p_fecha_inicio,p_fecha_fin,p_tipo,p_valor,p_aplicaA,p_estado);
+    INSERT INTO PROMO(nombre,descripcion,fecha_inicio,fecha_fin,tipo,valor,aplicaA,requiereSocio,gradoMinimo,requiereEmpleado,combinable,requierePuntos,puntosNecesarios,estado)
+    VALUES (p_nombre,p_descripcion,p_fecha_inicio,p_fecha_fin,p_tipo,p_valor,p_aplicaA,p_requiereSocio,p_gradoMinimo,p_requiereEmpleado,p_combinable,p_requierePuntos,p_puntosNecesarios,p_estado);
     SET p_id = LAST_INSERT_ID();
 END$$
 
@@ -328,9 +350,25 @@ BEGIN
 END$$
 
 DROP PROCEDURE IF EXISTS promo_update$$
-CREATE PROCEDURE promo_update(IN p_id INT, IN p_nombre VARCHAR(100), IN p_descripcion TEXT, IN p_fecha_inicio DATE, IN p_fecha_fin DATE, IN p_tipo ENUM('porcentaje','fijo'), IN p_valor DECIMAL(10,2), IN p_aplicaA ENUM('todo','productos','funciones'), IN p_estado ENUM('activa','inactiva'))
+CREATE PROCEDURE promo_update(
+    IN p_id INT,
+    IN p_nombre VARCHAR(100),
+    IN p_descripcion TEXT,
+    IN p_fecha_inicio DATE,
+    IN p_fecha_fin DATE,
+    IN p_tipo ENUM('porcentaje','fijo'),
+    IN p_valor DECIMAL(10,2),
+    IN p_aplicaA ENUM('todo','productos','funciones'),
+    IN p_requiereSocio TINYINT(1),
+    IN p_gradoMinimo ENUM('clasico','plata','oro','black'),
+    IN p_requiereEmpleado TINYINT(1),
+    IN p_combinable TINYINT(1),
+    IN p_requierePuntos TINYINT(1),
+    IN p_puntosNecesarios INT,
+    IN p_estado ENUM('activa','inactiva')
+)
 BEGIN
-    UPDATE PROMO SET nombre=p_nombre, descripcion=p_descripcion, fecha_inicio=p_fecha_inicio, fecha_fin=p_fecha_fin, tipo=p_tipo, valor=p_valor, aplicaA=p_aplicaA, estado=p_estado WHERE id = p_id;
+    UPDATE PROMO SET nombre=p_nombre, descripcion=p_descripcion, fecha_inicio=p_fecha_inicio, fecha_fin=p_fecha_fin, tipo=p_tipo, valor=p_valor, aplicaA=p_aplicaA, requiereSocio=p_requiereSocio, gradoMinimo=p_gradoMinimo, requiereEmpleado=p_requiereEmpleado, combinable=p_combinable, requierePuntos=p_requierePuntos, puntosNecesarios=p_puntosNecesarios, estado=p_estado WHERE id = p_id;
 END$$
 
 DROP PROCEDURE IF EXISTS promo_delete$$
@@ -764,6 +802,7 @@ BEGIN
         f.idIdioma,
         f.idPelicula,
         f.estado,
+        f.precio, -- <--- AGREGADO: precio de la función
         s.nombre AS nombreSala,
         c.nombre AS nombreCine,
         p.nombre AS nombrePelicula,
@@ -779,4 +818,57 @@ BEGIN
     WHERE f.id = p_idFuncion
     LIMIT 1;
 END$$
+DELIMITER ;
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS tipo_entrada_create$$
+CREATE PROCEDURE tipo_entrada_create(
+    IN p_nombre VARCHAR(50),
+    IN p_descripcion VARCHAR(255),
+    IN p_porcentajeDescuento DECIMAL(5,2),
+    IN p_estado ENUM('activa','inactiva'),
+    OUT p_id INT
+)
+BEGIN
+    INSERT INTO TIPO_ENTRADA(nombre, descripcion, porcentajeDescuento, estado)
+    VALUES (p_nombre, p_descripcion, p_porcentajeDescuento, p_estado);
+    SET p_id = LAST_INSERT_ID();
+END$$
+
+DROP PROCEDURE IF EXISTS tipo_entrada_get$$
+CREATE PROCEDURE tipo_entrada_get(IN p_id INT)
+BEGIN
+    SELECT * FROM TIPO_ENTRADA WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS tipo_entrada_update$$
+CREATE PROCEDURE tipo_entrada_update(
+    IN p_id INT,
+    IN p_nombre VARCHAR(50),
+    IN p_descripcion VARCHAR(255),
+    IN p_porcentajeDescuento DECIMAL(5,2),
+    IN p_estado ENUM('activa','inactiva')
+)
+BEGIN
+    UPDATE TIPO_ENTRADA
+    SET nombre = p_nombre,
+        descripcion = p_descripcion,
+        porcentajeDescuento = p_porcentajeDescuento,
+        estado = p_estado
+    WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS tipo_entrada_delete$$
+CREATE PROCEDURE tipo_entrada_delete(IN p_id INT)
+BEGIN
+    DELETE FROM TIPO_ENTRADA WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS tipo_entrada_get_all$$
+CREATE PROCEDURE tipo_entrada_get_all()
+BEGIN
+    SELECT * FROM TIPO_ENTRADA;
+END$$
+
 DELIMITER ;

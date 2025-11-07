@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const params = new URLSearchParams(window.location.search);
     const idFuncion = params.get('funcion');
+    const idPelicula = params.get('pelicula'); // <-- extrae idPelicula también
     if (!idFuncion) {
         document.getElementById('asientos-container').textContent = 'No se ha seleccionado función.';
         return;
@@ -90,6 +91,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const filas = Array.from(filasSet).sort();
     const columnas = Array.from(columnasSet).sort((a, b) => a - b);
 
+    // Selección de asientos
+    let seleccionados = new Set();
+    const MAX_SELECCION = 10;
+
     // Dibuja la grilla de asientos
     for (const fila of filas) {
         const filaDiv = document.createElement('div');
@@ -98,7 +103,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         filaLetra.textContent = fila;
         filaDiv.appendChild(filaLetra);
 
-        let numLogico = 1;
         for (const numero of columnas) {
             const asientoObj = asientosPlano.find(a => a.fila === fila && a.numero == numero);
             if (!asientoObj) {
@@ -118,20 +122,60 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             const asientoDiv = document.createElement('div');
             asientoDiv.className = 'asiento tipo-' + asientoObj.tipo;
-            if (asientoObj.tipo === 'discapacidad') {
-                asientoDiv.textContent = '0';
-            } else {
-                asientoDiv.textContent = numLogico;
-                numLogico++;
-            }
+            // Mostrar el número del plano (no lógica)
+            asientoDiv.textContent = asientoObj.numero;
             asientoDiv.dataset.idPlanoSala = asientoObj.id;
 
             if (ocupados.has(asientoObj.id)) {
                 asientoDiv.classList.add('ocupado');
+            } else {
+                // Selección de asientos
+                asientoDiv.addEventListener('click', () => {
+                    if (asientoDiv.classList.contains('seleccionado')) {
+                        asientoDiv.classList.remove('seleccionado');
+                        seleccionados.delete(asientoObj.id);
+                    } else {
+                        if (seleccionados.size >= MAX_SELECCION) {
+                            alert('Solo puedes seleccionar hasta 10 asientos.');
+                            return;
+                        }
+                        asientoDiv.classList.add('seleccionado');
+                        seleccionados.add(asientoObj.id);
+                    }
+                    actualizarBotonContinuar();
+                });
             }
 
             filaDiv.appendChild(asientoDiv);
         }
         container.appendChild(filaDiv);
+    }
+
+    // Botón continuar
+    const btnContinuar = document.createElement('button');
+    btnContinuar.textContent = 'Continuar';
+    btnContinuar.style.margin = '2em auto 1em auto';
+    btnContinuar.style.padding = '0.7em 2em';
+    btnContinuar.style.fontSize = '1.1em';
+    btnContinuar.style.cursor = 'pointer';
+    btnContinuar.disabled = true; // deshabilitado por defecto
+
+    btnContinuar.addEventListener('click', () => {
+        if (seleccionados.size === 0) {
+            alert('Selecciona al menos un asiento.');
+            return;
+        }
+        // Construir URL con ids de asientos seleccionados, funcion y pelicula
+        const urlParams = new URLSearchParams();
+        urlParams.set('pelicula', idPelicula);
+        urlParams.set('funcion', idFuncion);
+        urlParams.set('asientos', Array.from(seleccionados).join(','));
+        window.location.href = `entradas.html?${urlParams.toString()}`;
+    });
+
+    container.appendChild(btnContinuar);
+
+    function actualizarBotonContinuar() {
+        btnContinuar.disabled = seleccionados.size === 0;
     }
 });
