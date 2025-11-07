@@ -87,6 +87,69 @@
             </section>
         </main>
     </div>
+    <div id="socio-info" style="text-align:right; margin:10px;"></div>
+    <!-- Ventana flotante socio -->
+    <div id="socio-popup" style="display:none; position:fixed; top:70px; right:30px; background:#fff; border:1px solid #ccc; box-shadow:0 2px 8px #0002; z-index:1000; min-width:220px; padding:16px; border-radius:8px;">
+        <div id="socio-popup-content"></div>
+    </div>
     <script src="../js/filtrosIndex.js"></script>
+    <script>
+    let socioData = null;
+
+    // Verifica si hay sesión de socio y muestra el nombre
+    fetch('../../backend/auth/checkSession.php')
+        .then(res => res.json())
+        .then(data => {
+            socioData = data.socio || null;
+            if (data.loggedIn && socioData) {
+                document.getElementById('socio-info').innerHTML =
+                    '👤 Socio: ' + socioData.nombre +
+                    ' <button onclick="logout()">Cerrar sesión</button>';
+            } else {
+                // Cambia el enlace para incluir redirect
+                document.getElementById('socio-info').innerHTML =
+                    `<a href="login.html?redirect=index.html">Iniciar sesión</a>`;
+            }
+        });
+
+    function logout() {
+        fetch('../../backend/auth/logout.php')
+            .then(() => window.location.reload());
+    }
+
+    // Ventana flotante socio
+    const socioBtn = document.querySelector('.socio-btn');
+    const popup = document.getElementById('socio-popup');
+    const popupContent = document.getElementById('socio-popup-content');
+
+    socioBtn.addEventListener('click', function() {
+        if (popup.style.display === 'block') {
+            popup.style.display = 'none';
+            return;
+        }
+        if (socioData) {
+            popupContent.innerHTML = `
+                <div style="font-weight:bold; margin-bottom:8px;">${socioData.nombre}</div>
+                <button onclick="window.location.href='beneficios.html'">Mis beneficios</button><br>
+                <button onclick="window.location.href='compras.html'">Mis compras</button><br>
+                <button onclick="window.location.href='datos.html'">Mis datos</button><br>
+                <button onclick="logout()">Cerrar sesión</button>
+            `;
+        } else {
+            popupContent.innerHTML = `
+                <button onclick="window.location.href='login.html?redirect=index.html'">Iniciar sesión</button><br>
+                <button onclick="window.location.href='registro.html'">Registrar</button>
+            `;
+        }
+        popup.style.display = 'block';
+    });
+
+    // Ocultar popup al hacer click fuera
+    document.addEventListener('click', function(e) {
+        if (!popup.contains(e.target) && e.target !== socioBtn) {
+            popup.style.display = 'none';
+        }
+    });
+    </script>
 </body>
 </html>
