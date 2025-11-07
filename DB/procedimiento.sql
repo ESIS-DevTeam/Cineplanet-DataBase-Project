@@ -871,4 +871,16 @@ BEGIN
     SELECT * FROM TIPO_ENTRADA;
 END$$
 
-DELIMITER ;
+    DROP PROCEDURE IF EXISTS socio_login$$
+    CREATE PROCEDURE socio_login(
+        IN p_numeroDocumento VARCHAR(20),
+        IN p_password VARCHAR(255)
+    )
+    BEGIN
+        SELECT u.id, u.nombre, u.email, s.grado, s.empleado
+        FROM USUARIO u
+        JOIN SOCIO s ON u.id = s.id
+        WHERE u.numeroDocumento = p_numeroDocumento AND s.password = p_password
+        LIMIT 1;
+    END$$
+    DELIMITER ;
