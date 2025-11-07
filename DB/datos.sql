@@ -207,4 +207,11 @@ INSERT INTO BOLETA (idUsuario, fecha, subtotal, descuentoTotal, total) VALUES
 (9,'2025-11-05',45,5,40),
 (10,'2025-11-05',90,15,75);
 
--- BOLETA
+-- TIPO_ENTRADA
+INSERT INTO TIPO_ENTRADA (nombre, descripcion, porcentajeDescuento, estado)
+VALUES
+('General', 'Entrada regular sin descuentos', 0.00, 'activa'),
+('Niño', 'Descuento del 20% para menores de 12 años', 20.00, 'activa'),
+('Adulto mayor', 'Descuento del 25% para mayores de 60 años', 25.00, 'activa'),
+('Universitario', 'Descuento del 15% mostrando carnet universitario', 15.00, 'activa'),
+('Conadis', 'Descuento del 50% para personas con discapacidad registrada', 50.00, 'activa');
