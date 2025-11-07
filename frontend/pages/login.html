@@ -21,7 +21,12 @@
         .then(res => res.json())
         .then(data => {
             if (data.success) {
-                window.location.href = getRedirect();
+                // Si está en iframe/modal, recarga la página principal y cierra el modal
+                if (window.parent && window.parent !== window) {
+                    window.parent.location.reload();
+                } else {
+                    window.location.href = getRedirect();
+                }
             } else {
                 alert(data.message || 'Error de login');
             }
@@ -45,7 +50,12 @@
                         redirect += '?invitado=1';
                     }
                 }
-                window.location.href = redirect;
+                // Si está en iframe/modal, navega la ventana principal y reemplaza el historial
+                if (window.parent && window.parent !== window) {
+                    window.parent.location.replace(redirect);
+                } else {
+                    window.location.replace(redirect);
+                }
             };
             document.getElementById('invitado-container').appendChild(btn);
         }

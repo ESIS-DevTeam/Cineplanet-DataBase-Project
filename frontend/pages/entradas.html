@@ -8,6 +8,28 @@
         body { font-family: sans-serif; }
         #info-container { margin: 2em auto; max-width: 800px; }
         #socio-display { position: absolute; top: 15px; right: 15px; font-size: 1.2em; border: 1px solid #ccc; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; user-select: none; }
+        /* Estilos para el modal de login */
+        #login-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+        }
+        #login-frame {
+            width: 400px;
+            height: 500px;
+            border: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            border-radius: 10px;
+        }
     </style>
 </head>
 <body>
@@ -15,6 +37,10 @@
         <h1>Entradas</h1>
         <div id="socio-display">👤</div>
     </header>
+    <div id="login-modal">
+        <button id="close-login-modal" style="position:absolute;top:10px;right:10px;z-index:10000;">✖</button>
+        <iframe id="login-frame" src=""></iframe>
+    </div>
     <main>
         <div id="info-container"></div>
         <div id="btns-container" style="text-align:center; margin:2em 0;">
@@ -32,10 +58,20 @@
         const sessionRes = await fetch('../../backend/auth/checkSession.php');
         const sessionData = await sessionRes.json();
         if (!sessionData.loggedIn && !esInvitado) {
-            // Redirige a login.html con redirect, fromEntradas y sin invitado
-            params.set('redirect', 'entradas.html?' + params.toString());
+            // Muestra el modal de login encima de la página actual
+            const loginModal = document.getElementById('login-modal');
+            const loginFrame = document.getElementById('login-frame');
+            params.set('redirect', window.location.pathname + '?' + params.toString());
             params.set('fromEntradas', '1');
-            window.location.href = `login.html?${params.toString()}`;
+            loginFrame.src = `login.html?${params.toString()}`;
+            loginModal.style.display = 'block';
+            // Opcional: bloquear scroll y acciones en el fondo
+            document.body.style.overflow = 'hidden';
+
+            document.getElementById('close-login-modal').onclick = function() {
+                document.getElementById('login-modal').style.display = 'none';
+                document.body.style.overflow = '';
+            };
             return;
         }
 
