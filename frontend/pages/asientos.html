@@ -20,6 +20,9 @@
 <body>
     <header>
         <h1>Selecciona tus asientos</h1>
+        <div id="socio-display" style="position: absolute; top: 15px; right: 15px; font-size: 1.2em; border: 1px solid #ccc; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; user-select: none;">
+            👤
+        </div>
     </header>
     <main>
         <div class="leyenda-asientos">
@@ -31,5 +34,21 @@
         <div id="asientos-container"></div>
     </main>
     <script src="../js/asientos.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('../../backend/auth/checkSession.php')
+                .then(res => res.json())
+                .then(data => {
+                    const socioDisplay = document.getElementById('socio-display');
+                    if (data.loggedIn && data.socio && data.socio.nombre) {
+                        const nombre = data.socio.nombre;
+                        const iniciales = nombre.split(' ').map(word => word[0]).join('').toUpperCase();
+                        socioDisplay.textContent = iniciales;
+                    } else {
+                        socioDisplay.textContent = '👤';
+                    }
+                });
+        });
+    </script>
 </body>
 </html>
