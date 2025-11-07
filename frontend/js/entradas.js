@@ -109,4 +109,51 @@ document.addEventListener('DOMContentLoaded', async () => {
     btnContinuar.addEventListener('click', () => {
         alert('Continuar con la compra...');
     });
+
+    // Mostrar las entradas usando solo promociones
+    let promos = [];
+    let precioBase = 0;
+    try {
+        const res = await fetch(`../../backend/api/getPromosEntradas.php?idFuncion=${idFuncion}${esInvitado ? '' : '&socio=1'}`);
+        const data = await res.json();
+        promos = data.promos || [];
+        precioBase = data.precioBase || 0;
+    } catch {
+        document.getElementById('info-container').innerHTML += '<div>Error al obtener las promociones.</div>';
+        return;
+    }
+
+    // Renderiza las entradas (promos)
+    const entradasDiv = document.createElement('div');
+    entradasDiv.innerHTML = `<h2>Entradas disponibles</h2>`;
+    promos.forEach(p => {
+        entradasDiv.innerHTML += `
+            <div>
+                <strong>${p.nombre}</strong><br>
+                <span>${p.descripcion || ''}</span><br>
+                <span>Precio base: S/ ${precioBase.toFixed(2)}</span><br>
+                <span>Precio final: S/ ${p.precioFinal.toFixed(2)}${p.precioFinal < precioBase ? ' <span style="color:red;">Descuento aplicado</span>' : ''}</span>
+                <div>
+                    <button type="button" data-type="menos" data-id="${p.id}">-</button>
+                    <span id="cantidad-${p.id}">0</span>
+                    <button type="button" data-type="mas" data-id="${p.id}">+</button>
+                </div>
+            </div>
+        `;
+    });
+
+    document.getElementById('info-container').appendChild(entradasDiv);
+
+    // Lógica para sumar/restar cantidad
+    entradasDiv.addEventListener('click', function(e) {
+        if (e.target.tagName === 'BUTTON') {
+            const type = e.target.getAttribute('data-type');
+            const id = e.target.getAttribute('data-id');
+            const span = document.getElementById('cantidad-' + id);
+            let val = parseInt(span.textContent, 10);
+            if (type === 'mas') val++;
+            if (type === 'menos' && val > 0) val--;
+            span.textContent = val;
+        }
+    });
 });

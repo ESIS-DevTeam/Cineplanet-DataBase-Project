@@ -822,55 +822,6 @@ DELIMITER ;
 
 DELIMITER $$
 
-DROP PROCEDURE IF EXISTS tipo_entrada_create$$
-CREATE PROCEDURE tipo_entrada_create(
-    IN p_nombre VARCHAR(50),
-    IN p_descripcion VARCHAR(255),
-    IN p_porcentajeDescuento DECIMAL(5,2),
-    IN p_estado ENUM('activa','inactiva'),
-    OUT p_id INT
-)
-BEGIN
-    INSERT INTO TIPO_ENTRADA(nombre, descripcion, porcentajeDescuento, estado)
-    VALUES (p_nombre, p_descripcion, p_porcentajeDescuento, p_estado);
-    SET p_id = LAST_INSERT_ID();
-END$$
-
-DROP PROCEDURE IF EXISTS tipo_entrada_get$$
-CREATE PROCEDURE tipo_entrada_get(IN p_id INT)
-BEGIN
-    SELECT * FROM TIPO_ENTRADA WHERE id = p_id;
-END$$
-
-DROP PROCEDURE IF EXISTS tipo_entrada_update$$
-CREATE PROCEDURE tipo_entrada_update(
-    IN p_id INT,
-    IN p_nombre VARCHAR(50),
-    IN p_descripcion VARCHAR(255),
-    IN p_porcentajeDescuento DECIMAL(5,2),
-    IN p_estado ENUM('activa','inactiva')
-)
-BEGIN
-    UPDATE TIPO_ENTRADA
-    SET nombre = p_nombre,
-        descripcion = p_descripcion,
-        porcentajeDescuento = p_porcentajeDescuento,
-        estado = p_estado
-    WHERE id = p_id;
-END$$
-
-DROP PROCEDURE IF EXISTS tipo_entrada_delete$$
-CREATE PROCEDURE tipo_entrada_delete(IN p_id INT)
-BEGIN
-    DELETE FROM TIPO_ENTRADA WHERE id = p_id;
-END$$
-
-DROP PROCEDURE IF EXISTS tipo_entrada_get_all$$
-CREATE PROCEDURE tipo_entrada_get_all()
-BEGIN
-    SELECT * FROM TIPO_ENTRADA;
-END$$
-
 DROP PROCEDURE IF EXISTS socio_login$$
 CREATE PROCEDURE socio_login(
     IN p_numeroDocumento VARCHAR(20),

@@ -170,6 +170,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         urlParams.set('pelicula', idPelicula);
         urlParams.set('funcion', idFuncion);
         urlParams.set('asientos', Array.from(seleccionados).join(','));
+        // Mantener invitado=1 si existe en la URL actual
+        if (params.get('invitado') === '1') {
+            urlParams.set('invitado', '1');
+        }
         window.location.href = `entradas.html?${urlParams.toString()}`;
     });
 
