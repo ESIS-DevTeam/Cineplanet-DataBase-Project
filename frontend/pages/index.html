@@ -1,790 +1,92 @@
 <!DOCTYPE html>
-
-<!---hola xd no sabia como hacer un comentario en HTML-->
-<html lang="es" >
-    <head>
-        <meta charset="utf-8">
-        <meta name="author" content="Willo">
-        <meta name="description" content="Esta pagina replica el inicio de la pagina de Cineplanet">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Cineplanet</title>
-        <link rel="shortcut icon" href="/frontend/images/items/icono-cine.ico" type="image/x-icon">
-        <link href="../styles/estilos.css" rel="stylesheet" type="text/css" />
-    </head>
-
-    <body>
-        <div class="app-container">
-            <header class="main-header">
-                <div class="header-container">
-                    <h1 class="visually-hidden">Cineplanet</h1>
-                    <div class="header-brand">
-                        <a href="index.html" target="_self">
-                            <svg class="logo-cineplanet" width="600" height="385" viewBox="0 0 1752.4 1416.2" xmlns="http://www.w3.org/2000/svg">
-                                <g>
-                                    <path class="logo-planeta" d="M2621.4,601.9a156.8,156.8,0,0,1,5.8,22.4c1.3,2.3-.1,4.1-1.5,5.4-8,7.7-8.1,17.6-5.4,26.8,3.7,12.6,6,26,15.8,35.9,2.5,2.6.7,6.2,1.2,9.2a292.4,292.4,0,0,1,.1,40.8c-.6,9.9-.9,19.9-2.6,29.8-12-.6-20.1,6.7-28.5,13.8-17.1,14.4-35,27.9-52.9,41.3-14.9,11.2-18.1,21-12.6,38.7,2.6,8.3,5.2,16.6,9.2,24.3,5.9,11.3,14,14,25.6,8.5,9.2-4.4,16.4-11.5,24.4-17.5,2.8-2.1,5-5.5,9.3-4.8-5,15.9-12.3,30.9-19.9,45.8a439.6,439.6,0,0,1-38.3,61.6,27.3,27.3,0,0,1-2.3,2.5c-4.7,2.1-8.2,5.6-11.4,9.6-33,41.2-73,74.1-119.2,99.5-50.4,27.7-104.4,43.5-161.5,49.2-14.8,1.5-29.5,2.6-44.4,2.7-39.7.3-77.6-8.3-114.4-22.2-39.6-15-75.9-36-109.5-61.7-5.7-6.3-9.6-13.8-14.9-20.5-9.6-12.2-20.3-22.9-35.3-28.2-6.2-8.3-12.9-16.2-18.7-24.8-1.6-2.4-3.7-4.6-3.3-7.9,4.8-5.6,3.6-11.3,0-17-8.7-13.9-16.5-28.5-29-39.6a8.7,8.7,0,0,1-1.9-2.8c-12.7-40.4-23.6-81.3-28.6-123.4a490.7,490.7,0,0,1-2.2-92.3,416.7,416.7,0,0,1,20.3-102.6c17.7-53.4,44.7-101.4,82.4-143.5,36.2-40.5,78.7-72.8,126.7-98.1a485.7,485.7,0,0,1,173-53.3c30.6-3.5,61.4-4.4,92.2-.5,4.5.6,8.9,2.1,13.3,3.1,19,6.9,36.8,16.1,54.2,26.2q111.8,64.8,171.9,179.2c.7,1.4,1.3,2.9,1.9,4.4.8,3.4-1.9,4.9-3.9,6.6-11.7,10.1-14.4,21.5-7.9,35.5,4.7,10.1,9.7,20.2,15,30.1s10.2,12,21.4,8.4C2617.1,601.8,2619.1,600.2,2621.4,601.9Z" transform="translate(-1316.6 -279.5)" fill="#1f4c8a"/>
-                                    <path class="logo-planeta-sombra1" d="M2362.4,312.1c-5.5.8-10.8-1.2-16.3-1.6s-8.6-1.1-12.9-.9c-6.7.4-13.1-1.3-19.8-1.4-16-.1-31.9,1.2-47.8,2.6a470,470,0,0,0-99.6,19.8,488.1,488.1,0,0,0-66.1,26.1,463.1,463.1,0,0,0-66.7,39,500.5,500.5,0,0,0-39.6,31.4q-13.6,12-26.1,25.2a401.5,401.5,0,0,0-51.8,67.8,418.9,418.9,0,0,0-40.2,89,401.7,401.7,0,0,0-14.4,61.1c-2,12.6-3.1,25.3-4.3,37.9-1.8,18.3-1.5,36.6-.7,54.8a424.3,424.3,0,0,0,4.7,47.5,605.2,605.2,0,0,0,14.2,68.1c3.4,12.8,7.3,25.4,11,38.1.6,2.2,1.7,4.3,1.5,6.6-1.8,1.1-3.6.7-5.3,0-8.1-3.8-16.8-3.7-25.5-3.6q-23.2.1-46.5,0c-3.2,0-7,1-9.2-2.7-3.3-9.2-8.6-17.6-11.5-27,1.7-2.9,4.5-1.5,6.8-1.6,17.6-.6,35.2,1.3,52.7-1.3a51.7,51.7,0,0,0,5.4-1.1c7.9-2.4,10.7-7.7,7.8-15.3-5.2-13.5-12.2-26.1-19.6-38.5-6.3-10.5-16.5-14.5-28.1-13.7s-25.5,1.7-38.2,3.2c-3.3.4-6.9,1.2-9.6-1.9a460.3,460.3,0,0,1-10.7-80.1,429.5,429.5,0,0,1,59.9-241.4q81.9-137.8,232.6-193.4a424.8,424.8,0,0,1,120.9-24.5c65.6-3.7,128.9,6.1,190,30.2A28.5,28.5,0,0,1,2362.4,312.1Z" transform="translate(-1316.6 -279.5)" fill="#3b7cbf"/>
-                                    <path class="logo-letra-n1" d="M1622,1531.3v-70a88.8,88.8,0,0,1,.5-10.3c1.4-11.5,8-18.6,19.1-21.6,8-2.2,16.2-2.6,24.4-3.2,19.8-1.4,39.7-2.4,59.5.5a122.5,122.5,0,0,1,21.3,5.2c26.1,9.2,40,28.4,45.3,54.7a170,170,0,0,1,2.9,33.4v88.3c-.3,7.2-2.2,9.5-9.5,9.6-12.1.3-24.2.3-36.3.1-8.8-.1-11.3-2.9-11.3-11.8-.1-30.2,0-60.4,0-90.5a94.5,94.5,0,0,0-1.6-19.8c-2.8-12.1-10.1-19.7-22.5-22-10.2-1.9-20.5-1.2-30.8-.6-2.7.2-4.3,1.3-4,4.2s0,3.2,0,4.8v122.8c0,11.3-1.6,12.9-13.1,12.9h-32.1s-11.3-2.7-11.8-11.5v-63.1C1622.3,1539.6,1622,1531.3,1622,1531.3Z" transform="translate(-1316.6 -279.5)" fill="#1e335b"/>
-                                    <path class="logo-letra-n2" d="M2551,1530.7v-68.4q0-4.8.3-9.6c.9-12.4,6.9-19.7,18.9-23.1,8.2-2.3,16.7-2.7,25.1-3.3,19.8-1.4,39.7-2.4,59.5.6a104.1,104.1,0,0,1,25.7,7c21.9,9.4,34.2,26.5,39.7,49.2,2.8,11.6,3.6,23.5,3.7,35.4.2,28.8.1,57.6.1,86.4v.6c-.1,10.9-1.9,12.7-12.7,12.8s-20.9.1-31.5,0a29.9,29.9,0,0,1-6.7-.7,7.2,7.2,0,0,1-5.9-6.7c-.2-2-.2-4.1-.2-6.2v-88.4a88,88,0,0,0-2.3-21.7c-2.9-11-9.8-17.7-21-20.1s-21.4-1.4-32.1-.8c-2.5.1-3.8,1.2-3.6,3.9s0,3.2,0,4.8v126.4c-.2,7.3-2.2,9.6-9.4,9.8-12.2.3-24.4.3-36.5.1-8.6-.1-10.9-2.7-10.9-11.5C2550.9,1581.8,2551,1556.2,2551,1530.7Z" transform="translate(-1316.6 -279.5)" style="fill: #1e335b"/>
-                                    <path class="logo-letra-c" d="M1405.9,1619.5c-10.4.2-20.4-.5-30.2-3.1-24-6.3-41.2-20.7-49.9-44-11.6-30.8-12.4-62.2-1.7-93.4,11.9-34.7,39.9-54.9,76.5-56.4,20.9-.8,41,2.2,60.2,10.8a37.1,37.1,0,0,1,4.9,2.4c4.3,2.6,5.5,5.1,3.9,9.8-3.5,10.2-7.1,20.2-11.1,30.2-2,5-5.2,6.3-10.5,5.1-6.9-1.6-13.7-3.7-20.6-5.1a67.9,67.9,0,0,0-21.1-1.5c-10.3,1.1-17.9,6.4-23,15.3a46.4,46.4,0,0,0-5.1,13.4,90.6,90.6,0,0,0-.2,38.1c3.7,17.9,14.4,26.6,32.8,26.9,11.5.2,22.7-2.2,33.7-5.6,2.8-.9,5.6-2,8.4-2.8,6-1.8,8.4-.7,10.7,5.1,3.7,9.3,7.2,18.8,10.6,28.2,2.1,5.8,1.1,8.9-4.4,12a97.8,97.8,0,0,1-25.5,9.9A143.7,143.7,0,0,1,1405.9,1619.5Z" transform="translate(-1316.6 -279.5)" style="fill: #1e335b"/>
-                                    <path class="logo-letra-t" d="M2968,1477.2V1373.6c0-1.8-.1-3.7,0-5.5.3-6.3,2.6-8.7,8.8-9s10.6-.1,15.9-.1h21.4c8.9.2,11.1,2.3,11.1,11,.1,16.7,0,33.4,0,50.1a6.4,6.4,0,0,0,6.4,6.4h26.9c8.5.1,10.5,2.2,10.5,10.8v22c-.1,8.9-1.9,10.7-11.1,10.7h-27.6a5.3,5.3,0,0,0-5.3,5.3v133.2c0,6.5,0,6.6-6.4,8.4a50.9,50.9,0,0,1-26,.5c-13.7-3.4-22.1-13.2-24-28.4a90.1,90.1,0,0,1-.5-11.6C2967.9,1544,2968,1510.6,2968,1477.2Z" transform="translate(-1316.6 -279.5)" style="fill: #1e335b"/>
-                                    <path class="logo-letra-l" d="M2308,1488.9v118s.5,7.8-6.9,9.7a48.5,48.5,0,0,1-22.4.7c-14.1-2.9-23.8-13.4-26.1-28.3a89.2,89.2,0,0,1-.8-11.6l-.3-203.1a62.6,62.6,0,0,1,.2-7.5c.7-5.7,3.1-8.3,8.9-8.4q19.2-.5,38.4,0c7.5.2,10,11.9,10,11.9v118.8Z" transform="translate(-1316.6 -279.5)" style="fill: #1e335b"/>
-                                    <path class="logo-planeta-sombra2" d="M1988.4,1061.6c5.8,2.4,10.2,6.9,15.1,10.5a409.1,409.1,0,0,0,120.8,60.1,338.2,338.2,0,0,0,55.3,11.8,253,253,0,0,0,49.2,1.2,528.3,528.3,0,0,0,65-7.6,433.9,433.9,0,0,0,97.6-30.6c28.3-12.6,54.4-28.8,79-47.5a340.7,340.7,0,0,0,47-42.8c6.9-7.6,13.8-15.2,19.9-23.4,2.8-3.7,5.7-8,11.6-6.9-8.8,13.1-19.3,24.9-30.1,36.4q-75.9,80.9-180.8,116.6a441.6,441.6,0,0,1-170.2,22.2,429.8,429.8,0,0,1-123.6-26.3,444.1,444.1,0,0,1-116.5-64.5c-2-1.5-4.2-2.8-5.6-5,2.7-2.5,6-1.9,9.1-1.5,13.1,1.8,26.2,3.1,39.2,4.7C1977.8,1069.9,1984.6,1069.3,1988.4,1061.6Z" transform="translate(-1316.6 -279.5)" style="fill: #3b7cbf"/>
-                                    <path class="logo-letra-ip1" d="M1576,1524.4v82.7c0,7.2,0,7.2-7,9.1a46.4,46.4,0,0,1-22.2.7c-13.8-3-22-11.8-25.4-25.4a49.5,49.5,0,0,1-1.4-12.7c0-45.1-.1-91.1-.1-136.5a32.5,32.5,0,0,1,.2-5.4c.6-4.6,3-7.1,7.7-7.2,13.6-.2,27.3-.2,41,0,5.4.1,7.6,2.8,8.1,8.3a48.7,48.7,0,0,1,.1,5.4v80.9Z" transform="translate(-1316.6 -279.5)" style="fill: #1e335b"/>
-                                    <path class="logo-haz1" d="M2609.4,876.5l-22.1,17.1a60.1,60.1,0,0,1-12.8,7.8c-12,5.3-20.5-.4-24.9-8.5a109.3,109.3,0,0,1-9-22.8c-1.6-5.4-4.1-10.6-4.1-16.5a29.7,29.7,0,0,1,11.8-24.3c15.4-12.1,31.3-23.6,46.4-36l20.1-16.4c2.5-2.1,5.5-3.3,8.3-4.8s7.9-1.4,11.9,0a45.9,45.9,0,0,1,9.2,16.6c2.2,6.5,4.6,12.8,6.7,19.3a67.7,67.7,0,0,1,2.3,9.9c1.7,12.1-1.6,22.4-11,30.7s-16.6,14.2-25,21.2C2614.5,872,2612,874.3,2609.4,876.5Z" transform="translate(-1316.6 -279.5)" style="fill: #12aab9"/>
-                                    <path class="logo-haz2" d="M1766.6,819.9c10.1.4,20-1.4,30.1-1.7s18.1-2.7,27.3-.9,15.4,5.6,19.9,13.2a358.3,358.3,0,0,1,20,39c4,9.2.9,15.4-8.9,18.3a55.6,55.6,0,0,1-16.2,2.2c-16.4.1-32.9,0-49.3,0-2.1-1.1-4.4-.8-6.7-1-10.9-1.1-19.5-5.8-25.1-15.4a271.5,271.5,0,0,1-15.9-32.5,25.9,25.9,0,0,1-1.4-4.5c-1.6-8.5,2.1-13.6,10.7-14.9C1756.1,820.8,1761.4,820.5,1766.6,819.9Z" transform="translate(-1316.6 -279.5)" style="fill: #d35b2b"/>
-                                    <path class="logo-haz3" d="M2621.4,601.9c-3.2,1.2-6.3,2.6-9.6,3.5-5.7,1.6-12.1,1.8-17.1-6.1-1.1-1.7-2.2-3.5-3.2-5.3-4.8-9.6-9.5-19.3-14.4-28.8-6.9-13.6-3.7-31.6,8.7-38.2a10.5,10.5,0,0,0,4.5-5c1.8.1,2.9-1.1,4.2-2.1,10-8,20-15.9,29.4-24.6l2-1.9c8.8-7.9,15-7.1,20.7,3.4,6.7,12.2,13.1,24.6,19,37.2s4.9,24.6-7.3,34.4-21.7,18.9-32.4,28.5C2624.2,598.3,2622.2,599.5,2621.4,601.9Z" transform="translate(-1316.6 -279.5)" style="fill: #147d9b"/>
-                                    <path class="logo-haz4" d="M1800.9,917l53.3.5h13c7.3.1,13.7,3.1,20.2,5.9,11.7,8.7,18.3,21.4,26.1,33.2a113.5,113.5,0,0,1,6.6,11.2c3.2,6.2,2.5,9.5-2.6,14.5s-12.6,4.7-19.4,4.3a447.4,447.4,0,0,1-51.5-6.5,29.7,29.7,0,0,1-8.9-3.3c-4.5-1.5-9.1-2.8-13.6-4.5a31,31,0,0,1-16.3-12.9c-5.2-8.3-10.7-16.4-16.1-24.6-1.9-2.9-3.4-5.9-3.4-9.5s1.7-7.1,6.6-7.9A38.3,38.3,0,0,1,1800.9,917Z" transform="translate(-1316.6 -279.5)" style="fill: #cc2152"/>
-                                    <path class="logo-haz5" d="M2637.4,701.6a15.8,15.8,0,0,0-5.7-11.5c-4.1-3.6-5.3-9.5-7.2-14.6s-2.6-8.8-4.4-12.9c-2.9-6.8-2.8-13.8-2.5-20.9.2-4.6,2.4-8.2,5.4-11.5s4-3.2,4.4-6c2.6,0,3.9-2.1,5.6-3.6l36-33.6a27.9,27.9,0,0,1,4.2-3.5c5.8-3.6,10.5-2.6,13.7,3.4a141.6,141.6,0,0,1,14,37.7c2.1,9.7-.2,18.5-7.2,26-9.5,10.2-18.8,20.5-28.2,30.8-2.2,2.3-4.5,4.5-6.9,6.7-5.8,5.1-11.8,9.6-20,7.5C2636.9,697.6,2638.2,699.8,2637.4,701.6Z" transform="translate(-1316.6 -279.5)" style="fill: #068fa9"/>
-                                    <path class="logo-haz6" d="M1988.4,1061.6c-.4,6.5-1.7,8.2-7.6,9.3-4.3.8-8.6.3-12.9-.2-13.5-1.7-27-3.2-40.5-4.8a48.7,48.7,0,0,0-5.4-.1c-4.8-1.9-9.8-1.9-14.8-2.6-16.1-2-29.8-8.2-39.8-21.5-4.8-6.4-10-12.5-15-18.8a27.7,27.7,0,0,1-3.1-4.5c-3-5.6-1.2-9.8,5-11.4a33.5,33.5,0,0,1,5.4-.8c8.5-3.5,17.1-.1,25.5.5,13.8.9,27.6,2.2,41.3,3.5,4.6.4,9,.9,12.9,3.7,19.1,5.3,29.6,20.7,40.8,35.2C1983.3,1053.1,1985.7,1057.5,1988.4,1061.6Z" transform="translate(-1316.6 -279.5)" style="fill: #ab295c"/>
-                                    <path class="logo-haz7" d="M1782.5,972.9c-13.3-2.1-26.6-4.1-39.9-6.4-8.5-1.5-17-3.3-25.5-5-12-2.4-21.5-8.5-27.9-19.1-4.1-6.9-8.4-13.6-12.5-20.5a21.6,21.6,0,0,1-3.6-9.5c-.5-5,1.8-7.7,6.9-8.2a12.9,12.9,0,0,1,3.4.1c17.6,4,35.7,5,53.5,7.6,3.4.5,6.8,1.1,10.1,1.8a34.4,34.4,0,0,1,21.5,13.5c7.4,9.9,13.7,20.5,20.6,30.7a23.4,23.4,0,0,1,2.5,5.6c1.8,5.9-.2,8.8-6.2,9.1a24.3,24.3,0,0,1-2.7,0Z" transform="translate(-1316.6 -279.5)" style="fill: #b70f7d"/>
-                                    <path class="logo-haz8" d="M1842.3,1051.3c-10.1-.9-19.9-3-29.7-4.9-14.1-2.8-28.1-6.2-42.1-9.3s-26.1-10.6-34.7-22.7c-3.7-5.2-7.4-10.4-10.9-15.7a24.9,24.9,0,0,1-3.2-6.8c-1-3.5.5-5.8,4.2-6.4a15.6,15.6,0,0,1,6.1.2c22,5,44.3,8.8,66.5,12.9a80.1,80.1,0,0,1,13.7,4.1,36.2,36.2,0,0,1,15.4,11l20.1,25.1a7.6,7.6,0,0,1,.8,1.1c1.7,2.7,4.1,5.4,2.4,8.8S1845.4,1051.1,1842.3,1051.3Z" transform="translate(-1316.6 -279.5)" style="fill: #802480"/>
-                                    <path class="logo-haz9" d="M1629.1,873.6l-3.4-.6a272.6,272.6,0,0,1-35.1-11.7c-10-4.2-17.2-11-21.4-21-3-6.9-6.2-13.8-9.2-20.6a30.5,30.5,0,0,1-1.3-3.2c-1.2-3.2-2.6-6.8.2-9.6s6-1.4,9.1-.6c12.1,3.3,24.2,6.6,36.4,9.7,9.9,2.6,17,8.3,21,17.9,3.3,8,7.1,15.8,10.7,23.8a37.7,37.7,0,0,1,2.3,6.4C1639.7,870.8,1636.8,874,1629.1,873.6Z" transform="translate(-1316.6 -279.5)" style="fill: #761754"/>
-                                    <path class="logo-haz10" d="M1673,950.7c-.8-.2-2.6-.4-4.4-.9-16.8-4.5-33.1-10.3-48.3-18.9-5.7-3.2-10.6-7.2-14.1-12.7a174.4,174.4,0,0,1-14.2-25.8,29.3,29.3,0,0,1-2.2-6.5c-.9-4.6,1.5-7.1,6.2-6.4a30.8,30.8,0,0,1,6.5,2.1c12.5,5.1,25,10.1,37.8,14.1,11,3.4,19.3,9.9,24.8,20.2,3.7,7.1,7.9,13.9,11.8,20.9a25.7,25.7,0,0,1,2.8,6.9C1680.8,948.5,1678.9,950.7,1673,950.7Z" transform="translate(-1316.6 -279.5)" style="fill: #651a53"/>
-                                    <path class="logo-haz11" d="M2737.6,582.5c.1,4.3-1.6,8-3.6,11.7-4.4,8-10.3,15-15.8,22.3-3.6,4.8-8.4,4.6-10.8-.9-6.1-13.7-12.3-27.5-14.6-42.6a19.2,19.2,0,0,1,3.6-14.3c5.8-7.9,11.6-15.8,17.8-23.5,3.8-4.7,7.6-4.2,9.7,1.5,4.9,13.3,9.8,26.6,13.1,40.3C2737.3,578.8,2737.4,580.7,2737.6,582.5Z" transform="translate(-1316.6 -279.5)" style="fill: #2767ae"/>
-                                    <path class="logo-letra-ip2" d="M1547.7,1367.7c6.4,0,12.8-.2,19.2,0s8.9,2.5,9,9.3.1,15.5,0,23.3-1.9,9.2-9,9.4q-19.2.6-38.4,0c-7-.2-9.2-3-9.3-10s-.2-15.1,0-22.6,2.8-9.1,9.2-9.4S1541.3,1367.7,1547.7,1367.7Z" transform="translate(-1316.6 -279.5)" style="fill: #1e335b"/>
-                                    <path class="logo-planeta-sombra3" d="M1939.4,1014c-26.5-3.4-53.2-4.6-79.7-7.7-6-7.7-12.1-15.4-18-23.2-1.5-2-2.7-4.2-4.1-6.3,7.6,1.1,15.3,1.9,22.9,3.5,14.5,3.1,29.4,3.7,44.2,4.3,4.4.2,8.5-1.4,12.7-2.2,3.9,8.8,10.5,15.8,16.1,23.4A53.3,53.3,0,0,1,1939.4,1014Z" transform="translate(-1316.6 -279.5)" style="fill: #3b7cbf"/>
-                                    <path class="logo-haz12" d="M2122.7,592.2c14.8-.1,24.8,5.9,30.7,18.7,7.4,16.2,14.6,32.5,21.1,49.1a42.7,42.7,0,0,1,2.7,9.9c2.1,13.5-3.3,23.9-15.9,29.3s-25.7,9.6-38.8,13.7c-18.3,5.7-36.7,11.2-55.1,16.7-9,2.7-18.3,4.1-27.7,2.9s-16.6-5.6-20.7-14.7c-8.1-17.9-16-35.9-22.9-54.3s.6-34.1,18.9-39.9c31.4-9.9,62.3-21.2,94.1-29.5C2113.9,593,2118.6,592,2122.7,592.2Z" transform="translate(-1316.6 -279.5)" style="fill: #e19a2f"/>
-                                    <path class="logo-haz13" d="M2102.5,858.8a56.7,56.7,0,0,1-10.9-1,29,29,0,0,1-20.1-15.1,409.7,409.7,0,0,1-23.2-50.4c-5.7-14.9-.6-27.1,14-34,6-2.9,12.6-4.1,19-5.8q42.1-11.1,83.2-25.4c7.9-2.7,16-3.8,24.3-2.3a31.8,31.8,0,0,1,21.8,14.1,201.8,201.8,0,0,1,16.7,30.6l8.1,18.1c6.9,15.9,2.2,29.4-13.1,37.6-9.5,5.1-20,7.7-30.2,11-18.3,5.8-36.7,11-55.4,15.6-7.5,1.9-14.7,4.9-22.5,6C2110.2,858.3,2106.4,858.7,2102.5,858.8Z" transform="translate(-1316.6 -279.5)" style="fill: #faea3c"/>
-                                    <path class="logo-haz14" d="M2244,848.8c15.4-.5,26,5.3,32.6,18.5s12.2,23.5,18.4,35.2a28.3,28.3,0,0,1,3.5,14.5,21.6,21.6,0,0,1-8.1,16,46.8,46.8,0,0,1-17.6,9c-28.2,8.3-56.5,16.7-84.8,24.8-10.6,3.1-21.3,5-32.4,3s-20.3-7.6-26.1-18-12.3-21.4-18.5-32.1a47.2,47.2,0,0,1-4.5-10c-3.2-10.4-.2-18.3,9.1-24.1a57.8,57.8,0,0,1,19-7.6c30.8-6.7,60.7-16.9,90.8-26.1C2231.9,850.2,2238.3,848.5,2244,848.8Z" transform="translate(-1316.6 -279.5)" style="fill: #df912f"/>
-                                    <path class="logo-haz15" d="M2378.6,649.7c11.3-.2,19.5,4.3,25,13.6a420.9,420.9,0,0,1,20.1,38.2c6.9,15,2.2,28.5-12.8,37.2-12.2,7.1-25,13.4-37.7,19.5L2328,779.6c-9.3,4.4-18.8,8.2-29.5,8-9-.1-16-3.6-20.7-11.2a357.8,357.8,0,0,1-24.3-46.8c-5.8-13.2-1-26,11.3-33.7,5.1-3.2,10.7-5.2,16.2-7.4,26.5-10.5,52.3-22.9,78.3-34.5A45.9,45.9,0,0,1,2378.6,649.7Z" transform="translate(-1316.6 -279.5)" style="fill: #9cc451"/>
-                                    <path class="logo-haz16" d="M2357.1,898.2c-11.5-.2-20.1-4.2-25.8-13.9a286.1,286.1,0,0,1-17.2-33.5c-5.6-13.6-2.5-24.4,9.5-32.9a63,63,0,0,1,11.4-6.2c29-12.5,57.4-26.2,84.5-42.4a36.3,36.3,0,0,1,19.6-5.3c8,.1,14.2,3.6,17.9,10.6,6.3,11.9,12.5,23.9,18.1,36.2s.9,26.2-10.6,34.5c-8.5,6.2-18,10.9-27.2,15.9-19.7,10.7-39.5,21.1-59.3,31.6C2371.4,896.4,2364,897.8,2357.1,898.2Z" transform="translate(-1316.6 -279.5)" style="fill: #d3cc3e"/>
-                                    <path class="logo-haz17" d="M2222.2,1064.7a46,46,0,0,1-13.5-1.6c-7.1-1.9-13-5.4-17-11.8-5.9-9.3-11.9-18.4-17.9-27.6a24.6,24.6,0,0,1-3.1-6.8c-2.8-9.6.5-17.2,9.3-21.8a47.8,47.8,0,0,1,11-3.8c32.9-7.7,65.3-17.6,97.4-28,8.6-2.8,17.4-3.9,26.3-1.5,6.9,1.8,12.7,5.4,16.5,11.4a249.4,249.4,0,0,1,16.8,29.9c6.7,14.7,2.3,26-12.8,32-17.9,7.1-36.5,11.9-54.9,17.1-14.7,4.1-29.4,8.6-44.4,11.6A104.6,104.6,0,0,1,2222.2,1064.7Z" transform="translate(-1316.6 -279.5)" style="fill: #d35b2b"/>
-                                    <path class="logo-haz18" d="M1923.9,887.9c-10.9,1.4-21.5-6-29.5-18.6s-13.8-26.3-19-40.2a30.3,30.3,0,0,1-1.6-6.6,17.7,17.7,0,0,1,11-19.2,44.6,44.6,0,0,1,13.3-3.2c16-1.2,31.6-5,47.3-7.7,8.3-1.5,16.6-3.2,24.9-4.5a42,42,0,0,1,15,.3,26.3,26.3,0,0,1,18,12.5c7.2,11.7,12.9,24.2,18.4,36.7,2.7,6.1,5.4,12.1,6.5,18.7,2,11.7-3,19.3-14.6,21.4A758.9,758.9,0,0,1,1923.9,887.9Z" transform="translate(-1316.6 -279.5)" style="fill: #df912f"/>
-                                    <path class="logo-haz19" d="M2479.9,694c-7,0-13.5-1.9-17.4-7.9a245.4,245.4,0,0,1-23.2-45.7c-4.9-12.7,1.8-22,11.4-27.7,24.1-14.4,48.3-28.7,71.8-44a42.7,42.7,0,0,1,12.4-5.8c7.1-2,13.9-.3,17.9,5.4,9.4,13.5,17.3,28,22.3,43.8,3.6,11.6-.3,21.4-9.6,28.5-20.7,15.7-41.6,31.1-63.1,45.8A41.9,41.9,0,0,1,2479.9,694Z" transform="translate(-1316.6 -279.5)" style="fill: #2ea57f"/>
-                                    <path class="logo-haz20" d="M1996,987.4c-4.6,0-9.2.4-13.7-.1-12.9-1.5-23.2-7.4-30.7-18.4a276.6,276.6,0,0,1-20.4-34.9,24.1,24.1,0,0,1-1.6-4.5c-2.1-7.2.5-12.6,7.4-15.5s12.6-2.5,18.9-2.9c23.3-1.6,46.4-4.5,69.6-6.5,17.7-1.5,32.4,4.3,41.8,20.4,5.2,8.9,10.6,17.6,15.9,26.5a45.5,45.5,0,0,1,5.3,11.9c2.6,10-1.1,16.5-11.1,19.2-5.8,1.5-11.7,1.8-17.7,2.1-21.2,1.1-42.5,2-63.7,3Z" transform="translate(-1316.6 -279.5)" style="fill: #d35b2b"/>
-                                    <path class="logo-letra-p" d="M2212.3,1481.2c-8.5-38.2-30.8-58.1-69.6-63.1-16.5-2.1-32.8-.9-49.1,1.1a163.8,163.8,0,0,0-42.4,10.6c-8.4,3.4-12.7,9-12.6,18.9.5,34.8.2,69.5.2,104.3h.2v102.3a62.7,62.7,0,0,0,.3,7.5c2,17.8,14.1,30.3,31.7,32.6,7.4,1,14.5-.6,21.7-2.3,2.6-.6,3.1-2.2,3.1-4.5s.2-7.3.2-11v-62.4c0-5.3.1-5.4,5.2-4.6a202.2,202.2,0,0,0,32,2.7c38.6-.3,66.4-21.1,77.1-57.9A149.3,149.3,0,0,0,2212.3,1481.2Zm-57.4,59.9c-4.8,14.3-14.7,21.3-29.8,21.9a112.1,112.1,0,0,1-23.8-2.1c-3.2-.6-4.5-2-4.4-5.5.3-6.8.1-13.7.1-20.5V1515h.4c0-13.5.1-26.9-.1-40.4,0-3.6,1-5.3,4.8-5.8,9.3-1.4,18.5-2.7,27.9-1.2,13.3,2.1,22.3,9.3,25.9,22.2A85.5,85.5,0,0,1,2154.9,1541.1Z" transform="translate(-1316.6 -279.5)" style="fill: #1e335b"/>
-                                    <path class="logo-letra-a" d="M2509.2,1536h-.1c0-18.1.5-36.2-.1-54.2-1-29-16.5-48.6-43.7-56.2a99.3,99.3,0,0,0-19.6-3.4,222.7,222.7,0,0,0-55.3,3.2,134.6,134.6,0,0,0-25.1,6.7c-5.5,2.1-7.6,4.8-6.6,9.7,1.9,9.4,4,18.8,6.4,28.1,1.2,4.5,4.2,6.2,8.8,5.9a38.9,38.9,0,0,0,4.7-.9,225.2,225.2,0,0,1,45.5-6,54.3,54.3,0,0,1,15,1.5c7.3,2,11.9,6.6,13.1,14.2a38.2,38.2,0,0,1,.4,6.8c0,5.7,0,5.8-5.5,5.8h-31.6c-12.4.1-24.6,1.7-36.3,6.2-19.7,7.6-32.9,21.1-37.1,42.3a73.7,73.7,0,0,0-.3,23.9c2.6,17.5,11.8,30.4,27.4,38.7a83.6,83.6,0,0,0,21.2,7.5c20.4,4.4,40.9,3.8,61.5,1.9a163.8,163.8,0,0,0,44.7-10.1c8.8-3.4,12.9-9.2,12.7-18.8C2509,1571.3,2509.2,1553.7,2509.2,1536Zm-56.9,20.9c0,5.5-.1,10.9,0,16.4,0,2.5-1,3.8-3.4,4.3-11,2.1-22,3.8-33.2,1.6a31,31,0,0,1-13-5.7c-11.7-9.1-10-26.2,3.1-32.9a36.7,36.7,0,0,1,15.2-3.8c9.1-.3,18.2-.1,27.4-.3,2.9-.1,4.1.8,4.1,3.9C2452.2,1545.9,2452.3,1551.4,2452.3,1556.9Z" transform="translate(-1316.6 -279.5)" style="fill: #1e335b"/>
-                                    <path class="logo-letra-e1" d="M1967.9,1435.2c-17.2-12.2-36.8-15.5-57.5-13-34,4-57.9,21.6-69.8,53.8-11.3,30.6-10.7,62-.8,92.9,7.8,24.2,24.9,39.3,49.5,46a129.4,129.4,0,0,0,34.5,4.3,136,136,0,0,0,26-1.9c13.4-2.4,26.3-6.1,37.9-13.3,7-4.3,8-7.4,4.9-14.8s-6.2-14.3-9.4-21.3-5.8-7.9-13.1-5.5c-5.8,1.9-11.6,4.2-17.5,5.8-13,3.6-26.1,4.6-39.3.9s-20.5-11.6-22.5-24.9c-.9-6.1-.9-6.2,5.3-6.2h72.7c5.9,0,11.9-.1,17.7-1.6a17.8,17.8,0,0,0,13-12,43,43,0,0,0,2.2-12.8C2003.9,1480.1,1994.2,1453.8,1967.9,1435.2Zm-17,64.5-57.5-.2a9.4,9.4,0,0,1-1.9-.7c.5-3,.8-5.8,1.5-8.4,3.6-14.6,15-23.3,30.7-23,20.2.3,28.6,10.8,30.7,28C1954.7,1498.1,1954.3,1499.7,1950.9,1499.7Z" transform="translate(-1316.6 -279.5)" style="fill: #1e335b"/>
-                                    <path class="logo-letra-e2" d="M2928.8,1497.7c-2.4-29.4-15.4-52.3-41.7-66.6-15.6-8.4-32.4-10.5-49.9-8.4-34.3,4.1-58.2,21.9-70,54.4-10.7,29.3-10.1,59.3-1.6,89,7.8,27.3,26.4,43.8,53.8,50.1a144.9,144.9,0,0,0,74.5-2.6,79.4,79.4,0,0,0,22.3-10.3c4.6-3.2,6.1-6.3,4.2-11.1-3.6-8.9-7.4-17.7-11.6-26.3-2.1-4.4-5-5.3-9.7-3.9-1.7.5-3.4,1.4-5.1,2-10.7,4.1-21.7,7.3-33.2,7.8-9.5.4-18.8-.5-27.4-4.9s-14.7-12.7-15.8-23.3c-.5-4.7-.2-5,4.7-5h41.2c11,0,21.9.1,32.9,0a68.4,68.4,0,0,0,14.3-1c10.3-2.2,15-6.9,16.9-17.2A79.2,79.2,0,0,0,2928.8,1497.7Zm-51.5,2c-18.7-.2-37.5-.1-56.2-.1a6.7,6.7,0,0,1-1.9-.5c-.5-19.7,13.8-33,33.7-31.7s26.9,14.9,28.3,27.6C2881.5,1498.1,2881,1499.8,2877.3,1499.7Z" transform="translate(-1316.6 -279.5)" style="fill: #1e335b"/>
-                                </g>
-                            </svg>
-                        </a>
-                    </div>
-                    <nav class="main-nav">
-                        <div class="nav-container">
-                            <ul class="nav-list">
-                                <li class="nav-item"><a href="peliculas.html" target="_self">Películas</a></li>
-                                <li class="nav-item"><a href="cines.html" target="_self">Cines</a></li>
-                                <li class="nav-item"><a href="promociones.html" target="_self">Promociones</a></li>
-                                <li class="nav-item"><a href="socio.html" target="_self">Socio</a></li>
-                                <li class="nav-item"><a href="dulceria.html" target="_self">Dulcería</a></li>
-                                <li class="nav-item"><a href="corporativo.html" target="_self">Corporativo</a></li>
-                                <li class="nav-item"><a href="blog.html" target="_blank">Blog</a></li>
-                            </ul>
-                            <div class="nav-actions">
-                                <button class="buscar-btn" aria-label="Buscar">🔍</button>
-                                <button class="socio-btn" aria-label="socio">👤</button>
-                                <button class="ayuda-btn" aria-label="ayuda">❔</button>
-                            </div>
-                        </div>
-                    </nav>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="author" content="Willo">
+    <meta name="description" content="Formularios Cineplanet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cineplanet Formularios</title>
+    <link rel="shortcut icon" href="/frontend/images/items/icono-cine.ico" type="image/x-icon">
+    <link href="../styles/estilos.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div class="app-container">
+        <header class="main-header">
+            <div class="header-container">
+                <h1 class="visually-hidden">Cineplanet</h1>
+                <div class="header-brand">
+                    <a href="index.html" target="_self">
+                        <!-- ...logo svg... -->
+                    </a>
                 </div>
-            </header>
+                <nav class="main-nav">
+                    <div class="nav-container">
+                        <ul class="nav-list">
+                            <li class="nav-item"><a href="peliculas.html" target="_self">Películas</a></li>
+                            <li class="nav-item"><a href="cines.html" target="_self">Cines</a></li>
+                            <li class="nav-item"><a href="promociones.html" target="_self">Promociones</a></li>
+                            <li class="nav-item"><a href="socio.html" target="_self">Socio</a></li>
+                            <li class="nav-item"><a href="dulceria.html" target="_self">Dulcería</a></li>
+                            <li class="nav-item"><a href="corporativo.html" target="_self">Corporativo</a></li>
+                            <li class="nav-item"><a href="blog.html" target="_blank">Blog</a></li>
+                        </ul>
+                        <div class="nav-actions">
+                            <button class="buscar-btn" aria-label="Buscar">🔍</button>
+                            <button class="socio-btn" aria-label="socio">👤</button>
+                            <button class="ayuda-btn" aria-label="ayuda">❔</button>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </header>
         <main class="main-content">
-            <section class="bannerSlider">
-                <div class="slider-container">
-                    <!--slide-activo-->
-                    <article class="slide active" data-slide="1">autenticacion/registro
-                        <div class="slide-image">
-                            <img src="../images/frames/4KOY11L2.jpg" alt="joker" width="2000" height="1081" class="slide-bg">
+            <section class="filtro">
+                <div class="filtro-cuadrado">
+                    <form action="peliculas.html" method="get" class="filtro-form">
+                        <!--select pelicula-->
+                        <div class="filtro-cuadro-caja">
+                            <h3 class="filtro-titulo">Por pelicula</h3>
+                            <div class="filtro-description">Qué quieres ver</div>
+                            <select class="filtro-selector" id="select-pelicula" name="pelicula">
+                                <option class="filtro-select-option" value="">Qué quieres ver</option>
+                            </select>
                         </div>
-                        <div class="slide-content">
-                            <div class="slide-text">
-                                <h2 class="slide-text-title">El joker</h2>
-                                <p class="slide-text-sinopsis">Arthur Fleck adora hacer reír a la gente, pero su carrera como comediante es un fracaso. El repudio social, la marginación y una serie de trágicos acontecimientos lo conducen por el sendero de la locura y, finalmente, cae en el mundo del crimen.</p>
-                            </div>
-                            <div class="slide-actions">
-                                <button class="slide-button">Comprar</button>
-                            </div>
+                        <!--select ciudad-->
+                        <div class="filtro-cuadro-caja">
+                            <h3 class="filtro-titulo">Por ciudad</h3>
+                            <div class="filtro-description">Dónde estás</div>
+                            <select class="filtro-selector" id="select-ciudad" name="ciudad">
+                                <option class="filtro-select-option" value="">Elige tu Ciudad</option>
+                            </select>
                         </div>
-                    </article>
-                    <!--slide2-->
-                    <article class="slide hidden" data-slide="2">
-                        <div class="slide-image">
-                            <img src="../images/frames/BPB5UKZ0.jpg" alt="The Last of Us" width="1920" height="1080" class="slide-bg">
+                        <!--select cp-->
+                        <div class="filtro-cuadro-caja">
+                            <h3 class="filtro-titulo">Por cine</h3>
+                            <div class="filtro-description">Elige tu cineplanet</div>
+                            <select class="filtro-selector" id="select-cine" name="cine">
+                                <option class="filtro-select-option" value="">Elige tu Cineplanet</option>
+                            </select>
                         </div>
-                        <div class="slide-content">
-                            <div class="slide-text">
-                                <h2 class="slide-text-title">The Last of Us</h2>
-                                <p class="slide-text-sinopsis">Joel y Ellie, dos personas conectadas por la brutalidad del mundo en el que viven, se ven obligados a enfrentarse a criaturas y asesinos despiadados, mientras viajan a través de un Estados Unidos posapocalíptico.</p>
-                            </div>
-                            <div class="slide-actions">
-                                <button class="slide-button">Comprar</button>
-                            </div>
+                        <!--select fechas-->
+                        <div class="filtro-cuadro-caja">
+                            <h3 class="filtro-titulo">Por fecha</h3>
+                            <div class="filtro-description">Elige un día</div>
+                            <select class="filtro-selector" id="select-fecha" name="dia">
+                                <option class="filtro-select-option" value="">Elige un día</option>
+                                <option class="filtro-select-option" value="miercoles 15">Hoy Miercoles 15</option>
+                                <option class="filtro-select-option" value="jueves 16">Mañana Jueves 16</option>
+                                <option class="filtro-select-option" value="viernes 17">Viernes 17</option>
+                                <option class="filtro-select-option" value="sabado 18">Sábado 18</option>
+                            </select>
                         </div>
-                    </article>
-                    <!--slide3-->
-                    <article class="slide hidden" data-slide="3">
-                        <div class="slide-image">
-                            <img src="../images/frames/Barbie_23.jpg" alt="Barbie" width="1920" height="960" class="slide-bg">
+                        <div class="filtro-button-container">
+                            <button type="submit" class="filtro-button">Filtrar</button>
                         </div>
-                        <div class="slide-content">
-                            <div class="slide-text">
-                                <h2 class="slide-text-title">Barbie</h2>
-                                <p class="slide-text-sinopsis">Después de ser expulsada de Barbieland por no ser una muñeca de aspecto perfecto, Barbie parte hacia el mundo humano para encontrar la verdadera felicidad.</p>
-                            </div>
-                            <div class="slide-actions">
-                                <button class="slide-button">Comprar</button>
-                            </div>
-                        </div>
-                    </article>
-                    <!--slide4-->autenticacion/registro
-                    <article class="slide hidden" data-slide="4">
-                        <div class="slide-image">
-                            <img src="../images/frames/BWGQKRPZ.jpg" alt="Avatar" width="1920" height="1036" class="slide-bg">
-                        </div>
-                        <div class="slide-content">
-                            <div class="slide-text">
-                                <h2 class="slide-text-title">Avatar</h2>
-                                <p class="slide-text-sinopsis">En un exuberante planeta llamado Pandora viven los Na'vi, seres que aparentan ser primitivos pero que en realidad son muy evolucion
-                            </div>
-                            <div class="slide-actions">
-                                <button class="slide-button">Comprar</button>
-                            </div>
-                        </div>
-                    </article>
-                    <!--slide5-->
-                    <article class="slide hidden" data-slide="5">
-                        <div class="slide-image">
-                            <img src="../images/frames/P7ZGJ3F1.jpg" alt="El conjuro 2" width="1920" height="800" class="slide-bg">
-                        </div>
-                        <div class="slide-content">
-                            <div class="slide-text">
-                                <h2 class="slide-text-title">El conjuro 2</h2>autenticacion/registro
-                                <p class="slide-text-sinopsis">Ed y Lorraine Warren, renombrados demonólogos e investigadores de lo paranormal, se enfrentan de nuevo a las fuerzas infernales.</p>
-                            </div>
-                            <div class="slide-actions">
-                                <button class="slide-button">Comprar</button>
-                            </div>
-                        </div>
-                    </article>
-                    <!--slide6-->
-                    <article class="slide hidden" data-slide="6">
-                        <div class="slide-image">
-                            <img src="../images/frames/SSF72LDK.jpg" alt="Huye" width="2880" height="1204" class="slide-bg">
-                        </div>
-                        <div class="slide-content">
-                            <div class="slide-text">
-                                <h2 class="slide-text-title">¡Huye!</h2>
-                                <p class="slide-text-sinopsis">Chris va a conocer a los padres de Rose, su novia. Al principio se muestran encantadores, si bien un tanto nerviosos. Chris supone que se debe a que él es negro, pero un poco más tarde descubre que sus suegros ocultan un secreto espeluznante.</p>
-                            </div>
-                            <div class="slide-actions">
-                                <button class="slide-button">Comprar</button>
-                            </div>
-                        </div>
-                    </article>
-                    <!--slide7-->
-                    <article class="slide hidden" data-slide="7">
-                        <div class="slide-image">
-                            <img src="../images/frames/XEXIG1P6.jpg" alt="Your-name" width="1920" height="1080" class="slide-bg">
-                        </div>
-                        <div class="slide-content">
-                            <div class="slide-text">
-                                <h2 class="slide-text-title">Your name</h2>
-                                <p class="slide-text-sinopsis">Mitsuha es una adolescente que detesta su vida rural en el campo. Por otro lado, Taki es un chico que vive en Tokio y sueña con ser un artista o un arquitecto. Los destinos de estos jóvenes se entrelazan la noche en que dos estrellas caen del cielo, y comienzan a intercambiar sus cuerpos de la noche a la mañana.</p>
-                            </div>
-                            <div class="slide-actions">
-                                <button class="slide-button">Comprar</button>
-                            </div>
-                        </div>
-                    </article>
+                    </form>
                 </div>
-                <div class="slider-controls">
-                    <!-- Botón anterior -->
-                    <button class="slider-prev" onclick="previousSlide()" aria-label="Película anterior">
-                        ‹
-                    </button>
-                    <div class="slider-dots">
-                        <span class="dot active" onclick="currentSlide(1)" data-slide="1"></span>
-                        <span class="dot" onclick="currentSlide(2)" data-slide="2"></span>
-                        <span class="dot" onclick="currentSlide(3)" data-slide="3"></span>
-                        <span class="dot" onclick="currentSlide(4)" data-slide="4"></span>
-                        <span class="dot" onclick="currentSlide(5)" data-slide="5"></span>
-                        <span class="dot" onclick="currentSlide(6)" data-slide="6"></span>
-                        <span class="dot" onclick="currentSlide(7)" data-slide="7"></span>
-                    </div>
-                    <!-- Botón siguiente -->
-                    <button class="slider-next" onclick="nextSlide()" aria-label="Siguiente película">
-                        ›
-                    </button>
-                </div>
-            </section>
-            <section class="homePage">
-                <article class="delivery">
-                    <div class="delivery-description">
-                        <div class="article-title"><h2>¿Antojo de tu canchita favorita?</h2></div>
-                        <div class="article-description"><p>¡Te la llevamos a donde tú estés!</p></div>
-                    </div>
-                    <div class="delivery-link">
-                        <a href="delivery.html" target="_blank" rel="noopener noreferrer" class="delivery-button">
-                            <div class="delivery-button-gift">
-                                <img src="../images/items/gif_green.gif" alt="canchita gift" class="delivery-gif">
-                            </div>
-                            <div class="delivery-button-text">Cineplanet a tu puerta</div>
-                        </a>
-                    </div>
-                    <div class="canchita_delgada">
-                        <img src="../images/items/canchita_delgada.png" alt="canchita_delgada" class="canchita-image">
-                    </div>
-                    <div class="delivery-footer">
-                        <img src="../images/items/piso.png" alt="piso-verde" class="piso-image">
-                    </div>
-                </article>
-                <section class="filtro">
-                    <div class="filtro-cuadrado">
-                        <form action="peliculas.html" method="get" class="filtro-form">
-                            <!--select pelicula-->
-                            <div class="filtro-cuadro-caja">
-                                <h3 class="filtro-titulo">Por pelicula</h3>
-                                <div class="filtro-description">Qué quieres ver</div>
-                                <select class="filtro-selector" id="select-pelicula" name="pelicula">
-                                    <option class="filtro-select-option" value="">Qué quieres ver</option>
-                                </select>
-                            </div>
-                            <!--select ciudad-->
-                            <div class="filtro-cuadro-caja">
-                                <h3 class="filtro-titulo">Por ciudad</h3>
-                                <div class="filtro-description">Dónde estás</div>
-                                <select class="filtro-selector" id="select-ciudad" name="ciudad">
-                                    <option class="filtro-select-option" value="">Elige tu Ciudad</option>
-                                </select>
-                            </div>
-                            <!--select cp-->
-                            <div class="filtro-cuadro-caja">
-                                <h3 class="filtro-titulo">Por cine</h3>
-                                <div class="filtro-description">Elige tu cineplanet</div>
-                                <select class="filtro-selector" id="select-cine" name="cine">
-                                    <option class="filtro-select-option" value="">Elige tu Cineplanet</option>
-                                </select>
-                            </div>
-                            <!--select fechas-->
-                            <div class="filtro-cuadro-caja">
-                                <h3 class="filtro-titulo">Por fecha</h3>
-                                <div class="filtro-description">Elige un día</div>
-                                <select class="filtro-selector" id="select-fecha" name="dia">
-                                    <option class="filtro-select-option" value="">Elige un día</option>
-                                    <option class="filtro-select-option" value="miercoles 15">Hoy Miercoles 15</option>
-                                    <option class="filtro-select-option" value="jueves 16">Mañana Jueves 16</option>
-                                    <option class="filtro-select-option" value="viernes 17">Viernes 17</option>
-                                    <option class="filtro-select-option" value="sabado 18">Sábado 18</option>
-                                </select>
-                            </div>
-                            <div class="filtro-button-container">
-                                <button type="submit" class="filtro-button">Filtrar</button>
-                            </div>
-                        </form>
-                    </div>
-                </section>
-                <section class="homePage-peliculas">
-                    <div class="peliculas-homepage">
-                        <h2>Películas</h2>
-                    </div>
-                    <div class="movie-categories">
-                        <button class="category-btn active" data-category="cartelera">En cartelera</button>
-                        <button class="category-btn" data-category="preventa">Preventa</button>
-                        <button class="category-btn" data-category="estrenos">Próximos estrenos</button>
-                    </div>
-                    <!-- Grid de películas -->
-                    <div class="movie-grid">
-                        
-                        <!-- EN CARTELERA -->
-                        
-                        <!-- Película 1: Chainsaw Man -->
-                        <article class="movie-card movie-card-large" data-category="cartelera">
-                            <div class="movie-poster-container">
-                                <img src="../images/portrait/HO00002580.jpeg" alt="Póster de Chainsaw Man La Película: Arco de Reze" class="movie-poster">
-                                <div class="movie-overlay">
-                                    <div class="movie-overlay-buttons">
-                                        <button class="btn-comprar" data-movie="chainsaw-man-reze">
-                                            🎬 Comprar
-                                        </button>
-                                        <button class="btn-ver-detalles" data-movie="chainsaw-man-reze">
-                                            + Ver Detalles
-                                        </button>
-                                    </div>
-                                </div>
-                                <span class="estreno-badge">Estreno</span>
-                            </div>
-                            <h3 class="movie-title visually-hidden">Chainsaw Man La Película: Arco de Reze</h3>
-                        </article>
-                        
-                        <!-- Película 2: Demon Slayer -->
-                        <article class="movie-card movie-card-medium" data-category="cartelera">
-                            <div class="movie-poster-container">
-                                <img src="../images/portrait/HO00002431.jpeg" alt="Póster de Demon Slayer Castillo Infinito" class="movie-poster">
-                                <div class="movie-overlay">
-                                    <div class="movie-overlay-buttons">
-                                        <button class="btn-comprar" data-movie="demon-slayer-infinito">
-                                            🎬 Comprar
-                                        </button>
-                                        <button class="btn-ver-detalles" data-movie="demon-slayer-infinito">
-                                            + Ver Detalles
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <h3 class="movie-title visually-hidden">Demon Slayer Castillo Infinito</h3>
-                        </article>
-                        
-                        <!-- Película 3: El Conjuro 4 -->
-                        <article class="movie-card movie-card-small" data-category="cartelera">
-                            <div class="movie-poster-container">
-                                <img src="../images/portrait/HO00002490.png" alt="Póster de El Conjuro 4: Últimos Ritos" class="movie-poster">
-                                <div class="movie-overlay">
-                                    <div class="movie-overlay-buttons">
-                                        <button class="btn-comprar" data-movie="el-conjuro-4-ultimos-ritos">
-                                            🎬 Comprar
-                                        </button>
-                                        <button class="btn-ver-detalles" data-movie="el-conjuro-4-ultimos-ritos">
-                                            + Ver Detalles
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <h3 class="movie-title visually-hidden">El Conjuro 4: Últimos Ritos</h3>
-                        </article>
-                        
-                        <!-- Película 4: Tron Ares -->
-                        <article class="movie-card movie-card-small" data-category="cartelera">
-                            <div class="movie-poster-container">
-                                <img src="../images/portrait/HO00002574.jpeg" alt="Póster de Tron Ares" class="movie-poster">
-                                <div class="movie-overlay">
-                                    <div class="movie-overlay-buttons">
-                                        <button class="btn-comprar" data-movie="tron-ares">
-                                            🎬 Comprar
-                                        </button>
-                                        <button class="btn-ver-detalles" data-movie="tron-ares">
-                                            + Ver Detalles
-                                        </button>
-                                    </div>
-                                </div>
-                                <span class="estreno-badge">Estreno</span>
-                            </div>
-                            <h3 class="movie-title visually-hidden">Tron Ares</h3>
-                        </article>
-                        
-                        <!-- Película 5: Amores Compartidos -->
-                        <article class="movie-card movie-card-mini" data-category="cartelera">
-                            <div class="movie-poster-container">
-                                <img src="../images/portrait/HO00002605.jpeg" alt="Póster de Amores Compartidos" class="movie-poster">
-                                <div class="movie-overlay">
-                                    <div class="movie-overlay-buttons">
-                                        <button class="btn-comprar" data-movie="amores-compartidos">
-                                            🎬 Comprar
-                                        </button>
-                                        <button class="btn-ver-detalles" data-movie="amores-compartidos">
-                                            + Ver Detalles
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <h3 class="movie-title visually-hidden">Amores Compartidos</h3>
-                        </article>
-                        
-                        <!-- Botón "Ver más películas" -->
-                        <article class="movie-card ver-mas-card movie-card-mini" data-category="cartelera">
-                            <a href="peliculas.html" target="_self" class="ver-mas-link">
-                                <div class="ver-mas-content">
-                                    <div class="ver-mas-icon">+</div>
-                                    <h3 class="ver-mas-text">Ver más películas</h3>
-                                </div>
-                            </a>
-                        </article>
-                        
-                        <!-- PREVENTA -->
-                        
-                        <!-- Película 1: Teléfono Negro 2 -->
-                        <article class="movie-card movie-card-large hidden" data-category="preventa">
-                            <div class="movie-poster-container">
-                                <img src="../images/portrait/HO00002578.jpeg" alt="Póster de Teléfono Negro 2" class="movie-poster">
-                                <div class="movie-overlay">
-                                    <div class="movie-overlay-buttons">
-                                        <button class="btn-comprar" data-movie="telefono-negro-2">
-                                            🎬 Comprar
-                                        </button>
-                                        <button class="btn-ver-detalles" data-movie="telefono-negro-2">
-                                            + Ver Detalles
-                                        </button>
-                                    </div>
-                                    <div class="movie-date">16 de Octubre</div>
-                                </div>
-                                <span class="preventa-badge">Preventa</span>
-                            </div>
-                            <h3 class="movie-title visually-hidden">Teléfono Negro 2</h3>
-                        </article>
-                        
-                        <!-- Película 2: La Lágrima del Diablo -->
-                        <article class="movie-card movie-card-medium hidden" data-category="preventa">
-                            <div class="movie-poster-container">
-                                <img src="../images/portrait/HO00002538.jpeg" alt="Póster de La Lágrima del Diablo" class="movie-poster">
-                                <div class="movie-overlay">
-                                    <div class="movie-overlay-buttons">
-                                        <button class="btn-comprar" data-movie="lagrima-del-diablo">
-                                            🎬 Comprar
-                                        </button>
-                                        <button class="btn-ver-detalles" data-movie="lagrima-del-diablo">
-                                            + Ver Detalles
-                                        </button>
-                                    </div>
-                                    <div class="movie-date">23 de Octubre</div>
-                                </div>
-                                <span class="preventa-badge">Preventa</span>
-                            </div>
-                            <h3 class="movie-title visually-hidden">La Lágrima del Diablo</h3>
-                        </article>
-                        
-                        <!-- Película 3: Downton Abbey -->
-                        <article class="movie-card movie-card-small hidden" data-category="preventa">
-                            <div class="movie-poster-container">
-                                <img src="../images/portrait/HO00002573.jpeg" alt="Póster de Downton Abbey El Gran Final" class="movie-poster">
-                                <div class="movie-overlay">
-                                    <div class="movie-overlay-buttons">
-                                        <button class="btn-comprar" data-movie="downton-abbey-final">
-                                            🎬 Comprar
-                                        </button>
-                                        <button class="btn-ver-detalles" data-movie="downton-abbey-final">
-                                            + Ver Detalles
-                                        </button>
-                                    </div>
-                                    <div class="movie-date">22 de Octubre</div>
-                                </div>
-                                <span class="preventa-badge">Preventa</span>
-                            </div>
-                            <h3 class="movie-title visually-hidden">Downton Abbey El Gran Final</h3>
-                        </article>
-                        
-                        <!-- Película 4: Dollhouse -->
-                        <article class="movie-card movie-card-small hidden" data-category="preventa">
-                            <div class="movie-poster-container">
-                                <img src="../images/portrait/HO00002593.jpeg" alt="Póster de Dollhouse Muñeca Maldita" class="movie-poster">
-                                <div class="movie-overlay">
-                                    <div class="movie-overlay-buttons">
-                                        <button class="btn-comprar" data-movie="dollhouse-muneca-maldita">
-                                            🎬 Comprar
-                                        </button>
-                                        <button class="btn-ver-detalles" data-movie="dollhouse-muneca-maldita">
-                                            + Ver Detalles
-                                        </button>
-                                    </div>
-                                    <div class="movie-date">22 de Octubre</div>
-                                </div>
-                                <span class="preventa-badge">Preventa</span>
-                            </div>
-                            <h3 class="movie-title visually-hidden">Dollhouse Muñeca Maldita</h3>
-                        </article>
-                        
-                        <!-- Película 5: Casa de Muñecas de Gabby -->
-                        <article class="movie-card movie-card-mini hidden" data-category="preventa">
-                            <div class="movie-poster-container">
-                                <img src="../images/portrait/HO00002475.jpeg" alt="Póster de La Casa de Muñecas de Gabby" class="movie-poster">
-                                <div class="movie-overlay">
-                                    <div class="movie-overlay-buttons">
-                                        <button class="btn-comprar" data-movie="casa-munecas-gabby">
-                                            🎬 Comprar
-                                        </button>
-                                        <button class="btn-ver-detalles" data-movie="casa-munecas-gabby">
-                                            + Ver Detalles
-                                        </button>
-                                    </div>
-                                    <div class="movie-date">17 de Octubre</div>
-                                </div>
-                                <span class="preventa-badge">Preventa</span>
-                            </div>
-                            <h3 class="movie-title visually-hidden">La Casa de Muñecas de Gabby</h3>
-                        </article>
-                        
-                        <!-- Botón "Ver más películas" Preventa -->
-                        <article class="movie-card ver-mas-card movie-card-mini hidden" data-category="preventa">
-                            <a href="peliculas.html?categoria=preventa" target="_self" class="ver-mas-link">
-                                <div class="ver-mas-content">
-                                    <div class="ver-mas-icon">+</div>
-                                    <h3 class="ver-mas-text">Ver más películas</h3>
-                                </div>
-                            </a>
-                        </article>
-                        
-                        <!-- PRÓXIMOS ESTRENOS -->
-                        
-                        <!-- Película 1: El Corazón del Lobo  -->
-                        <article class="movie-card movie-card-large hidden" data-category="estrenos">
-                            <div class="movie-poster-container">
-                                <img src="../images/portrait/HO00002594.jpeg" alt="Póster de El Corazón del Lobo" class="movie-poster">
-                                <div class="movie-overlay">
-                                    <div class="movie-overlay-buttons">
-                                        <button class="btn-ver-detalles" data-movie="corazon-del-lobo">
-                                            + Ver Detalles
-                                        </button>
-                                    </div>
-                                    <div class="movie-date">16 de Octubre</div>
-                                </div>
-                            </div>
-                            <h3 class="movie-title">El Corazón del Lobo</h3>
-                        </article>
-                        
-                        <!-- Película 2: ParaNorman -->
-                        <article class="movie-card movie-card-medium hidden" data-category="estrenos">
-                            <div class="movie-poster-container">
-                                <img src="../images/portrait/HO00002609.jpeg" alt="Póster de ParaNorman (Remastered)" class="movie-poster">
-                                <div class="movie-overlay">
-                                    <div class="movie-overlay-buttons">
-                                        <button class="btn-ver-detalles" data-movie="paranorman-remastered">
-                                            + Ver Detalles
-                                        </button>
-                                    </div>
-                                    <div class="movie-date">16 de Octubre</div>
-                                </div>
-                            </div>
-                            <h3 class="movie-title">ParaNorman (Remastered)</h3>
-                        </article>
-                        
-                        <!-- Película 3: La Hermanastra Fea -->
-                        <article class="movie-card movie-card-small hidden" data-category="estrenos">
-                            <div class="movie-poster-container">
-                                <img src="../images/portrait/HO00002610.jpeg" alt="Póster de La Hermanastra Fea" class="movie-poster">
-                                <div class="movie-overlay">
-                                    <div class="movie-overlay-buttons">
-                                        <button class="btn-ver-detalles" data-movie="hermanastra-fea">
-                                            + Ver Detalles
-                                        </button>
-                                    </div>
-                                    <div class="movie-date">16 de Octubre</div>
-                                </div>
-                            </div>
-                            <h3 class="movie-title">La Hermanastra Fea</h3>
-                        </article>
-                        
-                        <!-- Película 4: Depeche Mode -->
-                        <article class="movie-card movie-card-small hidden" data-category="estrenos">
-                            <div class="movie-poster-container">
-                                <img src="../images/portrait/HO00002624.jpeg" alt="Póster de Depeche Mode: M" class="movie-poster">
-                                <div class="movie-overlay">
-                                    <div class="movie-overlay-buttons">
-                                        <button class="btn-ver-detalles" data-movie="depeche-mode-m">
-                                            + Ver Detalles
-                                        </button>
-                                    </div>
-                                    <div class="movie-date">16 de Octubre</div>
-                                </div>
-                            </div>
-                            <h3 class="movie-title">Depeche Mode: M</h3>
-                        </article>
-                        
-                        <!-- Película 5: El Poder del Exorcista -->
-                        <article class="movie-card movie-card-mini hidden" data-category="estrenos">
-                            <div class="movie-poster-container">
-                                <img src="../images/portrait/HO00002631.jpeg" alt="Póster de El Poder del Exorcista" class="movie-poster">
-                                <div class="movie-overlay">
-                                    <div class="movie-overlay-buttons">
-                                        <button class="btn-ver-detalles" data-movie="poder-del-exorcista">
-                                            + Ver Detalles
-                                        </button>
-                                    </div>
-                                    <div class="movie-date">16 de Octubre</div>
-                                </div>
-                            </div>
-                            <h3 class="movie-title">El Poder del Exorcista</h3>
-                        </article>
-                        
-                        <!-- Botón "Ver más películas" Estrenos -->
-                        <article class="movie-card ver-mas-card movie-card-mini hidden" data-category="estrenos">
-                            <a href="peliculas.html?categoria=estrenos" target="_self" class="ver-mas-link">
-                                <div class="ver-mas-content">
-                                    <div class="ver-mas-icon">+</div>
-                                    <h3 class="ver-mas-text">Ver más películas</h3>
-                                </div>
-                            </a>
-                        </article>
-                    </div>
-                </section>
-                <article class="homePage-article">
-                    <div class="article-description-box">
-                        <div class="article-textbox">
-                            <p class="article-text">¿Preparado para vivir una experiencia de cine con Socio Cineplanet?</p>
-                        </div>
-                    </div>
-                    <div class="article-buttons">
-                        <a href="formularioSocio.html" target="_blank" rel="noopener noreferrer" class="btn-unete">
-                            Únete 
-                        </a>
-                        <a href="socio.html" target="_blank" rel="noopener noreferrer" class="btn-socio-vermas">
-                            Ver más
-                        </a>
-                    </div>
-                    <div class="article-image">
-                        <img src="../images/items/socio_home.png" alt="socio" class="socio-cards"> 
-                    </div>
-                </article>
-                <article class="homePage-article">
-                    <div class="article-description-box">
-                        <div class="article-textbox">
-                            <p class="article-text">¡Ser Socio Cineplanet tiene beneficios dentro y fuera del cine!</p>
-                        </div>
-                    </div>
-                    <div class="article-buttons">
-                        <a href="socioplus.html" target="_blank" rel="noopener noreferrer" class="btn-socioplus">
-                            Explorar Socio+
-                        </a>
-                    </div>
-                    <div class="article-image">
-                        <img src="../images/items/socio_plus_home.png" alt="socio-plus" class="socio-plus-card">
-                    </div>
-                </article>
             </section>
         </main>
-        <footer class="main-footer">
-            <section class="footer-content">
-                <div class="left-footer">
-                    <div class="footer-text-box">
-                        <div class="footer-title-box">
-                            <h3 class="footer-title">Acerca de cineplanet</h3>
-                        </div>
-                        <div class="footer-list-box">   
-                            <ul class="footer-list">
-                                <li class="nav-footer"><a href="nosotros.html" target="_self">Nosotros</a></li>
-                                <li class="nav-footer"><a href="trabaja.html" target="_blank">Trabaja en Cineplanet</a></li>
-                                <li class="nav-footer"><a href="corporativo.html" target="_self">Ventas Corporativas</a></li>
-                                <li class="nav-footer"><a href="documents/Política SST.pdf" target="_blank">PolÍtica de SST</a></li>
-                                <li class="nav-footer"><a href="documents/Politica_Diversidad_Inclusion.pdf" target="_blank">Política de Diversidad e Inclusión</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="footer-img-box">
-                        <img src="../images/items/empresa_Segura.png" alt="empresa Segura" class="empresa-segura-img">
-                    </div>
-                </div>
-                <div class="center-footer">
-                    <div class="center-footer-up">
-                        <div class="footer-text-box">
-                            <div class="footer-title-box">
-                                <h3 class="footer-title">Sostenibilidad</h3>
-                            </div>
-                            <div class="footer-list-box">   
-                                <ul class="footer-list">
-                                    <li class="nav-footer"><a href="documents/SOS-GES-PT-01_Política_de_Sostenibilidad.png" target="_blank">Política de Sostenibilidad</a></li>
-                                    <li class="nav-footer"><a href="documents/2024 REPORTE SOSTENIBILIDAD CINEPLANET FINAL.pdf" target="_blank">Trabaja en Cineplanet</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="footer-img-box">
-                            <img src="../images/items/carbonoN3.png" alt="carbono" class="carbono-img">
-                        </div>
-                    </div>
-                    <div class="center-footer-down">
-                        <div class="footer-text-box">
-                            <div class="footer-title-box">
-                                <h3 class="footer-title">¿Necesitas descartar un electrodoméstico obsoleto (RAEE)?</h3>
-                            </div>
-                            <div class="footer-list-box">   
-                                <ul class="footer-list">
-                                    <li class="nav-footer"><a href="https://rev-log.com/pe/productos/revo/" target="_blank">Puntos de entrega de tu RAEE</a></li>
-                                    <li class="nav-footer"><a href="https://rev-log.com/pe/solicita-de-recoleccion/" target="_blank">Solicitud de recolección de tu RAEE</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="right-footer">
-                    <div class="footer-text-box">
-                        <div class="footer-title-box">
-                            <h3 class="footer-title">Ayuda y Contacto</h3>
-                        </div>
-                        <div class="footer-list-box">    
-                            <ul class="footer-list">
-                                    <li class="nav-footer"><a href="centroayuda.html" target="_self">Centro de ayuda</a></li>
-                                    <li class="nav-footer"><a href="contactanos.html" target="_self">Contáctanos</a></li>
-                                    <li class="nav-footer"><a href="boleta.html" target="_blank">Boleta electrónica</a></li>
-                                    <li class="nav-footer"><a href="documents/comunicadoCineplanet.pdf" target="_blank">Lista de productos permitidos</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <section class="site-footer">
-                <div class="site-footer-container">
-                    <div class="legal-links">
-                        <ul class="legal-list">
-                            <li class="nav-footer"><a href="documents/Politica de Privacidad 20.08.2025.pdf" target="_blank">Política de Privacidad</a></li>
-                            <li class="nav-footer"><a href="documents/Condiciones_de_Uso_y_Seguridad.pdf" target="_blank">Condiciones de uso y seguridad</a></li>
-                            <li class="nav-footer"><a href="documents/TyCCompraOnline 18.07.2025.pdf" target="_blank">Términos y condiciones</a></li>
-                            <li class="nav-footer"><a href="documents/Reglamento en cartilla web.pdf" target="_blank">Reglas y condiciones</a></li>
-                        </ul>
-                    </div>
-                    <div class="complain-book">
-                        <a href="libro_reclamaciones.html" target="_blank" class="complain-link">
-                            <img src="../images/items/complain_book.png" alt="Libro de Reclamaciones - Servicio al Cliente" class="libro-reclamaciones-img">
-                        </a>
-                    </div>
-                </div>
-            </section>
-            </section>
-            <section class="links-footer">
-                <div class="copyright">
-                    <p class="copyright-upper">Cineplex S.A. | RUC 20429683581</p>
-                    <p class="copyright-down">Todos los derechos reservados 2025</p>
-                </div>
-                <div class="social-links">
-                    <a href="https://facebook.com/cineplanet" target="_blank" aria-label="Facebook" class="social-link">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36" fill="none" class="social-icon facebook-icon">
-                            <g clip-path="url(#clip0_1695_1836-75)">
-                                <path d="M18.25 13C18.25 12.5359 18.4346 12.0908 18.7627 11.7627C19.0908 11.4346 19.5359 11.25 20 11.25H22.25V8.75H20C18.8728 8.75 17.792 9.19811 16.9951 9.99512C16.1981 10.7921 15.75 11.8728 15.75 13V16C15.75 16.4142 15.4142 16.75 15 16.75H12.75V19.25H15C15.4142 19.25 15.75 19.5858 15.75 20V27.25H18.25V20C18.25 19.5858 18.5858 19.25 19 19.25H21.415L22.04 16.75H19C18.5858 16.75 18.25 16.4142 18.25 16V13ZM19.75 15.25H23C23.2308 15.25 23.4487 15.3563 23.5908 15.5381C23.7329 15.7201 23.7835 15.9577 23.7275 16.1816L22.7275 20.1816C22.6441 20.5155 22.3442 20.75 22 20.75H19.75V28C19.75 28.4142 19.4142 28.75 19 28.75H15C14.5858 28.75 14.25 28.4142 14.25 28V20.75H12C11.5858 20.75 11.25 20.4142 11.25 20V16C11.25 15.5858 11.5858 15.25 12 15.25H14.25V13C14.25 11.475 14.8562 10.0129 15.9346 8.93457C17.0128 7.8562 18.475 7.25 20 7.25H23C23.4142 7.25 23.75 7.58579 23.75 8V12C23.75 12.4142 23.4142 12.75 23 12.75H20C19.9337 12.75 19.8701 12.7764 19.8232 12.8232C19.7764 12.8701 19.75 12.9337 19.75 13V15.25Z" fill="black"></path>
-                                <path d="M34.5 18C34.5 8.8873 27.1127 1.5 18 1.5C8.8873 1.5 1.5 8.8873 1.5 18C1.5 27.1127 8.8873 34.5 18 34.5C27.1127 34.5 34.5 27.1127 34.5 18ZM36 18C36 27.9411 27.9411 36 18 36C8.05888 36 0 27.9411 0 18C0 8.05888 8.05888 0 18 0C27.9411 0 36 8.05888 36 18Z" fill="black"></path>
-                            </g>
-                            <defs>
-                                <clipPath id="clip0_1695_1836-75">
-                                    <rect width="36" height="36" fill="black"></rect>
-                                </clipPath>
-                            </defs>
-                        </svg>
-                    </a>
-                    <a href="https://twitter.com/cineplanet" target="_blank" aria-label="Twitter" class="social-link">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36" fill="none" class="social-icon twitter-icon">
-                            <g clip-path="url(#clip0_1695_1853-76)">
-                                <path d="M16.4673 20.3564L20.6486 26H26.7949L19.8952 16.6862L25.6359 10H23.3091L18.8161 15.232L14.9413 10H8.79492L15.3891 18.9022L9.29541 26H11.6222L16.4673 20.3564ZM21.5266 24.2222L12.3071 11.7778H14.0632L23.2827 24.2222H21.5266Z" fill="black"></path>
-                                <path d="M34.5 18C34.5 8.8873 27.1127 1.5 18 1.5C8.8873 1.5 1.5 8.8873 1.5 18C1.5 27.1127 8.8873 34.5 18 34.5C27.1127 34.5 34.5 27.1127 34.5 18ZM36 18C36 27.9411 27.9411 36 18 36C8.05888 36 0 27.9411 0 18C0 8.05888 8.05888 0 18 0C27.9411 0 36 8.05888 36 18Z" fill="black"></path>
-                            </g>
-                            <defs>
-                                <clipPath id="clip0_1695_1853-76">
-                                    <rect width="36" height="36" fill="white"></rect>
-                                </clipPath>
-                            </defs>
-                        </svg>
-                    </a>
-                    <a href="https://www.youtube.com/channel/UCbKcf3bFY05mOS-GjLPLwsQ" target="_blank" aria-label="YouTube" class="social-link">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36" fill="none" class="social-icon youtube-icon">
-                            <g clip-path="url(#clip0_1695_1849-77)">
-                                <path d="M34.5 18C34.5 8.8873 27.1127 1.5 18 1.5C8.8873 1.5 1.5 8.8873 1.5 18C1.5 27.1127 8.8873 34.5 18 34.5C27.1127 34.5 34.5 27.1127 34.5 18ZM36 18C36 27.9411 27.9411 36 18 36C8.05888 36 0 27.9411 0 18C0 8.05888 8.05888 0 18 0C27.9411 0 36 8.05888 36 18Z" fill="black"></path>
-                                <path d="M27.2501 17.0371C27.2501 14.2389 27.2164 13.1913 26.4913 12.2598C25.7709 11.3332 25.0566 11.1599 23.004 10.7422V10.7412C21.357 10.4113 19.6808 10.2472 18.0011 10.25H18.0001C16.2391 10.25 14.5545 10.4246 12.9972 10.7422C10.9434 11.1611 10.2294 11.3332 9.5089 12.2598C8.7837 13.1924 8.75011 14.2394 8.75011 17.0371V18.9629C8.75011 21.7611 8.78377 22.8087 9.5089 23.7402C10.2294 24.6668 10.9436 24.8401 12.9962 25.2578H12.9972C14.5545 25.5755 16.2391 25.75 18.0001 25.75C19.7611 25.75 21.4457 25.5755 23.003 25.2578C25.0568 24.8389 25.7708 24.6668 26.4913 23.7402C27.2165 22.8076 27.2501 21.7606 27.2501 18.9629V17.0371ZM28.7501 18.9629C28.7501 21.5768 28.7834 23.2359 27.6749 24.6611C26.5634 26.0906 25.2691 26.3265 23.3028 26.7275C21.6442 27.0659 19.8591 27.25 18.0001 27.25C16.3736 27.25 14.8035 27.1095 13.3253 26.8477L12.6974 26.7275C10.7305 26.3273 9.43674 26.0905 8.32531 24.6611V24.6621C7.21648 23.2377 7.25011 21.5766 7.25011 18.9629V17.0371C7.25011 14.4232 7.21682 12.7641 8.32531 11.3389C9.43683 9.90942 10.7311 9.67354 12.6974 9.27246C14.356 8.93418 16.1411 8.75 18.0001 8.75V8.75098C19.5574 8.74845 21.1115 8.88075 22.6446 9.14844L23.3009 9.27148L23.3028 9.27246C25.2692 9.67258 26.5627 9.90949 27.6739 11.3379H27.6749C28.7837 12.7623 28.7501 14.4234 28.7501 17.0371V18.9629Z" fill="black"></path>
-                            </g>
-                            <defs>
-                                <clipPath id="clip0_1695_1849-77">
-                                    <rect width="36" height="36" fill="white"></rect>
-                                </clipPath>
-                            </defs>
-                        </svg>
-                    </a>
-                    <a href="https://instagram.com/cineplanetoficial/" target="_blank" aria-label="Instagram" class="social-link">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36" fill="none" class="social-icon instagram-icon">
-                            <g clip-path="url(#clip0_1695_1842-78)">
-                                <path d="M26.25 18C26.25 15.8573 26.2482 14.3259 26.0918 13.1621C25.9382 12.0198 25.6487 11.344 25.1523 10.8477C24.6561 10.3514 23.9803 10.0618 22.8379 9.9082C21.6739 9.75175 20.1423 9.75 18 9.75C15.8573 9.75 14.3259 9.7518 13.1621 9.9082C12.0198 10.0618 11.344 10.3513 10.8477 10.8477C10.3514 11.3439 10.0618 12.0197 9.9082 13.1621C9.75175 14.3261 9.75 15.8577 9.75 18C9.75 20.1427 9.7518 21.6741 9.9082 22.8379C10.0618 23.9802 10.3513 24.656 10.8477 25.1523C11.3439 25.6486 12.0197 25.9382 13.1621 26.0918C14.3261 26.2482 15.8577 26.25 18 26.25C20.1427 26.25 21.6741 26.2482 22.8379 26.0918C23.9802 25.9382 24.656 25.6487 25.1523 25.1523C25.6486 24.6561 25.9382 23.9803 26.0918 22.8379C26.2482 21.6739 26.25 20.1423 26.25 18ZM27.75 18C27.75 20.1 27.7511 21.751 27.5781 23.0381C27.4022 24.3465 27.0343 25.3915 26.2129 26.2129C25.3914 27.0344 24.3466 27.4022 23.0381 27.5781C21.7511 27.7511 20.1004 27.75 18 27.75C15.9 27.75 14.249 27.7511 12.9619 27.5781C11.6535 27.4022 10.6085 27.0343 9.78711 26.2129C8.96563 25.3914 8.59778 24.3466 8.42188 23.0381C8.24887 21.7511 8.25 20.1004 8.25 18C8.25 15.9 8.24887 14.249 8.42188 12.9619C8.59779 11.6535 8.96568 10.6085 9.78711 9.78711C10.6086 8.96563 11.6534 8.59778 12.9619 8.42188C14.2489 8.24887 15.8996 8.25 18 8.25C20.1 8.25 21.751 8.24887 23.0381 8.42188C24.3465 8.59779 25.3915 8.96568 26.2129 9.78711C27.0344 10.6086 27.4022 11.6534 27.5781 12.9619C27.7511 14.2489 27.75 15.8996 27.75 18Z" fill="black"></path>
-                                <path d="M21.5127 18.0002C21.5127 17.0685 21.1422 16.1747 20.4834 15.5159C19.8247 14.8572 18.9315 14.4867 18 14.4866C17.0682 14.4866 16.1745 14.857 15.5156 15.5159C14.8568 16.1747 14.4863 17.0686 14.4863 18.0002C14.4864 18.9318 14.8569 19.8249 15.5156 20.4836C16.1745 21.1425 17.0682 21.5129 18 21.5129C18.9315 21.5128 19.8246 21.1424 20.4834 20.4836C21.1421 19.8249 21.5126 18.9319 21.5127 18.0002ZM23.2178 12.0393C23.6319 12.0394 23.9678 12.3751 23.9678 12.7893C23.9678 13.2035 23.6319 13.5392 23.2178 13.5393H23.208C22.7938 13.5392 22.458 13.2035 22.458 12.7893C22.458 12.3751 22.7938 12.0394 23.208 12.0393H23.2178ZM23.0127 18.0002C23.0126 19.3297 22.484 20.6041 21.5439 21.5442C20.6039 22.4842 19.3294 23.0128 18 23.0129C16.6704 23.0129 15.3952 22.4843 14.4551 21.5442C13.5151 20.6042 12.9864 19.3297 12.9863 18.0002C12.9863 16.6707 13.5149 15.3955 14.4551 14.4553C15.3952 13.5152 16.6704 12.9866 18 12.9866C19.3293 12.9867 20.6039 13.5153 21.5439 14.4553C22.4841 15.3955 23.0127 16.6708 23.0127 18.0002Z" fill="black"></path>
-                                <path d="M34.5 18C34.5 8.8873 27.1127 1.5 18 1.5C8.8873 1.5 1.5 8.8873 1.5 18C1.5 27.1127 8.8873 34.5 18 34.5C27.1127 34.5 34.5 27.1127 34.5 18ZM36 18C36 27.9411 27.9411 36 18 36C8.05888 36 0 27.9411 0 18C0 8.05888 8.05888 0 18 0C27.9411 0 36 8.05888 36 18Z" fill="black"></path>
-                            </g>
-                            <defs>
-                                <clipPath id="clip0_1695_1842-78">
-                                    <rect width="36" height="36" fill="white"></rect>
-                                </clipPath>
-                            </defs>
-                        </svg>
-                    </a>
-                    <a href="https://tiktok.com/@cineplanetoficial" target="_blank" aria-label="TikTok" class="social-link">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36" fill="none" class="social-icon tiktok-icon">
-                            <path d="M34.5 18C34.5 8.8873 27.1127 1.5 18 1.5C8.8873 1.5 1.5 8.8873 1.5 18C1.5 27.1127 8.8873 34.5 18 34.5V36C8.05887 36 0 27.9411 0 18C0 8.05887 8.05887 0 18 0C27.9411 0 36 8.05887 36 18C36 27.9411 27.9411 36 18 36V34.5C27.1127 34.5 34.5 27.1127 34.5 18Z" fill="black"></path>
-                            <path d="M21.6886 15.8145C21.6889 14.9331 22.5763 14.4266 23.3126 14.7061L23.4571 14.7725L23.8282 14.96C24.5927 15.3203 25.411 15.5466 26.2491 15.6318V13.3271C25.1107 13.1626 24.0544 12.6282 23.2403 11.8018C22.4247 10.9736 21.9002 9.90157 21.7403 8.75H19.4571V21.6846C19.4571 22.3069 19.2811 22.9172 18.9503 23.4434C18.6194 23.9694 18.146 24.3901 17.5851 24.6543C17.0239 24.9185 16.3994 25.0147 15.7853 24.9307C15.1712 24.8466 14.5951 24.5862 14.1241 24.1816C13.6533 23.7771 13.3076 23.2454 13.1261 22.6504C12.9446 22.0555 12.9336 21.4208 13.0958 20.8203C13.2581 20.2197 13.5866 19.6766 14.044 19.2568C14.4483 18.8859 14.9387 18.6249 15.4689 18.4971V16.1709C14.5479 16.3007 13.6715 16.6679 12.9249 17.2412C12.0744 17.8944 11.429 18.7871 11.0694 19.8105C10.7099 20.8341 10.653 21.9425 10.9054 22.999C11.1578 24.0554 11.7081 25.0126 12.4874 25.7529C13.2665 26.493 14.2401 26.9847 15.2882 27.1689C16.3363 27.3532 17.415 27.2222 18.3917 26.792C19.3686 26.3616 20.2028 25.6495 20.7892 24.7422C21.3754 23.8348 21.6885 22.7719 21.6886 21.6846V15.8145ZM27.7491 16C27.7491 16.6236 27.2388 17.1953 26.546 17.1602C25.382 17.1009 24.2421 16.814 23.1886 16.3174V21.6846C23.1885 23.0595 22.7928 24.4054 22.0489 25.5566C21.305 26.7078 20.2445 27.6144 18.9972 28.1641C17.7495 28.7138 16.3694 28.8822 15.0284 28.6465C13.6876 28.4108 12.4456 27.7817 11.4542 26.8398C10.4629 25.8981 9.76572 24.6841 9.44639 23.3477C9.1271 22.0112 9.19926 20.6091 9.6544 19.3135C10.1096 18.0177 10.9284 16.8837 12.0118 16.0518C13.0954 15.2197 14.396 14.7259 15.754 14.6338L15.7648 14.6328C15.8838 14.6265 16.0027 14.6395 16.1173 14.6699L16.2296 14.7061L16.338 14.7539C16.4084 14.7894 16.4748 14.8319 16.5362 14.8809L16.6251 14.959L16.7042 15.0459C16.7544 15.1065 16.7983 15.1719 16.8351 15.2412L16.8849 15.3467L16.923 15.458C16.9544 15.5658 16.9697 15.6776 16.9689 15.79V18.7373C16.9687 19.3962 16.4542 19.8435 15.9317 19.9316L15.9327 19.9326C15.6084 19.9881 15.305 20.1364 15.0587 20.3623C14.8123 20.5884 14.6328 20.8826 14.544 21.2109C14.4553 21.5395 14.4614 21.8876 14.5607 22.2129C14.6599 22.5382 14.8482 22.8262 15.1017 23.0439C15.3549 23.2615 15.6625 23.4007 15.9884 23.4453C16.3144 23.4899 16.647 23.4389 16.9464 23.2979C17.246 23.1567 17.5011 22.9303 17.6808 22.6445C17.8605 22.3587 17.9571 22.0257 17.9571 21.6846V8.4209C17.9572 8.11407 18.077 7.81711 18.2941 7.59668L18.379 7.51855C18.5858 7.34652 18.8478 7.25007 19.1212 7.25H22.0431C22.3439 7.25779 22.6287 7.37979 22.8429 7.58789C23.0528 7.79189 23.1795 8.0644 23.2032 8.35352C23.2847 9.26049 23.6775 10.108 24.3087 10.749C24.9398 11.3898 25.77 11.7844 26.6544 11.8662C27.2334 11.9197 27.7501 12.3985 27.7501 13.0527L27.7491 16Z" fill="black"></path>
-                        </svg>
-                    </a>
-                </div>
-            </section>
-        </footer>
-        </div>
+    </div>
     <script src="../js/filtrosIndex.js"></script>
 </body>
 </html>
