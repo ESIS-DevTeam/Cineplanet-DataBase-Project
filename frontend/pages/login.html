@@ -28,6 +28,29 @@
         })
         .catch(() => alert('Error de conexion'));
     }
+
+    function mostrarBotonInvitado() {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('fromEntradas') === '1') {
+            const btn = document.createElement('button');
+            btn.textContent = 'Seguir como invitado';
+            btn.style.marginTop = '1em';
+            btn.onclick = function() {
+                // Redirige a entradas.html con los parámetros originales + invitado=1
+                let redirect = params.get('redirect') || 'entradas.html';
+                if (!redirect.includes('invitado=1')) {
+                    if (redirect.includes('?')) {
+                        redirect += '&invitado=1';
+                    } else {
+                        redirect += '?invitado=1';
+                    }
+                }
+                window.location.href = redirect;
+            };
+            document.getElementById('invitado-container').appendChild(btn);
+        }
+    }
+    document.addEventListener('DOMContentLoaded', mostrarBotonInvitado);
     </script>
 </head>
 <body>
@@ -39,5 +62,6 @@
         <input type="password" name="password" required><br>
         <button type="submit">Ingresar</button>
     </form>
+    <div id="invitado-container"></div>
 </body>
 </html>

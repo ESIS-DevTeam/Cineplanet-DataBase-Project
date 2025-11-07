@@ -17,26 +17,38 @@
     </header>
     <main>
         <div id="info-container"></div>
+        <div id="btns-container" style="text-align:center; margin:2em 0;">
+            <button id="btn-volver" style="padding:0.7em 2em; font-size:1.1em; margin-right:1em; cursor:pointer;">Volver</button>
+            <button id="btn-continuar" style="padding:0.7em 2em; font-size:1.1em; cursor:pointer;" disabled>Continuar</button>
+        </div>
         <!-- ...contenido de entradas aquí... -->
     </main>
     <script>
-    // Verifica sesión y muestra iniciales del socio
     document.addEventListener('DOMContentLoaded', async () => {
-        fetch('../../backend/auth/checkSession.php')
-            .then(res => res.json())
-            .then(data => {
-                const socioDisplay = document.getElementById('socio-display');
-                if (data.loggedIn && data.socio && data.socio.nombre) {
-                    const nombre = data.socio.nombre;
-                    const iniciales = nombre.split(' ').map(word => word[0]).join('').toUpperCase();
-                    socioDisplay.textContent = iniciales;
-                } else {
-                    socioDisplay.textContent = '👤';
-                }
-            });
+        const params = new URLSearchParams(window.location.search);
+        const esInvitado = params.get('invitado') === '1';
+
+        // Verifica sesión antes de mostrar la página
+        const sessionRes = await fetch('../../backend/auth/checkSession.php');
+        const sessionData = await sessionRes.json();
+        if (!sessionData.loggedIn && !esInvitado) {
+            // Redirige a login.html con redirect, fromEntradas y sin invitado
+            params.set('redirect', 'entradas.html?' + params.toString());
+            params.set('fromEntradas', '1');
+            window.location.href = `login.html?${params.toString()}`;
+            return;
+        }
+
+        const socioDisplay = document.getElementById('socio-display');
+        if (sessionData.socio && sessionData.socio.nombre) {
+            const nombre = sessionData.socio.nombre;
+            const iniciales = nombre.split(' ').map(word => word[0]).join('').toUpperCase();
+            socioDisplay.textContent = iniciales;
+        } else {
+            socioDisplay.textContent = '👤';
+        }
 
         // Extrae parámetros de la URL
-        const params = new URLSearchParams(window.location.search);
         const idFuncion = params.get('funcion');
         const idPelicula = params.get('pelicula');
 
@@ -90,6 +102,20 @@
             <hr style="margin:1em 0;">
         `;
         document.getElementById('info-container').appendChild(infoDiv);
+
+        // Botones
+        const btnVolver = document.getElementById('btn-volver');
+        const btnContinuar = document.getElementById('btn-continuar');
+
+        btnVolver.addEventListener('click', () => {
+            const params = new URLSearchParams(window.location.search);
+            window.location.href = `asientos.html?${params.toString()}`;
+        });
+
+        // btnContinuar.disabled = false; // Habilita según tu lógica
+        btnContinuar.addEventListener('click', () => {
+            alert('Continuar con la compra...');
+        });
     });
     </script>
 </body>
