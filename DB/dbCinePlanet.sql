@@ -73,20 +73,6 @@ CREATE TABLE PRODUCTO (
     tipo VARCHAR(50)
 );
 
-DROP TABLE IF EXISTS PROMO;
-CREATE TABLE PROMO (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    descripcion TEXT,
-    fecha_inicio DATE,
-    fecha_fin DATE,
-    -- tipo de promo: porcentaje (valor = 10 => 10%) o fijo (valor = 5 => 5 unidades monetarias)
-    tipo ENUM('porcentaje','fijo') DEFAULT 'fijo',
-    valor DECIMAL(10,2) DEFAULT 0,
-    -- aplicaA indica si la promo se aplica a todos los items, solo productos o solo funciones
-    aplicaA ENUM('todo','productos','funciones') DEFAULT 'todo',
-    estado ENUM('activa', 'inactiva') DEFAULT 'activa'
-);
 
 DROP TABLE IF EXISTS SOCIO;
 CREATE TABLE SOCIO (

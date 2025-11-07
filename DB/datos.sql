@@ -107,17 +107,64 @@ INSERT INTO PRODUCTO (nombre, descripcion, precio, imagen, tipo) VALUES
 ('Agua Mineral', 'Botella de agua 600ml', 6.00, 'agua.jpg', 'bebida');
 
 -- PROMO
-INSERT INTO PROMO (nombre, descripcion, fecha_inicio, fecha_fin, tipo, valor, aplicaA, estado) VALUES
-('Promo Lunes', '20% en todas las funciones los lunes', '2025-01-01', '2025-12-31', 'porcentaje', 20, 'funciones', 'activa'),
-('Combo Amigos', 'Descuento en combo familiar', '2025-01-01', '2025-12-31', 'fijo', 5, 'productos', 'activa'),
-('Miércoles Loco', '2x1 en entradas los miércoles', '2025-01-01', '2025-12-31', 'porcentaje', 50, 'funciones', 'activa'),
-('Promo Estudiante', '10% de descuento mostrando carnet', '2025-01-01', '2025-12-31', 'porcentaje', 10, 'todo', 'activa'),
-('Black Week', 'Descuento general por Black Week', '2025-11-20', '2025-11-30', 'porcentaje', 25, 'todo', 'activa'),
-('Cumple Planet', 'Descuento por cumpleaños', '2025-01-01', '2025-12-31', 'fijo', 8, 'todo', 'activa'),
-('Promo Verano', 'Descuento especial en enero', '2025-01-01', '2025-01-31', 'porcentaje', 15, 'funciones', 'activa'),
-('Noche de Parejas', 'Entradas 2x1 después de las 8pm', '2025-02-01', '2025-02-28', 'porcentaje', 50, 'funciones', 'activa'),
-('Promo Infantil', 'Niños 50% en funciones APT', '2025-01-01', '2025-12-31', 'porcentaje', 50, 'funciones', 'activa'),
-('Mega Combo', 'Descuento de 10 en combos familiares', '2025-01-01', '2025-12-31', 'fijo', 10, 'productos', 'activa');
+INSERT INTO PROMO (
+    nombre, descripcion, fecha_inicio, fecha_fin, tipo, valor, aplicaA,
+    requiereSocio, gradoMinimo, requiereEmpleado, combinable,
+    requierePuntos, puntosNecesarios, estado
+) VALUES
+-- 1. Descuento Adulto Mayor
+('Adulto Mayor 60+', 'Descuento del 20% para personas mayores de 60 años.',
+ '2025-01-01', '2025-12-31', 'porcentaje', 20.00, 'funciones',
+ 0, NULL, 0, 1,
+ 0, NULL, 'activa'),
+
+-- 2. Descuento Niños
+('Niños 2 a 11 años', 'Descuento del 20% para niños entre 2 y 11 años.',
+ '2025-01-01', '2025-12-31', 'porcentaje', 20.00, 'funciones',
+ 0, NULL, 0, 1,
+ 0, NULL, 'activa'),
+
+-- 3. Descuento CONADIS
+('Descuento CONADIS', 'Descuento del 40% para personas con carnet CONADIS.',
+ '2025-01-01', '2025-12-31', 'porcentaje', 40.00, 'funciones',
+ 0, NULL, 0, 1,
+ 0, NULL, 'activa'),
+
+-- 4. Martes al 50%
+('Martes al 50%', 'Descuento del 50% en entradas los días martes.',
+ '2025-01-01', '2025-12-31', 'porcentaje', 50.00, 'funciones',
+ 0, NULL, 0, 1,
+ 0, NULL, 'activa'),
+
+-- 5. Entradas Socio
+('Socio Cineplanet', 'Descuento del 45% para socios, requiere 5 puntos para canjear.',
+ '2025-01-01', '2025-12-31', 'porcentaje', 45.00, 'funciones',
+ 1, 'clasico', 0, 1,
+ 1, 5, 'activa'),
+
+-- 6. Universitario
+('Pack Universitario', 'Descuento del 35% para estudiantes universitarios.',
+ '2025-01-01', '2025-12-31', 'porcentaje', 35.00, 'funciones',
+ 0, NULL, 0, 1,
+ 0, NULL, 'activa'),
+
+-- 7. Fiesta del Cine
+('Fiesta del Cine', 'Descuento del 65% en entradas durante la Fiesta del Cine.',
+ '2025-01-01', '2025-12-31', 'porcentaje', 65.00, 'funciones',
+ 0, NULL, 0, 0,
+ 0, NULL, 'activa'),
+
+-- 8. General
+('General', 'Entrada general sin ningún tipo de descuento.',
+ '2025-01-01', '2025-12-31', 'porcentaje', 0.00, 'funciones',
+ 0, NULL, 0, 1,
+ 0, NULL, 'activa'),
+
+ --9. empleado
+ ('Empleado Cineplanet', 'Descuento del 50% exclusivo para empleados del cine.',
+ '2025-01-01', '2025-12-31', 'porcentaje', 50.00, 'funciones',
+ 0, NULL, 1, 0,
+ 0, NULL, 'activa');
 
 -- SOCIOS (ligados a los primeros 10 usuarios)
 INSERT INTO SOCIO (id, password, departamento, provincia, distrito, apellidoPaterno, apellidoMaterno, cineplanetFavorito, fechaNacimiento, celular, genero, grado)
@@ -207,11 +254,4 @@ INSERT INTO BOLETA (idUsuario, fecha, subtotal, descuentoTotal, total) VALUES
 (9,'2025-11-05',45,5,40),
 (10,'2025-11-05',90,15,75);
 
--- TIPO_ENTRADA
-INSERT INTO TIPO_ENTRADA (nombre, descripcion, porcentajeDescuento, estado)
-VALUES
-('General', 'Entrada regular sin descuentos', 0.00, 'activa'),
-('Niño', 'Descuento del 20% para menores de 12 años', 20.00, 'activa'),
-('Adulto mayor', 'Descuento del 25% para mayores de 60 años', 25.00, 'activa'),
-('Universitario', 'Descuento del 15% mostrando carnet universitario', 15.00, 'activa'),
-('Conadis', 'Descuento del 50% para personas con discapacidad registrada', 50.00, 'activa');
+;
