@@ -16,7 +16,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(0, 0, 0, 0.5);
+            background: #fff; /* Fondo sólido */
             z-index: 9999;
         }
         #login-frame {
@@ -30,18 +30,27 @@
             background: #fff;
             border-radius: 10px;
         }
+        #close-login-modal {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 10000;
+        }
+        .oculto-por-modal {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
-    <header>
+    <header id="main-header">
         <h1>Entradas</h1>
         <div id="socio-display">👤</div>
     </header>
     <div id="login-modal">
-        <button id="close-login-modal" style="position:absolute;top:10px;right:10px;z-index:10000;">✖</button>
+        <button id="close-login-modal">✖</button>
         <iframe id="login-frame" src=""></iframe>
     </div>
-    <main>
+    <main id="main-content">
         <div id="info-container"></div>
         <div id="btns-container" style="text-align:center; margin:2em 0;">
             <button id="btn-volver" style="padding:0.7em 2em; font-size:1.1em; margin-right:1em; cursor:pointer;">Volver</button>
@@ -58,21 +67,30 @@
         const sessionRes = await fetch('../../backend/auth/checkSession.php');
         const sessionData = await sessionRes.json();
         if (!sessionData.loggedIn && !esInvitado) {
-            // Muestra el modal de login encima de la página actual
+            // Oculta el contenido principal y muestra el modal de login
+            document.getElementById('main-content').classList.add('oculto-por-modal');
+            document.getElementById('main-header').classList.add('oculto-por-modal');
             const loginModal = document.getElementById('login-modal');
             const loginFrame = document.getElementById('login-frame');
             params.set('redirect', window.location.pathname + '?' + params.toString());
             params.set('fromEntradas', '1');
             loginFrame.src = `login.html?${params.toString()}`;
             loginModal.style.display = 'block';
-            // Opcional: bloquear scroll y acciones en el fondo
             document.body.style.overflow = 'hidden';
 
             document.getElementById('close-login-modal').onclick = function() {
-                document.getElementById('login-modal').style.display = 'none';
+                loginModal.style.display = 'none';
                 document.body.style.overflow = '';
+                document.getElementById('main-content').classList.remove('oculto-por-modal');
+                document.getElementById('main-header').classList.remove('oculto-por-modal');
             };
             return;
+        } else {
+            // Asegura que el contenido principal esté visible si no hay modal
+            document.getElementById('main-content').classList.remove('oculto-por-modal');
+            document.getElementById('main-header').classList.remove('oculto-por-modal');
+            document.getElementById('login-modal').style.display = 'none';
+            document.body.style.overflow = '';
         }
 
         const socioDisplay = document.getElementById('socio-display');
