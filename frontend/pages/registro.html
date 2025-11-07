@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registro de Socio</title>
+</head>
+<body>
+    <h2>Únete</h2>
+    <form method="POST" action="../../backend/auth/registro.php">
+        <label>Tipo de documento:</label>
+        <select name="tipoDocumento" required>
+            <option value="DNI">DNI</option>
+            <option value="CE">CE</option>
+            <!-- Agrega más si es necesario -->
+        </select><br>
+
+        <label>N° de documento:</label>
+        <input type="text" name="numeroDocumento" required><br>
+
+        <label>Correo electrónico:</label>
+        <input type="email" name="email" required><br>
+
+        <label>Nombre:</label>
+        <input type="text" name="nombre" required><br>
+
+        <label>Apellido Paterno:</label>
+        <input type="text" name="apellidoPaterno" required><br>
+
+        <label>Apellido Materno:</label>
+        <input type="text" name="apellidoMaterno" required><br>
+
+        <label>Contraseña:</label>
+        <input type="password" name="password" required><br>
+
+        <label>Confirmar contraseña:</label>
+        <input type="password" name="confirm_password" required><br>
+
+        <label>Fecha de Nacimiento:</label>
+        <input type="date" name="fechaNacimiento" required><br>
+
+        <label>Número de Celular:</label>
+        <input type="text" name="celular" required><br>
+
+        <label>Departamento:</label>
+        <input type="text" name="departamento" required><br>
+
+        <label>Provincia:</label>
+        <input type="text" name="provincia" required><br>
+
+        <label>Distrito:</label>
+        <input type="text" name="distrito" required><br>
+
+        <label>Tu Cineplanet favorito:</label>
+        <input type="text" name="cineplanetFavorito"><br>
+
+        <label>Género:</label>
+        <input type="radio" name="genero" value="Hombre" required> Hombre
+        <input type="radio" name="genero" value="Mujer" required> Mujer<br>
+
+        <input type="checkbox" name="acepta_terminos" required> Acepto los Términos y Condiciones y la Política de Privacidad<br>
+        <input type="checkbox" name="acepta_finalidades" required> He leído y acepto las finalidades de tratamiento adicionales<br>
+
+        <button type="submit">Registrarse</button>
+    </form>
+</body>
+</html>
