@@ -723,9 +723,7 @@ BEGIN
         CALL recalc_boleta_total(v_idBoleta);
     END IF;
 END$$
-
 DELIMITER ;
-
 
 -- Índices recomendados para evitar problemas con sql_safe_updates (UPDATE por idBoleta)
 ALTER TABLE PRODUCTOS_BOLETA ADD INDEX idx_productos_boleta_idBoleta (idBoleta);
