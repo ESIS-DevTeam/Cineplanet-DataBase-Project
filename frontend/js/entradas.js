@@ -117,7 +117,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // btnContinuar.disabled = false; // Habilita según tu lógica
     btnContinuar.addEventListener('click', () => {
-        alert('Continuar con la compra...');
+        // ...existing code para armar entradasSeleccionadas y datosCompra...
+       
+        window.location.href = 'dulceria.html';
     });
 
     // Mostrar las entradas usando solo promociones
@@ -223,6 +225,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     panelEntradas.appendChild(beneficiosDiv);
     document.getElementById('info-container').appendChild(panelEntradas);
 
+    // Función para habilitar/deshabilitar el botón continuar
+    function actualizarBotonContinuarEntradas() {
+        let totalSeleccionadas = 0;
+        [...panelEntradas.querySelectorAll('span[id^="cantidad-"]')].forEach(span => {
+            totalSeleccionadas += parseInt(span.textContent, 10);
+        });
+        btnContinuar.disabled = (totalSeleccionadas !== maxEntradas);
+    }
+
     // Lógica para sumar/restar cantidad con máximo y con stock
     panelEntradas.addEventListener('click', function(e) {
         if (e.target.tagName === 'BUTTON') {
@@ -245,45 +256,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                 maxPorPromo = Math.min(maxEntradas, promo.stock);
             }
 
-            // Lógica para promos con puntos (ajustada para puntosNecesarios y asientos)
-            if (promo && promo.requierePuntos && socioData) {
-                const puntosPorEntrada = promo.puntosNecesarios || 1;
-                let puntosUsados = val * puntosPorEntrada;
-                let puntosRestantes = puntosSocio - puntosUsados;
-                let maxPorPuntos = Math.floor(puntosSocio / puntosPorEntrada);
-
-                let totalSinEsta = totalSeleccionadas - val;
-                let maxPorAsientos = maxEntradas - totalSinEsta;
-                let maxReal = Math.min(maxPorPromo, maxPorPuntos, maxPorAsientos);
-
-                if (type === 'mas') {
-                    if (val < maxReal) {
-                        val++;
-                        puntosUsados = val * puntosPorEntrada;
-                        puntosRestantes = puntosSocio - puntosUsados;
-                    }
-                }
-                if (type === 'menos') {
-                    if (val > 0) {
-                        val--;
-                        puntosUsados = val * puntosPorEntrada;
-                        puntosRestantes = puntosSocio - puntosUsados;
-                    }
-                }
-                span.textContent = val;
-                const puntosSpan = document.getElementById('puntos-disponibles-' + id);
-                if (puntosSpan) {
-                    puntosSpan.textContent = `Puntos disponibles: ${puntosRestantes}`;
-                }
-                // Ya no se bloquea el botón "+" ni "-"
-                return;
-            }
-
-            // ...existing code for generales y beneficios sin puntos...
+            // Calcula entradas seleccionadas en otras promos
             let totalSinEsta = totalSeleccionadas - val;
             let maxPorAsientos = maxEntradas - totalSinEsta;
-            let maxReal = Math.min(maxPorPromo, maxPorAsientos);
+            let maxReal = maxPorPromo;
+            if (promo && promo.requierePuntos && socioData) {
+                const puntosPorEntrada = promo.puntosNecesarios || 1;
+                let maxPorPuntos = Math.floor(puntosSocio / puntosPorEntrada);
+                maxReal = Math.min(maxPorPromo, maxPorPuntos, maxPorAsientos);
+            } else {
+                maxReal = Math.min(maxPorPromo, maxPorAsientos);
+            }
 
+            // Sumar/restar cantidad igual para todos
             if (type === 'mas') {
                 if (val < maxReal) val++;
             }
@@ -291,6 +276,22 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (val > 0) val--;
             }
             span.textContent = val;
+
+            // Visualización de puntos solo si requiere puntos
+            if (promo && promo.requierePuntos && socioData) {
+                const puntosPorEntrada = promo.puntosNecesarios || 1;
+                let puntosUsados = val * puntosPorEntrada;
+                let puntosRestantes = puntosSocio - puntosUsados;
+                const puntosSpan = document.getElementById('puntos-disponibles-' + id);
+                if (puntosSpan) {
+                    puntosSpan.textContent = `Puntos disponibles: ${puntosRestantes}`;
+                }
+            }
+
+            actualizarBotonContinuarEntradas();
         }
     });
+
+    // Inicializa el botón al cargar
+    actualizarBotonContinuarEntradas();
 });
