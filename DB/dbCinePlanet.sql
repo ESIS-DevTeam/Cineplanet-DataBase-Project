@@ -167,7 +167,7 @@ CREATE TABLE PROMO (
     -- NUEVO: stock de la promoción
     tieneStock TINYINT(1) DEFAULT 0,
     stock INT DEFAULT NULL,                     -- cantidad disponible (NULL = ilimitado)
-
+    aplicaRestriccion TINYINT(1) DEFAULT 0,          -- referencia a RESTRICCION si aplica
     estado ENUM('activa', 'inactiva') DEFAULT 'activa'
 );
 
@@ -231,6 +231,23 @@ CREATE TABLE PROMO_USO (
     fechaUso DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (idUsuario) REFERENCES USUARIO(id) ON DELETE CASCADE,
     FOREIGN KEY (idPromo) REFERENCES PROMO(id) ON DELETE CASCADE
+);
+
+DROP TABLE IF EXISTS FUNCION;
+CREATE TABLE FUNCION (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    idPelicula INT NOT NULL,
+    idSala INT NOT NULL,
+    idFormato INT NOT NULL,
+    fecha DATE NOT NULL,
+    hora TIME NOT NULL,
+    precio DECIMAL(6,2) NOT NULL,
+    idIdioma INT,
+    estado ENUM('activa','inactiva') DEFAULT 'activa',
+    FOREIGN KEY (idPelicula) REFERENCES PELICULA(id) ON DELETE CASCADE,
+    FOREIGN KEY (idSala) REFERENCES SALA(id) ON DELETE CASCADE,
+    FOREIGN KEY (idFormato) REFERENCES FORMATO(id) ON DELETE CASCADE,
+    FOREIGN KEY (idIdioma) REFERENCES IDIOMA(id) ON DELETE SET NULL
 );
 
 

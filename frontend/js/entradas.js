@@ -152,10 +152,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     const generalesDiv = document.createElement('div');
     generalesDiv.innerHTML = `<h2>Entradas generales</h2>`;
     generales.forEach(p => {
+        // Muestra el stock si tieneStock está activo
+        let stockInfo = '';
+        if (p.tieneStock && p.stock !== null) {
+            stockInfo = `<span style="color:#b00;">Stock disponible: ${p.stock}</span><br>`;
+        }
         generalesDiv.innerHTML += `
             <div>
                 <strong>${p.nombre}</strong><br>
                 <span>${p.descripcion || ''}</span><br>
+                ${stockInfo}
                 <span>S/${p.precioFinal.toFixed(2)}${p.precioFinal < precioBase ? ' Precio más bajo' : ''}</span>
                 <div>
                     <button type="button" data-type="menos" data-id="${p.id}" data-grupo="general">-</button>
@@ -170,11 +176,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     const beneficiosDiv = document.createElement('div');
     beneficiosDiv.innerHTML = `<h2>Tus Beneficios</h2>`;
     beneficios.forEach(p => {
+        let stockInfo = '';
+        if (p.tieneStock && p.stock !== null) {
+            stockInfo = `<span style="color:#b00;">Stock disponible: ${p.stock}</span><br>`;
+        }
         beneficiosDiv.innerHTML += `
             <div>
                 <strong>${p.nombre}</strong><br>
                 <span>${p.descripcion || ''}</span><br>
                 ${p.requierePuntos && socioData ? `<span>Puntos disponibles: ${puntosSocio}</span><br>` : ''}
+                ${stockInfo}
                 <span>S/${p.precioFinal.toFixed(2)}</span>
                 <div>
                     <button type="button" data-type="menos" data-id="${p.id}" data-grupo="beneficio">-</button>
@@ -191,7 +202,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     panelEntradas.appendChild(beneficiosDiv);
     document.getElementById('info-container').appendChild(panelEntradas);
 
-    // Lógica para sumar/restar cantidad con máximo
+    // Lógica para sumar/restar cantidad con máximo y con stock
     panelEntradas.addEventListener('click', function(e) {
         if (e.target.tagName === 'BUTTON') {
             const type = e.target.getAttribute('data-type');
@@ -202,10 +213,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                 totalSeleccionadas += parseInt(span.textContent, 10);
             });
 
+            // Busca la promo seleccionada en ambas listas
+            const promo = [...generales, ...beneficios].find(p => p.id == id);
             const span = document.getElementById('cantidad-' + id);
             let val = parseInt(span.textContent, 10);
 
-            if (type === 'mas' && totalSeleccionadas < maxEntradas) val++;
+            // Calcula el máximo permitido por stock y por asientos
+            let maxPorPromo = maxEntradas;
+            if (promo && promo.tieneStock && promo.stock !== null) {
+                maxPorPromo = Math.min(maxEntradas, promo.stock);
+            }
+
+            if (type === 'mas' && val < maxPorPromo && totalSeleccionadas < maxEntradas) val++;
             if (type === 'menos' && val > 0) val--;
             span.textContent = val;
         }

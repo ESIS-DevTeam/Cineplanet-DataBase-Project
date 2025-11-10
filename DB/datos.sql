@@ -106,65 +106,74 @@ INSERT INTO PRODUCTO (nombre, descripcion, precio, imagen, tipo) VALUES
 ('Combo Pareja', 'Cancha + 2 Gaseosas', 25.00, 'combo_pareja.jpg', 'combo'),
 ('Agua Mineral', 'Botella de agua 600ml', 6.00, 'agua.jpg', 'bebida');
 
+
 -- PROMO
 INSERT INTO PROMO (
     nombre, descripcion, fecha_inicio, fecha_fin, tipo, valor, aplicaA,
     requiereSocio, gradoMinimo, requiereEmpleado, combinable,
-    requierePuntos, puntosNecesarios, estado
+    requierePuntos, puntosNecesarios, tieneStock, stock, estado
 ) VALUES
--- 1. Descuento Adulto Mayor
-('Adulto Mayor 60+', 'Descuento del 20% para personas mayores de 60 años.',
- '2025-01-01', '2025-12-31', 'porcentaje', 20.00, 'funciones',
- 0, NULL, 0, 1,
- 0, NULL, 'activa'),
 
--- 2. Descuento Niños
-('Niños 2 a 11 años', 'Descuento del 20% para niños entre 2 y 11 años.',
- '2025-01-01', '2025-12-31', 'porcentaje', 20.00, 'funciones',
- 0, NULL, 0, 1,
- 0, NULL, 'activa'),
-
--- 3. Descuento CONADIS
-('Descuento CONADIS', 'Descuento del 40% para personas con carnet CONADIS.',
- '2025-01-01', '2025-12-31', 'porcentaje', 40.00, 'funciones',
- 0, NULL, 0, 1,
- 0, NULL, 'activa'),
-
--- 4. Martes al 50%
-('Martes al 50%', 'Descuento del 50% en entradas los días martes.',
- '2025-01-01', '2025-12-31', 'porcentaje', 50.00, 'funciones',
- 0, NULL, 0, 1,
- 0, NULL, 'activa'),
-
--- 5. Entradas Socio
-('Socio Cineplanet', 'Descuento del 45% para socios, requiere 5 puntos para canjear.',
- '2025-01-01', '2025-12-31', 'porcentaje', 45.00, 'funciones',
- 1, 'clasico', 0, 1,
- 1, 5, 'activa'),
-
--- 6. Universitario
-('Pack Universitario', 'Descuento del 35% para estudiantes universitarios.',
- '2025-01-01', '2025-12-31', 'porcentaje', 35.00, 'funciones',
- 0, NULL, 0, 1,
- 0, NULL, 'activa'),
-
--- 7. Fiesta del Cine
-('Fiesta del Cine', 'Descuento del 65% en entradas durante la Fiesta del Cine.',
- '2025-01-01', '2025-12-31', 'porcentaje', 65.00, 'funciones',
- 0, NULL, 0, 0,
- 0, NULL, 'activa'),
-
--- 8. General
+-- 1. General
 ('General', 'Entrada general sin ningún tipo de descuento.',
  '2025-01-01', '2025-12-31', 'porcentaje', 0.00, 'funciones',
  0, NULL, 0, 1,
- 0, NULL, 'activa'),
+ 0, NULL, 0, NULL, 'activa'),
 
- --9. empleado
- ('Empleado Cineplanet', 'Descuento del 50% exclusivo para empleados del cine.',
+-- 2. Descuento Adulto Mayor
+('Adulto Mayor 60+', 'Descuento del 20% para personas mayores de 60 años.',
+ '2025-01-01', '2025-12-31', 'porcentaje', 20.00, 'funciones',
+ 0, NULL, 0, 1,
+ 0, NULL, 0, NULL, 'activa'),
+
+-- 3. Descuento Niños
+('Niños 2 a 11 años', 'Descuento del 20% para niños entre 2 y 11 años.',
+ '2025-01-01', '2025-12-31', 'porcentaje', 20.00, 'funciones',
+ 0, NULL, 0, 1,
+ 0, NULL, 0, NULL, 'activa'),
+
+-- 4. Descuento CONADIS
+('Descuento CONADIS', 'Descuento del 40% para personas con carnet CONADIS.',
+ '2025-01-01', '2025-12-31', 'porcentaje', 40.00, 'funciones',
+ 0, NULL, 0, 1,
+ 0, NULL, 0, NULL, 'activa'),
+
+-- 5. Martes al 50%
+('Martes al 50%', 'Descuento del 50% en entradas los días martes.',
  '2025-01-01', '2025-12-31', 'porcentaje', 50.00, 'funciones',
- 0, NULL, 1, 0,
- 0, NULL, 'activa');
+ 0, NULL, 0, 1,
+ 0, NULL, 0, NULL, 'activa'),
+
+-- 6. Entradas Socio
+('Socio Cineplanet', 'Descuento del 45% para socios, requiere 5 puntos para canjear.',
+ '2025-01-01', '2025-12-31', 'porcentaje', 45.00, 'funciones',
+ 1, 'clasico', 0, 1,
+ 1, 5, 0, NULL, 'activa'),
+
+-- 7. Universitario
+('Pack Universitario', 'Descuento del 35% para estudiantes universitarios.',
+ '2025-01-01', '2025-12-31', 'porcentaje', 35.00, 'funciones',
+ 1, NULL, 0, 1,
+ 0, NULL, 0, NULL, 'activa'),
+
+-- 8. Fiesta del Cine
+('Fiesta del Cine', 'Entrada especial a S/6 durante la Fiesta del Cine.',
+ '2025-01-01', '2025-12-31', 'fijo', 6.00, 'funciones',
+ 0, NULL, 0, 0,
+ 0, NULL, 0, NULL, 'activa'),
+
+-- 9. Empleado
+('Empleado Cineplanet', 'Descuento del 50% exclusivo para empleados del cine.',
+ '2025-01-01', '2025-12-31', 'porcentaje', 50.00, 'funciones',
+ 1, NULL, 1, 0,
+ 0, NULL, 0, NULL, 'activa'),
+
+-- 10. Entrada Preventa
+('Entrada Preventa', 'Promoción de entrada anticipada a solo S/6. Stock limitado a 3 usos.',
+ '2025-01-01', '2025-12-31', 'fijo', 6.00, 'funciones',
+ 1, 'clasico', 0, 1,
+ 0, NULL, 1, 3, 'activa');
+
 
 -- SOCIOS (ligados a los primeros 10 usuarios)
 INSERT INTO SOCIO (id, password, departamento, provincia, distrito, apellidoPaterno, apellidoMaterno, cineplanetFavorito, fechaNacimiento, celular, genero, grado)

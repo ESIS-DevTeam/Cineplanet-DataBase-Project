@@ -336,6 +336,7 @@ CREATE PROCEDURE promo_create(
     IN p_puntosNecesarios INT,
     IN p_tieneStock TINYINT(1),
     IN p_stock INT,
+    IN p_aplicaRestriccion TINYINT(1),
     IN p_estado ENUM('activa','inactiva'),
     OUT p_id INT
 )
@@ -343,12 +344,12 @@ BEGIN
     INSERT INTO PROMO(
         nombre,descripcion,fecha_inicio,fecha_fin,tipo,valor,aplicaA,
         requiereSocio,gradoMinimo,requiereEmpleado,combinable,
-        requierePuntos,puntosNecesarios,tieneStock,stock,estado
+        requierePuntos,puntosNecesarios,tieneStock,stock,aplicaRestriccion,estado
     )
     VALUES (
         p_nombre,p_descripcion,p_fecha_inicio,p_fecha_fin,p_tipo,p_valor,p_aplicaA,
         p_requiereSocio,p_gradoMinimo,p_requiereEmpleado,p_combinable,
-        p_requierePuntos,p_puntosNecesarios,p_tieneStock,p_stock,p_estado
+        p_requierePuntos,p_puntosNecesarios,p_tieneStock,p_stock,p_aplicaRestriccion,p_estado
     );
     SET p_id = LAST_INSERT_ID();
 END$$
@@ -377,6 +378,7 @@ CREATE PROCEDURE promo_update(
     IN p_puntosNecesarios INT,
     IN p_tieneStock TINYINT(1),
     IN p_stock INT,
+    IN p_aplicaRestriccion TINYINT(1),
     IN p_estado ENUM('activa','inactiva')
 )
 BEGIN
@@ -396,6 +398,7 @@ BEGIN
         puntosNecesarios=p_puntosNecesarios,
         tieneStock=p_tieneStock,
         stock=p_stock,
+        aplicaRestriccion=p_aplicaRestriccion,
         estado=p_estado
     WHERE id = p_id;
 END$$
