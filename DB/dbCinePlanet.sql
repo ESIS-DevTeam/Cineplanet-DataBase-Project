@@ -163,6 +163,11 @@ CREATE TABLE PROMO (
     -- NUEVO: requisitos de puntos para canjear
     requierePuntos TINYINT(1) DEFAULT 0,       -- 1 si se canjea con puntos
     puntosNecesarios INT DEFAULT NULL,          -- puntos requeridos (si aplica)
+
+    -- NUEVO: stock de la promoción
+    tieneStock TINYINT(1) DEFAULT 0,
+    stock INT DEFAULT NULL,                     -- cantidad disponible (NULL = ilimitado)
+
     estado ENUM('activa', 'inactiva') DEFAULT 'activa'
 );
 
@@ -213,6 +218,18 @@ CREATE TABLE PROMO_BOLETA (
     montoDescuento DECIMAL(10,2) DEFAULT 0,
     detalle VARCHAR(255),
     FOREIGN KEY (idBoleta) REFERENCES BOLETA(id) ON DELETE CASCADE,
+    FOREIGN KEY (idPromo) REFERENCES PROMO(id) ON DELETE CASCADE
+);
+
+-- NUEVA TABLA: registro de uso de promociones por usuario
+DROP TABLE IF EXISTS PROMO_USO;
+CREATE TABLE PROMO_USO (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    idUsuario INT NOT NULL,
+    idPromo INT NOT NULL,
+    cantidad INT DEFAULT 1,
+    fechaUso DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (idUsuario) REFERENCES USUARIO(id) ON DELETE CASCADE,
     FOREIGN KEY (idPromo) REFERENCES PROMO(id) ON DELETE CASCADE
 );
 

@@ -334,12 +334,22 @@ CREATE PROCEDURE promo_create(
     IN p_combinable TINYINT(1),
     IN p_requierePuntos TINYINT(1),
     IN p_puntosNecesarios INT,
+    IN p_tieneStock TINYINT(1),
+    IN p_stock INT,
     IN p_estado ENUM('activa','inactiva'),
     OUT p_id INT
 )
 BEGIN
-    INSERT INTO PROMO(nombre,descripcion,fecha_inicio,fecha_fin,tipo,valor,aplicaA,requiereSocio,gradoMinimo,requiereEmpleado,combinable,requierePuntos,puntosNecesarios,estado)
-    VALUES (p_nombre,p_descripcion,p_fecha_inicio,p_fecha_fin,p_tipo,p_valor,p_aplicaA,p_requiereSocio,p_gradoMinimo,p_requiereEmpleado,p_combinable,p_requierePuntos,p_puntosNecesarios,p_estado);
+    INSERT INTO PROMO(
+        nombre,descripcion,fecha_inicio,fecha_fin,tipo,valor,aplicaA,
+        requiereSocio,gradoMinimo,requiereEmpleado,combinable,
+        requierePuntos,puntosNecesarios,tieneStock,stock,estado
+    )
+    VALUES (
+        p_nombre,p_descripcion,p_fecha_inicio,p_fecha_fin,p_tipo,p_valor,p_aplicaA,
+        p_requiereSocio,p_gradoMinimo,p_requiereEmpleado,p_combinable,
+        p_requierePuntos,p_puntosNecesarios,p_tieneStock,p_stock,p_estado
+    );
     SET p_id = LAST_INSERT_ID();
 END$$
 
@@ -365,16 +375,84 @@ CREATE PROCEDURE promo_update(
     IN p_combinable TINYINT(1),
     IN p_requierePuntos TINYINT(1),
     IN p_puntosNecesarios INT,
+    IN p_tieneStock TINYINT(1),
+    IN p_stock INT,
     IN p_estado ENUM('activa','inactiva')
 )
 BEGIN
-    UPDATE PROMO SET nombre=p_nombre, descripcion=p_descripcion, fecha_inicio=p_fecha_inicio, fecha_fin=p_fecha_fin, tipo=p_tipo, valor=p_valor, aplicaA=p_aplicaA, requiereSocio=p_requiereSocio, gradoMinimo=p_gradoMinimo, requiereEmpleado=p_requiereEmpleado, combinable=p_combinable, requierePuntos=p_requierePuntos, puntosNecesarios=p_puntosNecesarios, estado=p_estado WHERE id = p_id;
+    UPDATE PROMO SET
+        nombre=p_nombre,
+        descripcion=p_descripcion,
+        fecha_inicio=p_fecha_inicio,
+        fecha_fin=p_fecha_fin,
+        tipo=p_tipo,
+        valor=p_valor,
+        aplicaA=p_aplicaA,
+        requiereSocio=p_requiereSocio,
+        gradoMinimo=p_gradoMinimo,
+        requiereEmpleado=p_requiereEmpleado,
+        combinable=p_combinable,
+        requierePuntos=p_requierePuntos,
+        puntosNecesarios=p_puntosNecesarios,
+        tieneStock=p_tieneStock,
+        stock=p_stock,
+        estado=p_estado
+    WHERE id = p_id;
 END$$
 
 DROP PROCEDURE IF EXISTS promo_delete$$
 CREATE PROCEDURE promo_delete(IN p_id INT)
 BEGIN
     DELETE FROM PROMO WHERE id = p_id;
+END$$
+
+-- PROMO_USO CRUD
+DROP PROCEDURE IF EXISTS promo_uso_create$$
+CREATE PROCEDURE promo_uso_create(
+    IN p_idUsuario INT,
+    IN p_idPromo INT,
+    IN p_cantidad INT,
+    IN p_fechaUso DATETIME,
+    OUT p_id INT
+)
+BEGIN
+    INSERT INTO PROMO_USO(idUsuario, idPromo, cantidad, fechaUso)
+    VALUES (p_idUsuario, p_idPromo, p_cantidad, p_fechaUso);
+    SET p_id = LAST_INSERT_ID();
+END$$
+
+DROP PROCEDURE IF EXISTS promo_uso_get$$
+CREATE PROCEDURE promo_uso_get(IN p_id INT)
+BEGIN
+    SELECT * FROM PROMO_USO WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS promo_uso_get_by_usuario$$
+CREATE PROCEDURE promo_uso_get_by_usuario(IN p_idUsuario INT)
+BEGIN
+    SELECT * FROM PROMO_USO WHERE idUsuario = p_idUsuario;
+END$$
+
+DROP PROCEDURE IF EXISTS promo_uso_get_by_promo$$
+CREATE PROCEDURE promo_uso_get_by_promo(IN p_idPromo INT)
+BEGIN
+    SELECT * FROM PROMO_USO WHERE idPromo = p_idPromo;
+END$$
+
+DROP PROCEDURE IF EXISTS promo_uso_update$$
+CREATE PROCEDURE promo_uso_update(
+    IN p_id INT,
+    IN p_cantidad INT,
+    IN p_fechaUso DATETIME
+)
+BEGIN
+    UPDATE PROMO_USO SET cantidad = p_cantidad, fechaUso = p_fechaUso WHERE id = p_id;
+END$$
+
+DROP PROCEDURE IF EXISTS promo_uso_delete$$
+CREATE PROCEDURE promo_uso_delete(IN p_id INT)
+BEGIN
+    DELETE FROM PROMO_USO WHERE id = p_id;
 END$$
 
 -- SALA

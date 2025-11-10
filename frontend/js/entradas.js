@@ -1,6 +1,15 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const params = new URLSearchParams(window.location.search);
+    const idFuncion = params.get('funcion');
+    const idPelicula = params.get('pelicula');
     const esInvitado = params.get('invitado') === '1';
+
+    // Calcular el máximo de entradas según la cantidad de asientos en la URL
+    let asientosArr = [];
+    if (params.get('asientos')) {
+        asientosArr = params.get('asientos').split(',').filter(x => x.trim() !== '');
+    }
+    const maxEntradas = asientosArr.length || 1;
 
     // Verifica sesión antes de mostrar la página
     const sessionRes = await fetch('../../backend/auth/checkSession.php');
@@ -41,10 +50,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         socioDisplay.textContent = '👤';
     }
 
-    // Extrae parámetros de la URL
-    const idFuncion = params.get('funcion');
-    const idPelicula = params.get('pelicula');
+    let socioData = sessionData.socio || null;
+    let esEmpleado = socioData && socioData.empleado == 1;
+    let puntosSocio = socioData && socioData.puntos ? socioData.puntos : 0;
 
+    // Extrae parámetros de la URL
     if (!idFuncion) {
         document.getElementById('info-container').textContent = 'No se ha seleccionado función.';
         return;
@@ -123,35 +133,79 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // Renderiza las entradas (promos)
-    const entradasDiv = document.createElement('div');
-    entradasDiv.innerHTML = `<h2>Entradas disponibles</h2>`;
+    // Separar promos en generales y beneficios
+    const generales = [];
+    const beneficios = [];
     promos.forEach(p => {
-        entradasDiv.innerHTML += `
+        // Solo muestra promos de empleados si el usuario es empleado
+        if (p.requiereEmpleado && !esEmpleado) return;
+
+        // Generales: no requiere socio, empleado ni puntos
+        if (!p.requiereSocio && !p.requiereEmpleado && !p.requierePuntos) {
+            generales.push(p);
+        } else {
+            beneficios.push(p);
+        }
+    });
+
+    // Renderiza las entradas generales
+    const generalesDiv = document.createElement('div');
+    generalesDiv.innerHTML = `<h2>Entradas generales</h2>`;
+    generales.forEach(p => {
+        generalesDiv.innerHTML += `
             <div>
                 <strong>${p.nombre}</strong><br>
                 <span>${p.descripcion || ''}</span><br>
-                <span>Precio base: S/ ${precioBase.toFixed(2)}</span><br>
-                <span>Precio final: S/ ${p.precioFinal.toFixed(2)}${p.precioFinal < precioBase ? ' <span style="color:red;">Descuento aplicado</span>' : ''}</span>
+                <span>S/${p.precioFinal.toFixed(2)}${p.precioFinal < precioBase ? ' Precio más bajo' : ''}</span>
                 <div>
-                    <button type="button" data-type="menos" data-id="${p.id}">-</button>
+                    <button type="button" data-type="menos" data-id="${p.id}" data-grupo="general">-</button>
                     <span id="cantidad-${p.id}">0</span>
-                    <button type="button" data-type="mas" data-id="${p.id}">+</button>
+                    <button type="button" data-type="mas" data-id="${p.id}" data-grupo="general">+</button>
                 </div>
             </div>
         `;
     });
 
-    document.getElementById('info-container').appendChild(entradasDiv);
+    // Renderiza los beneficios
+    const beneficiosDiv = document.createElement('div');
+    beneficiosDiv.innerHTML = `<h2>Tus Beneficios</h2>`;
+    beneficios.forEach(p => {
+        beneficiosDiv.innerHTML += `
+            <div>
+                <strong>${p.nombre}</strong><br>
+                <span>${p.descripcion || ''}</span><br>
+                ${p.requierePuntos && socioData ? `<span>Puntos disponibles: ${puntosSocio}</span><br>` : ''}
+                <span>S/${p.precioFinal.toFixed(2)}</span>
+                <div>
+                    <button type="button" data-type="menos" data-id="${p.id}" data-grupo="beneficio">-</button>
+                    <span id="cantidad-${p.id}">0</span>
+                    <button type="button" data-type="mas" data-id="${p.id}" data-grupo="beneficio">+</button>
+                </div>
+            </div>
+        `;
+    });
 
-    // Lógica para sumar/restar cantidad
-    entradasDiv.addEventListener('click', function(e) {
+    // Muestra ambos paneles en columnas
+    const panelEntradas = document.createElement('div');
+    panelEntradas.appendChild(generalesDiv);
+    panelEntradas.appendChild(beneficiosDiv);
+    document.getElementById('info-container').appendChild(panelEntradas);
+
+    // Lógica para sumar/restar cantidad con máximo
+    panelEntradas.addEventListener('click', function(e) {
         if (e.target.tagName === 'BUTTON') {
             const type = e.target.getAttribute('data-type');
             const id = e.target.getAttribute('data-id');
+            // Suma total de entradas seleccionadas
+            let totalSeleccionadas = 0;
+            [...panelEntradas.querySelectorAll('span[id^="cantidad-"]')].forEach(span => {
+                totalSeleccionadas += parseInt(span.textContent, 10);
+            });
+
             const span = document.getElementById('cantidad-' + id);
             let val = parseInt(span.textContent, 10);
-            if (type === 'mas') val++;
+
+            if (type === 'mas' && totalSeleccionadas < maxEntradas) val++;
             if (type === 'menos' && val > 0) val--;
             span.textContent = val;
         }
