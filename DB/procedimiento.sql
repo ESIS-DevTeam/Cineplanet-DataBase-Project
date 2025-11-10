@@ -933,3 +933,11 @@ BEGIN
     LIMIT 1;
 END$$
 DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS promo_uso_get_by_usuario_promo$$
+CREATE PROCEDURE promo_uso_get_by_usuario_promo(IN p_idUsuario INT, IN p_idPromo INT)
+BEGIN
+    SELECT * FROM PROMO_USO WHERE idUsuario = p_idUsuario AND idPromo = p_idPromo LIMIT 1;
+END$$
+DELIMITER ;

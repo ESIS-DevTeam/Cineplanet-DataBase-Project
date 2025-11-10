@@ -200,11 +200,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (p.tieneStock && p.stock !== null) {
             stockInfo = `<span style="color:#b00;">Stock disponible: ${p.stock}</span><br>`;
         }
+        // NUEVO: agrega un span con id para mostrar puntos disponibles dinámicamente
         beneficiosDiv.innerHTML += `
             <div>
                 <strong>${p.nombre}</strong><br>
                 <span>${p.descripcion || ''}</span><br>
-                ${p.requierePuntos && socioData ? `<span>Puntos disponibles: ${puntosSocio}</span><br>` : ''}
+                ${p.requierePuntos && socioData ? `<span id="puntos-disponibles-${p.id}">Puntos disponibles: ${puntosSocio}</span><br>` : ''}
                 ${stockInfo}
                 <span>S/${p.precioFinal.toFixed(2)}</span>
                 <div>
@@ -244,8 +245,51 @@ document.addEventListener('DOMContentLoaded', async () => {
                 maxPorPromo = Math.min(maxEntradas, promo.stock);
             }
 
-            if (type === 'mas' && val < maxPorPromo && totalSeleccionadas < maxEntradas) val++;
-            if (type === 'menos' && val > 0) val--;
+            // Lógica para promos con puntos (ajustada para puntosNecesarios y asientos)
+            if (promo && promo.requierePuntos && socioData) {
+                const puntosPorEntrada = promo.puntosNecesarios || 1;
+                let puntosUsados = val * puntosPorEntrada;
+                let puntosRestantes = puntosSocio - puntosUsados;
+                let maxPorPuntos = Math.floor(puntosSocio / puntosPorEntrada);
+
+                let totalSinEsta = totalSeleccionadas - val;
+                let maxPorAsientos = maxEntradas - totalSinEsta;
+                let maxReal = Math.min(maxPorPromo, maxPorPuntos, maxPorAsientos);
+
+                if (type === 'mas') {
+                    if (val < maxReal) {
+                        val++;
+                        puntosUsados = val * puntosPorEntrada;
+                        puntosRestantes = puntosSocio - puntosUsados;
+                    }
+                }
+                if (type === 'menos') {
+                    if (val > 0) {
+                        val--;
+                        puntosUsados = val * puntosPorEntrada;
+                        puntosRestantes = puntosSocio - puntosUsados;
+                    }
+                }
+                span.textContent = val;
+                const puntosSpan = document.getElementById('puntos-disponibles-' + id);
+                if (puntosSpan) {
+                    puntosSpan.textContent = `Puntos disponibles: ${puntosRestantes}`;
+                }
+                // Ya no se bloquea el botón "+" ni "-"
+                return;
+            }
+
+            // ...existing code for generales y beneficios sin puntos...
+            let totalSinEsta = totalSeleccionadas - val;
+            let maxPorAsientos = maxEntradas - totalSinEsta;
+            let maxReal = Math.min(maxPorPromo, maxPorAsientos);
+
+            if (type === 'mas') {
+                if (val < maxReal) val++;
+            }
+            if (type === 'menos') {
+                if (val > 0) val--;
+            }
             span.textContent = val;
         }
     });

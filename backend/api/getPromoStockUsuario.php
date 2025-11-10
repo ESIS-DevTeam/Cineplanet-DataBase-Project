@@ -28,20 +28,25 @@ if (!$promo || !$promo['tieneStock']) {
 
 $stockTotal = $promo['stock'];
 
-// 2. Buscar registro de uso del usuario para esa promo
-$stmt = $conn->prepare("SELECT cantidad FROM PROMO_USO WHERE idPromo = ? AND idUsuario = ?");
-$stmt->bind_param("ii", $idPromo, $idUsuario);
+// 2. Buscar registro de uso del usuario para esa promo usando procedimiento
+$cantidadUsada = 0;
+$stmt = $conn->prepare("CALL promo_uso_get_by_usuario_promo(?, ?)");
+$stmt->bind_param("ii", $idUsuario, $idPromo);
 $stmt->execute();
 $res = $stmt->get_result();
 $uso = $res->fetch_assoc();
 $stmt->close();
+$conn->next_result();
 
 if (!$uso) {
-    // Si no existe, crear registro con cantidad 0
-    $stmt = $conn->prepare("INSERT INTO PROMO_USO (idPromo, idUsuario, cantidad) VALUES (?, ?, 0)");
-    $stmt->bind_param("ii", $idPromo, $idUsuario);
+    // Si no existe, crear registro con cantidad 0 usando procedimiento
+    $fechaUso = date('Y-m-d H:i:s');
+    $idPromoUso = 0;
+    $stmt = $conn->prepare("CALL promo_uso_create(?, ?, 0, ?, @id)");
+    $stmt->bind_param("iis", $idUsuario, $idPromo, $fechaUso);
     $stmt->execute();
     $stmt->close();
+    $conn->next_result();
     $cantidadUsada = 0;
 } else {
     $cantidadUsada = intval($uso['cantidad']);
