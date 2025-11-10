@@ -133,12 +133,32 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
+    // NUEVO: obtener el stock disponible por usuario para cada promo con stock
+    async function obtenerStockPromoUsuario(promo, idUsuario) {
+        if (!promo.tieneStock || promo.stock === null) return promo.stock;
+        // Si no hay usuario, retorna el stock general
+        if (!idUsuario) return promo.stock;
+        try {
+            const res = await fetch(`../../backend/api/getPromoStockUsuario.php?idPromo=${promo.id}&idUsuario=${idUsuario}`);
+            const data = await res.json();
+            if (data && typeof data.stockDisponible === 'number') {
+                return data.stockDisponible;
+            }
+        } catch {}
+        return promo.stock;
+    }
+
     // Separar promos en generales y beneficios
     const generales = [];
     const beneficios = [];
-    promos.forEach(p => {
+    for (const p of promos) {
         // Solo muestra promos de empleados si el usuario es empleado
-        if (p.requiereEmpleado && !esEmpleado) return;
+        if (p.requiereEmpleado && !esEmpleado) continue;
+
+        // Obtiene el stock real disponible para el usuario si aplica
+        if (p.tieneStock && p.stock !== null && socioData && socioData.id) {
+            p.stock = await obtenerStockPromoUsuario(p, socioData.id);
+        }
 
         // Generales: no requiere socio, empleado ni puntos
         if (!p.requiereSocio && !p.requiereEmpleado && !p.requierePuntos) {
@@ -146,7 +166,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else {
             beneficios.push(p);
         }
-    });
+    }
 
     // Renderiza las entradas generales
     const generalesDiv = document.createElement('div');
