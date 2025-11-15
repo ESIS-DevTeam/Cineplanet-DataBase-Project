@@ -1,4 +1,5 @@
-const API_URL = 'http://localhost/Cineplanet-DataBase-Project/backend/api/getPeliculasFiltro.php';
+import BASE_API_DOMAIN from "./config.js";
+const API_URL = BASE_API_DOMAIN + 'getPeliculasFiltro.php';
 
 const selects = {
   pelicula: document.getElementById('select-pelicula'),
@@ -132,19 +133,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       // Lógica de rutas
       if (pelicula && !ciudad && !cine && !dia) {
-        window.location.href = `peliculaseleccion.html?pelicula=${encodeURIComponent(pelicula)}`;
+        window.location.href = `frontend/pages/peliculaSeleccion.html?pelicula=${encodeURIComponent(pelicula)}`;
       } else if (!pelicula && (ciudad || cine || dia)) {
         const params = [];
         if (ciudad) params.push(`ciudad=${encodeURIComponent(ciudad)}`);
         if (cine) params.push(`cine=${encodeURIComponent(cine)}`);
         if (dia) params.push(`dia=${encodeURIComponent(dia)}`);
-        window.location.href = `peliculas.html${params.length ? '?' + params.join('&') : ''}`;
+        window.location.href = `frontend/pages/peliculas.html${params.length ? '?' + params.join('&') : ''}`;
       } else if (pelicula && (ciudad || cine || dia)) {
         const params = [`pelicula=${encodeURIComponent(pelicula)}`];
         if (ciudad) params.push(`ciudad=${encodeURIComponent(ciudad)}`);
         if (cine) params.push(`cine=${encodeURIComponent(cine)}`);
         if (dia) params.push(`dia=${encodeURIComponent(dia)}`);
-        window.location.href = `peliculaseleccion.html?${params.join('&')}`;
+        window.location.href = `frontend/pages/peliculaSeleccion.html?${params.join('&')}`;
       }
       // Si nada seleccionado, no hacer nada
     });

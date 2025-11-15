@@ -6,8 +6,8 @@
     <meta name="description" content="Formularios Cineplanet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cineplanet Formularios</title>
-    <link rel="shortcut icon" href="/frontend/images/items/icono-cine.ico" type="image/x-icon">
-    <link href="../styles/estilos.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="frontend/images/items/icono-cine.ico" type="image/x-icon">
+    <link href="frontend/styles/estilos.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
     <div class="app-container">
@@ -22,13 +22,13 @@
                 <nav class="main-nav">
                     <div class="nav-container">
                         <ul class="nav-list">
-                            <li class="nav-item"><a href="peliculas.html" target="_self">Películas</a></li>
-                            <li class="nav-item"><a href="cines.html" target="_self">Cines</a></li>
-                            <li class="nav-item"><a href="promociones.html" target="_self">Promociones</a></li>
-                            <li class="nav-item"><a href="socio.html" target="_self">Socio</a></li>
-                            <li class="nav-item"><a href="dulceria.html" target="_self">Dulcería</a></li>
-                            <li class="nav-item"><a href="corporativo.html" target="_self">Corporativo</a></li>
-                            <li class="nav-item"><a href="blog.html" target="_blank">Blog</a></li>
+                            <li class="nav-item"><a href="frontend/pages/peliculas.html" target="_self">Películas</a></li>
+                            <li class="nav-item"><a href="frontend/pages/cines.html" target="_self">Cines</a></li>
+                            <li class="nav-item"><a href="frontend/pages/promociones.html" target="_self">Promociones</a></li>
+                            <li class="nav-item"><a href="frontend/pages/socio.html" target="_self">Socio</a></li>
+                            <li class="nav-item"><a href="frontend/pages/dulceria.html" target="_self">Dulcería</a></li>
+                            <li class="nav-item"><a href="frontend/pages/corporativo.html" target="_self">Corporativo</a></li>
+                            <li class="nav-item"><a href="frontend/pages/blog.html" target="_blank">Blog</a></li>
                         </ul>
                         <div class="nav-actions">
                             <button class="buscar-btn" aria-label="Buscar">🔍</button>
@@ -92,12 +92,12 @@
     <div id="socio-popup" style="display:none; position:fixed; top:70px; right:30px; background:#fff; border:1px solid #ccc; box-shadow:0 2px 8px #0002; z-index:1000; min-width:220px; padding:16px; border-radius:8px;">
         <div id="socio-popup-content"></div>
     </div>
-    <script src="../js/filtrosIndex.js"></script>
+    <script type="module" src="frontend/js/filtrosIndex.js"></script>
     <script>
     let socioData = null;
 
     // Verifica si hay sesión de socio y muestra el nombre
-    fetch('../../backend/auth/checkSession.php')
+    fetch('backend/auth/checkSession.php')
         .then(res => res.json())
         .then(data => {
             socioData = data.socio || null;
@@ -106,14 +106,14 @@
                     '👤 Socio: ' + socioData.nombre +
                     ' <button onclick="logout()">Cerrar sesión</button>';
             } else {
-                // Cambia el enlace para incluir redirect
+                // Enlace de login con redirect dinámico
                 document.getElementById('socio-info').innerHTML =
-                    `<a href="login.html?redirect=index.html">Iniciar sesión</a>`;
+                    `<a href="frontend/pages/login.html?redirect=${encodeURIComponent(window.location.pathname)}">Iniciar sesión</a>`;
             }
         });
 
     function logout() {
-        fetch('../../backend/auth/logout.php')
+        fetch('backend/auth/logout.php')
             .then(() => window.location.reload());
     }
 
@@ -136,8 +136,9 @@
                 <button onclick="logout()">Cerrar sesión</button>
             `;
         } else {
+            // Botón de login con redirect dinámico
             popupContent.innerHTML = `
-                <button onclick="window.location.href='login.html?redirect=index.html'">Iniciar sesión</button><br>
+                <button onclick="window.location.href='frontend/pages/login.html?redirect=${encodeURIComponent(window.location.pathname)}'">Iniciar sesión</button><br>
                 <button onclick="window.location.href='registro.html'">Registrar</button>
             `;
         }

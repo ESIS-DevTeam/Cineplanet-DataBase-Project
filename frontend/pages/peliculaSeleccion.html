@@ -68,8 +68,8 @@
   <div id="socio-popup" style="display:none; position:fixed; top:70px; right:30px; background:#fff; border:1px solid #ccc; box-shadow:0 2px 8px #0002; z-index:1000; min-width:220px; padding:16px; border-radius:8px;">
       <div id="socio-popup-content"></div>
   </div>
-  <script src="../js/peliculaSeleccion.js"></script>
-  <script>
+  <script  type="module"  src="../js/peliculaSeleccion.js"></script>
+  <script  >
     let socioData = null;
 
     // Verifica si hay sesión de socio
@@ -88,7 +88,7 @@
         });
 
     function logout() {
-        fetch('../../backend/auth/logout.php')
+        fetch('../backend/auth/logout.php')
             .then(() => window.location.reload());
     }
 

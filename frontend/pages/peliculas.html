@@ -48,7 +48,7 @@
 
     <body>
         <header>
-            <a href="index.html" target="_self">
+            <a href="../../index.html" target="_self">
                 <svg class="logo-cineplanet" width="600" height="385" viewBox="0 0 1752.4 1416.2" xmlns="http://www.w3.org/2000/svg">
                     <g>
                     </g>
@@ -116,61 +116,61 @@
         <div id="socio-popup" style="display:none; position:fixed; top:70px; right:30px; background:#fff; border:1px solid #ccc; box-shadow:0 2px 8px #0002; z-index:1000; min-width:220px; padding:16px; border-radius:8px;">
             <div id="socio-popup-content"></div>
         </div>
-        <script src="../js/mostrarPeliculas.js"></script>
-        <script>
-let socioData = null;
-fetch('../../backend/auth/checkSession.php')
-    .then(res => res.json())
-    .then(data => {
-        socioData = data.socio || null;
-        if (data.loggedIn && socioData) {
-            document.getElementById('socio-info').innerHTML =
-                '👤 Socio: ' + socioData.nombre +
-                ' <button onclick="logout()">Cerrar sesión</button>';
-        } else {
-            document.getElementById('socio-info').innerHTML =
-                `<a href="login.html?redirect=peliculas.html">Iniciar sesión</a>`;
-        }
-    });
+        <script type="module" src="../js/mostrarPeliculas.js"></script>
+        <script >
+            let socioData = null;
+            fetch('../../backend/auth/checkSession.php')
+                .then(res => res.json())
+                .then(data => {
+                    socioData = data.socio || null;
+                    if (data.loggedIn && socioData) {
+                        document.getElementById('socio-info').innerHTML =
+                            '👤 Socio: ' + socioData.nombre +
+                            ' <button onclick="logout()">Cerrar sesión</button>';
+                    } else {
+                        document.getElementById('socio-info').innerHTML =
+                            `<a href="login.html?redirect=peliculas.html">Iniciar sesión</a>`;
+                    }
+                });
 
-function logout() {
-    fetch('../../backend/auth/logout.php')
-        .then(() => window.location.reload());
-}
+            function logout() {
+                fetch('../../backend/auth/logout.php')
+                    .then(() => window.location.reload());
+            }
 
-// Ventana flotante socio
-const socioBtn = document.querySelector('.socio-btn');
-const popup = document.getElementById('socio-popup');
-const popupContent = document.getElementById('socio-popup-content');
+            // Ventana flotante socio
+            const socioBtn = document.querySelector('.socio-btn');
+            const popup = document.getElementById('socio-popup');
+            const popupContent = document.getElementById('socio-popup-content');
 
-socioBtn.addEventListener('click', function() {
-    if (popup.style.display === 'block') {
-        popup.style.display = 'none';
-        return;
-    }
-    if (socioData) {
-        popupContent.innerHTML = `
-            <div style="font-weight:bold; margin-bottom:8px;">${socioData.nombre}</div>
-            <button onclick="window.location.href='beneficios.html'">Mis beneficios</button><br>
-            <button onclick="window.location.href='compras.html'">Mis compras</button><br>
-            <button onclick="window.location.href='datos.html'">Mis datos</button><br>
-            <button onclick="logout()">Cerrar sesión</button>
-        `;
-    } else {
-        popupContent.innerHTML = `
-            <button onclick="window.location.href='login.html?redirect=peliculas.html'">Iniciar sesión</button><br>
-            <button onclick="window.location.href='registro.html'">Registrar</button>
-        `;
-    }
-    popup.style.display = 'block';
-});
+            socioBtn.addEventListener('click', function() {
+                if (popup.style.display === 'block') {
+                    popup.style.display = 'none';
+                    return;
+                }
+                if (socioData) {
+                    popupContent.innerHTML = `
+                        <div style="font-weight:bold; margin-bottom:8px;">${socioData.nombre}</div>
+                        <button onclick="window.location.href='beneficios.html'">Mis beneficios</button><br>
+                        <button onclick="window.location.href='compras.html'">Mis compras</button><br>
+                        <button onclick="window.location.href='datos.html'">Mis datos</button><br>
+                        <button onclick="logout()">Cerrar sesión</button>
+                    `;
+                } else {
+                    popupContent.innerHTML = `
+                        <button onclick="window.location.href='login.html?redirect=peliculas.html'">Iniciar sesión</button><br>
+                        <button onclick="window.location.href='registro.html'">Registrar</button>
+                    `;
+                }
+                popup.style.display = 'block';
+            });
 
-// Ocultar popup al hacer click fuera
-document.addEventListener('click', function(e) {
-    if (!popup.contains(e.target) && e.target !== socioBtn) {
-        popup.style.display = 'none';
-    }
-});
+            // Ocultar popup al hacer click fuera
+            document.addEventListener('click', function(e) {
+                if (!popup.contains(e.target) && e.target !== socioBtn) {
+                    popup.style.display = 'none';
+                }
+            });
         </script>
     </body>
 </html>

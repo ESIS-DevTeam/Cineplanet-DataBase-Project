@@ -1,3 +1,5 @@
+import BASE_API_DOMAIN from "./config.js";
+
 let urlCheckboxesMarcados = false;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -18,7 +20,7 @@ function onFiltroChange(e) {
 function cargarPeliculasYFiltros(seleccionadosPrevios = null) {
     const filtros = seleccionadosPrevios || obtenerFiltrosSeleccionados();
     const params = new URLSearchParams(filtros).toString();
-    fetch(`../../backend/api/getPeliculasFiltro.php?${params}`)
+    fetch(BASE_API_DOMAIN + `getPeliculasFiltro.php?${params}`)
         .then(res => res.json())
         .then(peliculas => {
             mostrarPeliculas(peliculas, filtros); // Pasar los filtros a mostrarPeliculas

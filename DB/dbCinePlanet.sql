@@ -185,18 +185,7 @@ CREATE TABLE BOLETA (
 
 -- BOLETA_ASIENTO: registra qué asiento se vendió para una boleta y función
 -- Se asegura que un mismo asiento no sea asignado a la misma función más de una vez
-DROP TABLE IF EXISTS BOLETA_ASIENTO;
-CREATE TABLE BOLETA_ASIENTO (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    idBoleta INT NOT NULL,
-    idFuncion INT NOT NULL,
-    idPlanoSala INT NOT NULL,  -- referencia al asiento dentro del plano
-    precioUnitario DECIMAL(10,2) NOT NULL,
-    FOREIGN KEY (idBoleta) REFERENCES BOLETA(id) ON DELETE CASCADE,
-    FOREIGN KEY (idFuncion) REFERENCES FUNCION(id) ON DELETE CASCADE,
-    FOREIGN KEY (idPlanoSala) REFERENCES PLANO_SALA(id) ON DELETE CASCADE,
-    CONSTRAINT uq_funcion_asiento UNIQUE (idFuncion, idPlanoSala)
-);
+
 
 DROP TABLE IF EXISTS PRODUCTOS_BOLETA;
 CREATE TABLE PRODUCTOS_BOLETA (
@@ -251,3 +240,15 @@ CREATE TABLE FUNCION (
 );
 
 
+DROP TABLE IF EXISTS BOLETA_ASIENTO;
+CREATE TABLE BOLETA_ASIENTO (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    idBoleta INT NOT NULL,
+    idFuncion INT NOT NULL,
+    idPlanoSala INT NOT NULL,  -- referencia al asiento dentro del plano
+    precioUnitario DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (idBoleta) REFERENCES BOLETA(id) ON DELETE CASCADE,
+    FOREIGN KEY (idFuncion) REFERENCES FUNCION(id) ON DELETE CASCADE,
+    FOREIGN KEY (idPlanoSala) REFERENCES PLANO_SALA(id) ON DELETE CASCADE,
+    CONSTRAINT uq_funcion_asiento UNIQUE (idFuncion, idPlanoSala)
+);

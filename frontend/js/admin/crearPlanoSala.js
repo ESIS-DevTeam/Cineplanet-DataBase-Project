@@ -1,3 +1,5 @@
+import BASE_API_DOMAIN from "../config.js";
+
 let cinesGlobal = [];
 let ciudadesGlobal = [];
 let salaSeleccionadaId = null;
@@ -6,8 +8,8 @@ let tipoAsientoSeleccionado = '';
 async function cargarCiudadesYCines() {
     try {
         const [resCiudades, resCines] = await Promise.all([
-            fetch('http://localhost/Cineplanet-DataBase-Project/backend/api/getCiudades.php'),
-            fetch('http://localhost/Cineplanet-DataBase-Project/backend/api/getCines.php')
+            fetch(BASE_API_DOMAIN + 'getCiudades.php'),
+            fetch(BASE_API_DOMAIN + 'getCines.php')
         ]);
         ciudadesGlobal = await resCiudades.json();
         cinesGlobal = await resCines.json();
@@ -51,7 +53,7 @@ async function cargarSalas(idCine) {
     const container = document.getElementById('lista-salas');
     container.innerHTML = 'Cargando salas...';
     try {
-        const res = await fetch(`http://localhost/Cineplanet-DataBase-Project/backend/api/getSalasPorCine.php?idCine=${idCine}`);
+        const res = await fetch(BASE_API_DOMAIN + `getSalasPorCine.php?idCine=${idCine}`);
         const salas = await res.json();
         
         if (salas.length > 0) {
@@ -86,7 +88,7 @@ async function cargarSalas(idCine) {
 
 async function cargarPlanoSalaExistente(idSala) {
     try {
-        const res = await fetch(`http://localhost/Cineplanet-DataBase-Project/backend/api/getPlanoSalaPorSala.php?idSala=${idSala}`);
+        const res = await fetch(BASE_API_DOMAIN + `getPlanoSalaPorSala.php?idSala=${idSala}`);
         const asientos = await res.json();
         if (Array.isArray(asientos) && asientos.length > 0) {
             // Detectar filas y columnas
@@ -191,7 +193,7 @@ document.getElementById('guardar-plano').addEventListener('click', async functio
     mostrarBloqueo();
 
     try {
-        const response = await fetch('http://localhost/Cineplanet-DataBase-Project/backend/api/guardarPlanoSala.php', {
+        const response = await fetch(BASE_API_DOMAIN + 'guardarPlanoSala.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(plano)

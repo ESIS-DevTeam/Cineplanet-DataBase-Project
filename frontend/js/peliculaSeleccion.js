@@ -1,3 +1,5 @@
+import BASE_API_DOMAIN from "./config.js";
+
 async function mostrarInfoPelicula() {
   const params = new URLSearchParams(window.location.search);
   const idPelicula = params.get('pelicula');
@@ -11,9 +13,8 @@ async function mostrarInfoPelicula() {
     return;
   }
 
-  try {
-    // Usar el endpoint nuevo para obtener los datos por id
-    const res = await fetch(`http://localhost/Cineplanet-DataBase-Project/backend/api/getInfoPelicula.php?idPelicula=${idPelicula}`);
+  try { 
+    const res = await fetch(BASE_API_DOMAIN + `getInfoPelicula.php?idPelicula=${idPelicula}`);
     const pelicula = await res.json();
 
     if (!pelicula || Object.keys(pelicula).length === 0) {
@@ -84,7 +85,7 @@ async function cargarOpcionesFuncionPelicula() {
   if (!idPelicula) return;
 
   try {
-    const res = await fetch(`http://localhost/Cineplanet-DataBase-Project/backend/api/getOpcionesFuncionPelicula.php?pelicula=${idPelicula}`);
+    const res = await fetch(BASE_API_DOMAIN + `getOpcionesFuncionPelicula.php?pelicula=${idPelicula}`);
     const data = await res.json();
     rawData = data;
 
@@ -95,7 +96,7 @@ async function cargarOpcionesFuncionPelicula() {
     // Pre-cargar funciones para todos los cines
     for (const cine of allCines) {
       const funcionesRes = await fetch(
-        `http://localhost/Cineplanet-DataBase-Project/backend/api/getFuncionesPorCine.php?idPelicula=${idPelicula}&idCine=${cine.id}`
+        BASE_API_DOMAIN + `getFuncionesPorCine.php?idPelicula=${idPelicula}&idCine=${cine.id}`
       );
       funcionesPorCineGlobal[cine.id] = await funcionesRes.json();
     }
@@ -321,7 +322,7 @@ async function renderDetallesCines() {
 
     // Obtener funciones por cine usando el endpoint
     const funcionesRes = await fetch(
-      `http://localhost/Cineplanet-DataBase-Project/backend/api/getFuncionesPorCine.php?idPelicula=${idPelicula}&idCine=${c.id}`
+      BASE_API_DOMAIN + `getFuncionesPorCine.php?idPelicula=${idPelicula}&idCine=${c.id}`
     );
     const funcionesPorFecha = await funcionesRes.json();
 

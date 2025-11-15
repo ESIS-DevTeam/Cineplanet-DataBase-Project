@@ -1,3 +1,5 @@
+import BASE_API_DOMAIN from "./config.js";
+
 document.addEventListener('DOMContentLoaded', async () => {
     const params = new URLSearchParams(window.location.search);
     const idFuncion = params.get('funcion');
@@ -10,7 +12,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Obtener datos completos de la función y película
     let infoFuncion = null;
     try {
-        const resInfo = await fetch(`http://localhost/Cineplanet-DataBase-Project/backend/api/getInfoFuncionCompleta.php?idFuncion=${idFuncion}`);
+        const resInfo = await fetch(BASE_API_DOMAIN + `getInfoFuncionCompleta.php?idFuncion=${idFuncion}`);
         infoFuncion = await resInfo.json();
     } catch {
         // Si falla, muestra error y no dibuja nada
@@ -68,7 +70,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Obtener asientos del plano de la sala
     let asientosPlano = [];
     try {
-        const resPlano = await fetch(`http://localhost/Cineplanet-DataBase-Project/backend/api/getPlanoSalaPorSala.php?idSala=${idSala}`);
+        const resPlano = await fetch(BASE_API_DOMAIN + `getPlanoSalaPorSala.php?idSala=${idSala}`);
         asientosPlano = await resPlano.json();
     } catch {
         container.textContent = 'Error al obtener el plano de sala.';
@@ -78,7 +80,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Opcional: obtener ocupados para la función
     let ocupados = new Set();
     try {
-        const resOcupados = await fetch(`http://localhost/Cineplanet-DataBase-Project/backend/api/getAsientosOcupadosPorFuncion.php?idFuncion=${idFuncion}`);
+        const resOcupados = await fetch(BASE_API_DOMAIN + `getAsientosOcupadosPorFuncion.php?idFuncion=${idFuncion}`);
         const ocupadosArr = await resOcupados.json();
         ocupados = new Set(ocupadosArr.map(a => a.idPlanoSala));
     } catch {

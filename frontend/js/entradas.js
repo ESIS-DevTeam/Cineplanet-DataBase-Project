@@ -1,3 +1,5 @@
+import BASE_API_DOMAIN from "./config.js";
+
 document.addEventListener('DOMContentLoaded', async () => {
     const params = new URLSearchParams(window.location.search);
     const idFuncion = params.get('funcion');
@@ -63,7 +65,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Obtener datos completos de la función y película
     let infoFuncion = null;
     try {
-        const resInfo = await fetch(`http://localhost/Cineplanet-DataBase-Project/backend/api/getInfoFuncionCompleta.php?idFuncion=${idFuncion}`);
+        const resInfo = await fetch(BASE_API_DOMAIN + `getInfoFuncionCompleta.php?idFuncion=${idFuncion}`);
         infoFuncion = await resInfo.json();
     } catch {
         document.getElementById('info-container').textContent = 'Error al obtener la información de la función.';
@@ -117,16 +119,34 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // btnContinuar.disabled = false; // Habilita según tu lógica
     btnContinuar.addEventListener('click', () => {
-        // ...existing code para armar entradasSeleccionadas y datosCompra...
-       
-        window.location.href = 'dulceria.html';
+        // Obtiene los asientos seleccionados de la URL
+        const asientos = params.get('asientos') || '';
+        // Obtiene las promociones y cantidades seleccionadas
+        const promosSeleccionadas = [];
+        [...panelEntradas.querySelectorAll('span[id^="cantidad-"]')].forEach(span => {
+            const cantidad = parseInt(span.textContent, 10);
+            if (cantidad > 0) {
+                const idPromo = span.id.replace('cantidad-', '');
+                promosSeleccionadas.push({ id: idPromo, cantidad });
+            }
+        });
+        // Serializa las promociones seleccionadas en la URL
+        // Ejemplo: promos=1:2,3:1 (idPromo:cantidad)
+        const promosParam = promosSeleccionadas.map(p => `${p.id}:${p.cantidad}`).join(',');
+        const urlParams = new URLSearchParams();
+        urlParams.set('pelicula', idPelicula);
+        urlParams.set('funcion', idFuncion);
+        urlParams.set('asientos', asientos);
+        if (promosParam) urlParams.set('promos', promosParam);
+        if (params.get('invitado') === '1') urlParams.set('invitado', '1');
+        window.location.href = `dulceria.html?${urlParams.toString()}`;
     });
 
     // Mostrar las entradas usando solo promociones
     let promos = [];
     let precioBase = 0;
     try {
-        const res = await fetch(`../../backend/api/getPromosEntradas.php?idFuncion=${idFuncion}${esInvitado ? '' : '&socio=1'}`);
+        const res = await fetch(BASE_API_DOMAIN + `getPromosEntradas.php?idFuncion=${idFuncion}${esInvitado ? '' : '&socio=1'}`);
         const data = await res.json();
         promos = data.promos || [];
         precioBase = data.precioBase || 0;
@@ -141,7 +161,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Si no hay usuario, retorna el stock general
         if (!idUsuario) return promo.stock;
         try {
-            const res = await fetch(`../../backend/api/getPromoStockUsuario.php?idPromo=${promo.id}&idUsuario=${idUsuario}`);
+            const res = await fetch(BASE_API_DOMAIN + `getPromoStockUsuario.php?idPromo=${promo.id}&idUsuario=${idUsuario}`);
             const data = await res.json();
             if (data && typeof data.stockDisponible === 'number') {
                 return data.stockDisponible;
