@@ -2,9 +2,12 @@ import BASE_API_DOMAIN from "./config.js";
 
 document.addEventListener('DOMContentLoaded', async () => {
     const params = new URLSearchParams(window.location.search);
+    const idFuncion = params.get('funcion');
+    const idPelicula = params.get('pelicula');
+    const asientos = params.get('asientos');
+    const promos = params.get('promos');
 
     // Obtener datos de función y película
-    const idFuncion = params.get('funcion');
     let infoFuncion = null;
     if (idFuncion) {
         try {
@@ -116,9 +119,58 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     main.appendChild(seccionesDiv);
 
+    // Carrito de productos: [{prod, cantidad}]
+    let carrito = [];
+
     // Contenedor para productos
     const productosDiv = document.createElement('div');
     main.appendChild(productosDiv);
+
+    // Contenedor para el carrito (orden de dulcería)
+    const ordenDiv = document.createElement('div');
+    ordenDiv.id = 'orden-dulceria';
+    main.appendChild(ordenDiv);
+
+    // Renderiza el carrito como una sección debajo de los productos
+    function renderCarrito() {
+        ordenDiv.innerHTML = `
+            <h2>Tu Orden de Dulcería</h2>
+            <div>
+                ${carrito.length === 0 
+                    ? '<div>Aún no tienes productos agregados a tu orden.</div>' 
+                    : `<ul>
+                        ${carrito.map((item, idx) => `
+                            <li>
+                                ${item.prod.nombre} - S/${item.prod.precio} x ${item.cantidad} = S/${(item.prod.precio * item.cantidad).toFixed(2)}
+                                <button onclick="window.__removeCarritoItem(${idx})">Quitar</button>
+                            </li>
+                        `).join('')}
+                    </ul>`
+                }
+            </div>
+            <div>
+                <strong>Total: S/${carrito.reduce((sum, item) => sum + item.prod.precio * item.cantidad, 0).toFixed(2)}</strong>
+            </div>
+            <button id="continuar-btn">Continuar</button>
+        `;
+        ordenDiv.querySelector('#continuar-btn').onclick = () => {
+            // Construye productos=id-cant,id-cant,...
+            const productosParam = carrito.map(item => `${item.prod.id}-${item.cantidad}`).join(',');
+            const urlParams = new URLSearchParams();
+            if (idPelicula) urlParams.set('pelicula', idPelicula);
+            if (idFuncion) urlParams.set('funcion', idFuncion);
+            if (asientos) urlParams.set('asientos', asientos);
+            if (promos) urlParams.set('promos', promos);
+            urlParams.set('productos', productosParam);
+            window.location.href = `pago.html?${urlParams.toString()}`;
+        };
+    }
+
+    // Función global para quitar producto del carrito
+    window.__removeCarritoItem = function(idx) {
+        carrito.splice(idx, 1);
+        renderCarrito();
+    };
 
     // Función para mostrar productos de una sección
     function mostrarSeccion(seccion) {
@@ -163,24 +215,84 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Renderiza producto
+    // Modifica renderProducto para agregar al carrito con cantidad
     function renderProducto(prod, esSocio) {
         const divProd = document.createElement('div');
         divProd.style.border = '1px solid #ccc';
         divProd.style.margin = '8px 0';
         divProd.style.padding = '8px';
-        divProd.innerHTML = `
-            ${prod.imagen ? `<img src="${prod.imagen}" alt="${prod.nombre}" style="width:80px;height:80px;">` : ''}
-            <strong>${prod.nombre}</strong><br>
-            <span>${prod.descripcion || ''}</span><br>
-            <span>Precio: S/${prod.precio}</span>
-            ${esSocio ? `<div style="color:green;">Solo para socios</div>` : ''}
-            ${prod.canjeaPuntos && esSocio ? `<div>Puedes canjear por ${prod.puntosNecesarios} puntos</div>` : ''}
-            <button>Agregar</button>
-        `;
+
+        function renderNormal() {
+            divProd.innerHTML = `
+                ${prod.imagen ? `<img src="${prod.imagen}" alt="${prod.nombre}" width="80" height="80">` : ''}
+                <strong>${prod.nombre}</strong><br>
+                <span>${prod.descripcion || ''}</span><br>
+                <span>Precio: S/${prod.precio}</span>
+                ${esSocio ? `<div>Solo para socios</div>` : ''}
+                ${prod.canjeaPuntos && esSocio ? `<div>Puedes canjear por ${prod.puntosNecesarios} puntos</div>` : ''}
+                <button class="agregar-btn">Agregar</button>
+            `;
+            divProd.querySelector('.agregar-btn').onclick = () => renderCantidad();
+        }
+
+        function renderCantidad() {
+            // Calcular cantidad máxima posible
+            const totalActual = carrito.reduce((sum, item) => sum + item.cantidad, 0);
+            const maxAgregar = 10 - totalActual;
+            if (maxAgregar <= 0) {
+                alert('Máximo 10 productos en la orden.');
+                return;
+            }
+            let cantidad = 1;
+            divProd.innerHTML = `
+                ${prod.imagen ? `<img src="${prod.imagen}" alt="${prod.nombre}" width="80" height="80">` : ''}
+                <strong>${prod.nombre}</strong><br>
+                <span>${prod.descripcion || ''}</span><br>
+                <span>Precio: S/${prod.precio}</span>
+                <div>
+                    <button class="menos-btn">-</button>
+                    <span class="cantidad-span">${cantidad}</span>
+                    <button class="mas-btn">+</button>
+                    <span> (máx ${maxAgregar})</span>
+                </div>
+                <div style="margin-top:8px;">
+                    <button class="aceptar-btn">Aceptar</button>
+                    <button class="cancelar-btn">Cancelar</button>
+                </div>
+            `;
+            const cantidadSpan = divProd.querySelector('.cantidad-span');
+            divProd.querySelector('.menos-btn').onclick = () => {
+                if (cantidad > 1) {
+                    cantidad--;
+                    cantidadSpan.textContent = cantidad;
+                }
+            };
+            divProd.querySelector('.mas-btn').onclick = () => {
+                if (cantidad < maxAgregar) {
+                    cantidad++;
+                    cantidadSpan.textContent = cantidad;
+                }
+            };
+            divProd.querySelector('.aceptar-btn').onclick = () => {
+                const idx = carrito.findIndex(item => item.prod.id === prod.id);
+                if (idx >= 0) {
+                    carrito[idx].cantidad += cantidad;
+                } else {
+                    carrito.push({prod, cantidad});
+                }
+                renderCarrito();
+                renderNormal();
+            };
+            divProd.querySelector('.cancelar-btn').onclick = renderNormal;
+        }
+
+        renderNormal();
         return divProd;
     }
 
     // Muestra por defecto la primera sección (dulce)
     mostrarSeccion('dulce');
+
+    // Renderiza el carrito inicialmente
+    renderCarrito();
 });
