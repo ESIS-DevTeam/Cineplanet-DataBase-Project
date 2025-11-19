@@ -294,9 +294,31 @@ END$$
 
 -- PRODUCTO
 DROP PROCEDURE IF EXISTS producto_create$$
-CREATE PROCEDURE producto_create(IN p_nombre VARCHAR(100), IN p_descripcion TEXT, IN p_precio DECIMAL(5,2), IN p_imagen VARCHAR(255), IN p_tipo VARCHAR(50), OUT p_id INT)
+CREATE PROCEDURE producto_create(
+    IN p_nombre VARCHAR(100),
+    IN p_descripcion TEXT,
+    IN p_precio DECIMAL(10,2),
+    IN p_imagen VARCHAR(255),
+    IN p_tipo ENUM('snack','bebida','combo','merch','dulce','complementario','otro'),
+    IN p_estado ENUM('activo','inactivo'),
+    IN p_requiereSocio TINYINT(1),
+    IN p_gradoMinimo ENUM('clasico','plata','oro','black'),
+    IN p_requiereEmpleado TINYINT(1),
+    IN p_canjeaPuntos TINYINT(1),
+    IN p_puntosNecesarios INT,
+    OUT p_id INT
+)
 BEGIN
-    INSERT INTO PRODUCTO(nombre,descripcion,precio,imagen,tipo) VALUES (p_nombre,p_descripcion,p_precio,p_imagen,p_tipo);
+    INSERT INTO PRODUCTO(
+        nombre, descripcion, precio, imagen, tipo, estado,
+        requiereSocio, gradoMinimo, requiereEmpleado,
+        canjeaPuntos, puntosNecesarios
+    )
+    VALUES (
+        p_nombre, p_descripcion, p_precio, p_imagen, p_tipo, p_estado,
+        p_requiereSocio, p_gradoMinimo, p_requiereEmpleado,
+        p_canjeaPuntos, p_puntosNecesarios
+    );
     SET p_id = LAST_INSERT_ID();
 END$$
 
@@ -307,9 +329,34 @@ BEGIN
 END$$
 
 DROP PROCEDURE IF EXISTS producto_update$$
-CREATE PROCEDURE producto_update(IN p_id INT, IN p_nombre VARCHAR(100), IN p_descripcion TEXT, IN p_precio DECIMAL(5,2), IN p_imagen VARCHAR(255), IN p_tipo VARCHAR(50))
+CREATE PROCEDURE producto_update(
+    IN p_id INT,
+    IN p_nombre VARCHAR(100),
+    IN p_descripcion TEXT,
+    IN p_precio DECIMAL(10,2),
+    IN p_imagen VARCHAR(255),
+    IN p_tipo ENUM('snack','bebida','combo','merch','dulce','complementario','otro'),
+    IN p_estado ENUM('activo','inactivo'),
+    IN p_requiereSocio TINYINT(1),
+    IN p_gradoMinimo ENUM('clasico','plata','oro','black'),
+    IN p_requiereEmpleado TINYINT(1),
+    IN p_canjeaPuntos TINYINT(1),
+    IN p_puntosNecesarios INT
+)
 BEGIN
-    UPDATE PRODUCTO SET nombre=p_nombre, descripcion=p_descripcion, precio=p_precio, imagen=p_imagen, tipo=p_tipo WHERE id = p_id;
+    UPDATE PRODUCTO SET
+        nombre = p_nombre,
+        descripcion = p_descripcion,
+        precio = p_precio,
+        imagen = p_imagen,
+        tipo = p_tipo,
+        estado = p_estado,
+        requiereSocio = p_requiereSocio,
+        gradoMinimo = p_gradoMinimo,
+        requiereEmpleado = p_requiereEmpleado,
+        canjeaPuntos = p_canjeaPuntos,
+        puntosNecesarios = p_puntosNecesarios
+    WHERE id = p_id;
 END$$
 
 DROP PROCEDURE IF EXISTS producto_delete$$

@@ -68,10 +68,26 @@ CREATE TABLE PRODUCTO (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     descripcion TEXT,
-    precio DECIMAL(5,2) NOT NULL,
+    precio DECIMAL(10,2) NOT NULL,
     imagen VARCHAR(255),
-    tipo VARCHAR(50)
+
+    -- Clasificación interna del producto
+    tipo ENUM('snack','bebida','combo','merch','dulce','complementario','otro') DEFAULT 'otro',
+
+    -- Estado del producto
+    estado ENUM('activo','inactivo') DEFAULT 'activo',
+
+    -- 🔹 RESTRICCIONES DE DISPONIBILIDAD
+    requiereSocio TINYINT(1) DEFAULT 0,
+    gradoMinimo ENUM('clasico','plata','oro','black') NULL,
+
+    requiereEmpleado TINYINT(1) DEFAULT 0,
+
+    -- 🔹 CANJE POR PUNTOS
+    canjeaPuntos TINYINT(1) DEFAULT 0,
+    puntosNecesarios INT DEFAULT NULL
 );
+
 
 
 DROP TABLE IF EXISTS SOCIO;

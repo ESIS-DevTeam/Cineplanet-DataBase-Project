@@ -94,17 +94,91 @@ INSERT INTO IDIOMA (nombre) VALUES
 ('Hindi');
 
 -- PRODUCTO
-INSERT INTO PRODUCTO (nombre, descripcion, precio, imagen, tipo) VALUES
-('Cancha Grande', 'Cancha de maíz grande', 15.00, 'cancha_grande.jpg', 'comida'),
-('Cancha Mediana', 'Cancha de maíz mediana', 10.00, 'cancha_mediana.jpg', 'comida'),
-('Canchita Pequeña', 'Cancha de maíz pequeña', 7.00, 'cancha_pequena.jpg', 'comida'),
-('Gaseosa Grande', 'Bebida de 1L', 12.00, 'gaseosa_grande.jpg', 'bebida'),
-('Gaseosa Mediana', 'Bebida de 500ml', 8.00, 'gaseosa_mediana.jpg', 'bebida'),
-('Hot Dog', 'Pan con salchicha', 9.00, 'hotdog.jpg', 'comida'),
-('Nachos', 'Con queso y guacamole', 14.00, 'nachos.jpg', 'comida'),
-('Combo Familiar', '2 Canchas + 2 Gaseosas + Nachos', 40.00, 'combo_familiar.jpg', 'combo'),
-('Combo Pareja', 'Cancha + 2 Gaseosas', 25.00, 'combo_pareja.jpg', 'combo'),
-('Agua Mineral', 'Botella de agua 600ml', 6.00, 'agua.jpg', 'bebida');
+INSERT INTO PRODUCTO 
+(nombre, descripcion, precio, imagen, tipo, estado,
+ requiereSocio, gradoMinimo, requiereEmpleado,
+ canjeaPuntos, puntosNecesarios)
+VALUES
+-- ============================
+-- SNACKS
+-- ============================
+('Cancha Grande', 'Balde grande de canchita salada', 18.00, 'cancha_grande.jpg', 'snack', 'activo',
+ 0, NULL, 0, 0, NULL),
+
+('Cancha Mediana', 'Cancha mediana tradicional', 12.00, 'cancha_mediana.jpg', 'snack', 'activo',
+ 0, NULL, 0, 0, NULL),
+
+-- ============================
+-- BEBIDAS
+-- ============================
+('Gaseosa 12oz', 'Gaseosa pequeña', 7.00, 'gaseosa12.jpg', 'bebida', 'activo',
+ 0, NULL, 0, 0, NULL),
+
+('Gaseosa 21oz', 'Gaseosa mediana', 10.00, 'gaseosa21.jpg', 'bebida', 'activo',
+ 0, NULL, 0, 0, NULL),
+
+-- ============================
+-- COMBOS GENERALES
+-- ============================
+('Combo Pareja', 'Cancha grande + 2 gaseosas 21oz', 30.00, 'combo_pareja.jpg', 'combo', 'activo',
+ 0, NULL, 0, 0, NULL),
+
+-- ============================
+-- COMBOS EXCLUSIVOS POR NIVEL DE SOCIO
+-- ============================
+('Combo Clásico',
+ 'Cancha mediana + gaseosa 12oz. Disponible para socios clásicos o superior.',
+ 18.00, 'combo_clasico.jpg', 'combo', 'activo',
+ 1, 'clasico', 0, 0, NULL),
+
+('Combo Plata',
+ 'Cancha grande + gaseosa 21oz. Disponible para socios plata o superior.',
+ 24.00, 'combo_plata.jpg', 'combo', 'activo',
+ 1, 'plata', 0, 0, NULL),
+
+('Combo Oro',
+ 'Cancha jumbo + 2 gaseosas medianas. Disponible para socios oro o superior.',
+ 35.00, 'combo_oro.jpg', 'combo', 'activo',
+ 1, 'oro', 0, 0, NULL),
+
+('Combo Black',
+ 'Cancha jumbo + 2 gaseosas + hot dog + nachos. Solo para socios black.',
+ 49.00, 'combo_black.jpg', 'combo', 'activo',
+ 1, 'black', 0, 0, NULL),
+
+-- ============================
+-- PRODUCTO EXCLUSIVO EMPLEADO + SOCIO
+-- ============================
+('Combo Empleado Plus', 
+ 'Combo especial solo para empleados socios',
+ 15.00, 'combo_empleado.jpg', 'combo', 'activo',
+ 1, 'clasico', 1, 0, NULL),
+
+-- ============================
+-- DULCES
+-- ============================
+('Chocolate Sublime', 'Sublime clásico 30g', 5.00, 'sublime.jpg', 'dulce', 'activo',
+ 0, NULL, 0, 0, NULL),
+
+-- ============================
+-- MERCH
+-- ============================
+('Vaso Coleccionable', 'Vaso de edición limitada', 25.00, 'vaso.jpg', 'merch', 'activo',
+ 0, NULL, 0, 0, NULL),
+
+-- ============================
+-- COMPLEMENTARIOS
+-- ============================
+('Extra Mantequilla', 'Shot de mantequilla adicional', 3.00, 'mantequilla.jpg', 'complementario', 'activo',
+ 0, NULL, 0, 0, NULL),
+
+-- ============================
+-- PRODUCTO DE CANJE POR PUNTOS (SOLO SOCIO)
+-- ============================
+('Gaseosa 12oz (Canje Socio)',
+ 'Canje exclusivo de gaseosa para socios',
+ 0.00, 'gaseosa_canje.jpg', 'bebida', 'activo',
+ 1, 'clasico', 0, 1, 300);
 
 
 -- PROMO
