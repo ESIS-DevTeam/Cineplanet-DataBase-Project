@@ -54,17 +54,147 @@ document.addEventListener('DOMContentLoaded', async () => {
             `;
         }
 
+        // Preparar promosBoleta: promos=id:cant,id:cant,...
+        async function prepararPromosBoleta() {
+            if (!promos) return [];
+            const promoArr = promos.split(',').map(str => {
+                const [id, cantidad] = str.split(':');
+                return { idPromo: parseInt(id), cantidad: cantidad ? parseInt(cantidad) : 1 };
+            });
+            // Consultar detalle y descuento para cada promo
+            const results = [];
+            for (const promo of promoArr) {
+                try {
+                    const resPromo = await fetch(`${BASE_API_DOMAIN}getPromoDetalleDescuento.php?idPromo=${promo.idPromo}&idFuncion=${idFuncion}`);
+                    const dataPromo = await resPromo.json();
+                    results.push({
+                        idPromo: promo.idPromo,
+                        montoDescuento: dataPromo.montoDescuento || 0,
+                        detalle: dataPromo.detalle || '',
+                        cantidad: promo.cantidad
+                    });
+                } catch {
+                    results.push({
+                        idPromo: promo.idPromo,
+                        montoDescuento: 0,
+                        detalle: '',
+                        cantidad: promo.cantidad
+                    });
+                }
+            }
+            return results;
+        }
+
+        // Preparar productosBoleta: productos=id-cant,id-cant,...
+        async function prepararProductosBoleta() {
+            if (!productos) return [];
+            const prodArr = productos.split(',').map(str => {
+                const [id, cantidad] = str.split('-');
+                return { idProducto: parseInt(id), cantidad: cantidad ? parseInt(cantidad) : 1 };
+            });
+            const results = [];
+            for (const prod of prodArr) {
+                try {
+                    const resProd = await fetch(`${BASE_API_DOMAIN}getProductoDetallePrecio.php?idProducto=${prod.idProducto}`);
+                    const dataProd = await resProd.json();
+                    const precioUnitario = dataProd.precioUnitario || 0;
+                    results.push({
+                        idProducto: prod.idProducto,
+                        cantidad: prod.cantidad,
+                        precioUnitario: precioUnitario,
+                        subtotal: prod.cantidad * precioUnitario
+                    });
+                } catch {
+                    results.push({
+                        idProducto: prod.idProducto,
+                        cantidad: prod.cantidad,
+                        precioUnitario: 0,
+                        subtotal: 0
+                    });
+                }
+            }
+            return results;
+        }
+
         // Obtener resumen completo desde el endpoint
         let resumen = null;
+        let productosBoleta = [];
+        let promosBoleta = [];
+        let asientosBoleta = [];
         try {
             const url = `${BASE_API_DOMAIN}/getResumenCompra.php?funcion=${idFuncion || ''}&pelicula=${idPelicula || ''}&asientos=${asientos || ''}&promos=${promos || ''}&productos=${productos || ''}`;
             const res = await fetch(url);
             resumen = await res.json();
+
+            // Preparar productosBoleta con precio y detalle
+            productosBoleta = await prepararProductosBoleta();
+
+            // Preparar promosBoleta con detalle y descuento
+            promosBoleta = await prepararPromosBoleta();
+
+            // Preparar asientosBoleta: asigna a cada asiento el precio de la entrada/promo correspondiente
+            // Ejemplo: resumen.entradas = [{nombre, cantidad, precio, asientos: [A1, A2]}, ...]
+            if (Array.isArray(resumen.entradas) && asientos) {
+                let asientosArr = asientos.split(',').map(id => id.trim()).filter(x => x);
+                let asientoPromoMap = [];
+                let used = new Set();
+                resumen.entradas.forEach(entrada => {
+                    // Asigna el precio de la entrada a la cantidad de asientos que corresponda
+                    let count = 0;
+                    for (let i = 0; i < asientosArr.length && count < entrada.cantidad; i++) {
+                        if (!used.has(asientosArr[i])) {
+                            asientoPromoMap.push({
+                                idPlanoSala: parseInt(asientosArr[i]),
+                                precioUnitario: entrada.precio
+                            });
+                            used.add(asientosArr[i]);
+                            count++;
+                        }
+                    }
+                });
+                // Si quedan asientos sin asignar (por error), asígnales el precio base
+                for (let i = 0; i < asientosArr.length; i++) {
+                    if (!used.has(asientosArr[i])) {
+                        asientoPromoMap.push({
+                            idPlanoSala: parseInt(asientosArr[i]),
+                            precioUnitario: resumen.precio || 0
+                        });
+                    }
+                }
+                asientosBoleta = asientoPromoMap;
+            } else if (asientos) {
+                // Fallback: todos los asientos con el mismo precio
+                let precioAsiento = resumen.precioFinalAsiento || resumen.precioFinal || resumen.totalAsiento || resumen.precio || 0;
+                asientosBoleta = asientos.split(',').map(id => ({
+                    idPlanoSala: parseInt(id),
+                    precioUnitario: precioAsiento
+                }));
+            }
+
+            // Guardar en el resumen para el autofill
+            resumen.productosBoleta = productosBoleta;
+            resumen.promosBoleta = promosBoleta;
+            resumen.asientosBoleta = asientosBoleta;
+
+            // Guardar resumen global para el autofill
+            window.resumenCompra = resumen;
         } catch {
-            // Si falla, muestra error
             document.getElementById('info-container').innerHTML += '<div>Error al obtener el resumen de la compra.</div>';
             return;
         }
+
+        // Visualizar los datos preparados en la página
+        const debugDiv = document.createElement('div');
+        debugDiv.style = 'background:#f9f9f9;border:1px solid #ccc;padding:1em;margin:1em 0;max-height:300px;overflow:auto;font-size:0.95em;';
+        debugDiv.innerHTML = `
+            <b>PRODUCTOS_BOLETA:</b>
+            <pre>${JSON.stringify(productosBoleta, null, 2)}</pre>
+            <b>PROMO_BOLETA:</b>
+            <pre>${JSON.stringify(promosBoleta, null, 2)}</pre>
+            <b>BOLETA_ASIENTO:</b>
+            <pre>${JSON.stringify(asientosBoleta, null, 2)}</pre>
+        `;
+        main.appendChild(debugDiv);
 
         // Mostrar total y botón de resumen
         const resumenDiv = document.createElement('div');
