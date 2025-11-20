@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const pagoForms = document.querySelectorAll('details[id^="pago-"] form');
     const warningDiv = document.getElementById('pago-warning');
     pagoForms.forEach(form => {
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', async function(e) {
             const nombreInput = document.querySelector('input[name="nombreCompleto"]');
             const emailInput = document.querySelector('input[name="correoElectronico"]');
             if (!nombreInput.value.trim() || !emailInput.value.trim()) {
@@ -64,7 +64,37 @@ document.addEventListener('DOMContentLoaded', async () => {
                 warningDiv.textContent = '';
                 warningDiv.style.display = 'none';
             }
-            // ...existing code for submit if any...
+
+            e.preventDefault();
+
+            // Recopilar datos
+            const tipoDocumento = form.querySelector('select[name="tipoDocumento"]').value;
+            const numeroDocumento = form.querySelector('input[name="numeroDocumento"]').value;
+            const payloadVerificar = {
+                nombreCompleto: nombreInput.value,
+                correoElectronico: emailInput.value,
+                tipoDocumento,
+                numeroDocumento
+            };
+
+            // Verificar documento antes de pagar
+            try {
+                const resVerificar = await fetch('../../backend/api/verificarDocumento.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payloadVerificar)
+                });
+                const resultVerificar = await resVerificar.json();
+                if (resultVerificar.status === 'socio') {
+                    alert(resultVerificar.message);
+                    return;
+                }
+                // Si usuario existe o fue insertado, continuar con el pago normal
+                // ...aquí iría la lógica para enviar el pago (como antes)...
+            } catch {
+                alert('❌ Error al verificar el documento');
+                return;
+            }
         });
     });
 });
