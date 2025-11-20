@@ -238,8 +238,44 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // --- NUEVO: Lógica de verificación de documento al pagar ---
+    // --- NUEVO: Lógica de verificación de documento y pago ---
     const form = document.getElementById('form-pago');
+
+    async function procesarPago(idUsuario) {
+        if (!idUsuario) {
+            alert('Error: No se pudo obtener un ID de usuario para la boleta.');
+            return;
+        }
+        datosBoleta.idUsuario = idUsuario;
+
+        const payload = {
+            ...datosBoleta,
+            idFuncion: idFuncion,
+            productosBoleta: datosProductosBoleta,
+            promosBoleta: datosPromoBoleta,
+            asientosBoleta: datosBoletaAsiento
+        };
+
+        try {
+            const res = await fetch(`${BASE_API_DOMAIN}realizarPago.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const resultadoPago = await res.json();
+
+            if (resultadoPago.success) {
+                alert(`¡Pago exitoso! ID de boleta: ${resultadoPago.idBoleta}`);
+                // Redirigir a una página de éxito
+                window.location.href = 'pagoExitoso.html?boleta=' + resultadoPago.idBoleta;
+            } else {
+                alert(`Error en el pago: ${resultadoPago.message}`);
+            }
+        } catch (err) {
+            alert('Error al conectar con el servidor para realizar el pago.');
+        }
+    }
+
     // Detectar todos los botones de pago
     form.querySelectorAll('button[type="submit"]').forEach(btn => {
         btn.addEventListener('click', async function(e) {
@@ -247,7 +283,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // Si está logueado, usar el id del socio
             if (sessionData.socio && sessionData.socio.id) {
-                alert(`ID de usuario (socio logueado): ${sessionData.socio.id}`);
+                await procesarPago(sessionData.socio.id);
                 return;
             }
 
@@ -275,7 +311,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return;
             }
 
-            // Consultar al backend
+            // Consultar al backend para verificar/registrar usuario
             try {
                 const res = await fetch(`${BASE_API_DOMAIN}verificarDocumento.php`, {
                     method: 'POST',
@@ -292,13 +328,138 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (data.status === 'socio') {
                     alert(data.message);
                 } else if (data.status === 'usuario' || data.status === 'insertado') {
-                    alert(`ID de usuario: ${data.idUsuario}`);
+                    await procesarPago(data.idUsuario);
                 } else {
-                    alert(data.message || 'Error desconocido');
+                    alert(data.message || 'Error desconocido al verificar documento.');
                 }
             } catch (err) {
                 alert('Error al verificar el documento. Intenta nuevamente.');
             }
         });
     });
+
+    // --- NUEVO: Preparar datos para cada tabla relacionada con la boleta ---
+    function parseCSV(str) {
+        return str ? str.split(',').map(s => s.trim()).filter(Boolean) : [];
+    }
+
+    function parseProductos(str) {
+        return str ? str.split(',').map(item => {
+            const [id, cantidad] = item.split('-');
+            return {
+                idProducto: id,
+                cantidad: cantidad ? parseInt(cantidad, 10) : 1,
+                precioUnitario: null,
+                subtotal: null
+            };
+        }).filter(p => p.idProducto) : [];
+    }
+
+    function parsePromos(str) {
+        return str ? str.split(',').map(item => {
+            const [id] = item.split(':');
+            return {
+                idPromo: id,
+                montoDescuento: null,
+                detalle: ''
+            };
+        }).filter(p => p.idPromo) : [];
+    }
+
+    const datosBoleta = {
+        idUsuario: null,
+        fecha: new Date().toISOString().slice(0, 10),
+        subtotal: 0,
+        descuentoTotal: 0,
+        total: 0
+    };
+
+    const datosBoletaAsiento = parseCSV(asientos).map(asiento => ({
+        idFuncion: idFuncion,
+        idPlanoSala: asiento,
+        precioUnitario: null
+    }));
+
+    const datosProductosBoleta = parseProductos(productos);
+    const datosPromoBoleta = parsePromos(promos);
+
+    async function completarPreciosProductos(arr) {
+        for (const prod of arr) {
+            try {
+                const res = await fetch(`${BASE_API_DOMAIN}getProductoDetallePrecio.php?idProducto=${prod.idProducto}`);
+                const data = await res.json();
+                prod.precioUnitario = data.precioUnitario ?? null;
+                prod.subtotal = prod.precioUnitario !== null ? prod.precioUnitario * prod.cantidad : null;
+            } catch {
+                prod.precioUnitario = null;
+                prod.subtotal = null;
+            }
+        }
+    }
+
+    async function completarDatosPromos(arr, idFuncion) {
+        for (const promo of arr) {
+            try {
+                const res = await fetch(`${BASE_API_DOMAIN}getPromoDetalleDescuento.php?idPromo=${promo.idPromo}&idFuncion=${idFuncion}`);
+                const data = await res.json();
+                promo.montoDescuento = data.montoDescuento ?? null;
+                promo.detalle = data.detalle ?? '';
+                promo.precioFinal = data.precioFinal ?? null; // Guardar el precio final
+                promo.tipo = data.tipo ?? 'fijo'; // Guardar el tipo
+            } catch {
+                promo.montoDescuento = null;
+                promo.detalle = '';
+                promo.precioFinal = null;
+                promo.tipo = 'fijo';
+            }
+        }
+    }
+
+    // --- NUEVO: Obtener precio de función y aplicar descuento de promo a cada asiento ---
+    async function completarPreciosAsientos(asientosArr, promosArr, idFuncion) {
+        if (asientosArr.length === 0 || !idFuncion) return;
+
+        let precioBase = null;
+        try {
+            const res = await fetch(`${BASE_API_DOMAIN}getInfoFuncionCompleta.php?idFuncion=${idFuncion}`);
+            const data = await res.json();
+            precioBase = data.precio ?? null;
+        } catch {
+            precioBase = null;
+        }
+
+        if (precioBase === null) {
+            asientosArr.forEach(asiento => asiento.precioUnitario = null);
+            return;
+        }
+
+        asientosArr.forEach((asiento, index) => {
+            const promo = promosArr.length > 0 ? (promosArr[index] ?? promosArr[0]) : null;
+            
+            if (promo && promo.precioFinal !== null) {
+                asiento.precioUnitario = promo.precioFinal;
+            } else {
+                asiento.precioUnitario = precioBase;
+            }
+        });
+
+        return precioBase; // Devuelve el precio base para el cálculo del subtotal
+    }
+
+    (async () => {
+        await completarPreciosProductos(datosProductosBoleta);
+        await completarDatosPromos(datosPromoBoleta, idFuncion);
+        const precioBaseAsiento = await completarPreciosAsientos(datosBoletaAsiento, datosPromoBoleta, idFuncion);
+
+        // --- CORREGIDO: Calcular totales para la boleta ---
+        const subtotalAsientos = (precioBaseAsiento || 0) * datosBoletaAsiento.length;
+        const subtotalProductos = datosProductosBoleta.reduce((acc, prod) => acc + (prod.subtotal || 0), 0);
+        datosBoleta.subtotal = subtotalAsientos + subtotalProductos;
+
+        // El descuento total es la suma de los descuentos aplicados a cada asiento.
+        const totalAsientosConDescuento = datosBoletaAsiento.reduce((acc, asiento) => acc + (asiento.precioUnitario || 0), 0);
+        datosBoleta.descuentoTotal = subtotalAsientos - totalAsientosConDescuento;
+        
+        datosBoleta.total = datosBoleta.subtotal - datosBoleta.descuentoTotal;
+    })();
 });

@@ -37,18 +37,25 @@ if (!$funcion) {
 }
 
 $precioBase = floatval($funcion['precio']);
-$descuento = 0;
+$montoDescuento = 0;
+$precioFinal = $precioBase;
 
-// Calcular descuento
+// Calcular precio final o descuento
 if ($promo['tipo'] === 'porcentaje') {
-    $descuento = $precioBase * (floatval($promo['valor']) / 100);
-} else {
-    $descuento = floatval($promo['valor']);
+    $montoDescuento = $precioBase * (floatval($promo['valor']) / 100);
+    $precioFinal = $precioBase - $montoDescuento;
+} else { // tipo 'fijo'
+    $precioFinal = floatval($promo['valor']);
+    $montoDescuento = $precioBase - $precioFinal;
 }
-if ($descuento > $precioBase) $descuento = $precioBase;
+
+if ($montoDescuento < 0) $montoDescuento = 0;
+if ($precioFinal < 0) $precioFinal = 0;
 
 echo json_encode([
     'detalle' => $promo['nombre'] . ($promo['descripcion'] ? ' - ' . $promo['descripcion'] : ''),
-    'montoDescuento' => round($descuento, 2)
+    'montoDescuento' => round($montoDescuento, 2),
+    'precioFinal' => round($precioFinal, 2),
+    'tipo' => $promo['tipo']
 ]);
 ?>
