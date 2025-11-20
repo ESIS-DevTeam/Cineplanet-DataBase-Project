@@ -237,4 +237,68 @@ document.addEventListener('DOMContentLoaded', async () => {
             form['celular-billetera'].readOnly = true;
         }
     }
+
+    // --- NUEVO: Lógica de verificación de documento al pagar ---
+    const form = document.getElementById('form-pago');
+    // Detectar todos los botones de pago
+    form.querySelectorAll('button[type="submit"]').forEach(btn => {
+        btn.addEventListener('click', async function(e) {
+            e.preventDefault(); // Evita el submit normal
+
+            // Si está logueado, usar el id del socio
+            if (sessionData.socio && sessionData.socio.id) {
+                alert(`ID de usuario (socio logueado): ${sessionData.socio.id}`);
+                return;
+            }
+
+            // Detectar método de pago
+            const metodo = btn.getAttribute('data-metodo');
+            let tipoDocumento = '', numeroDocumento = '', nombreCompleto = '', correoElectronico = '';
+
+            nombreCompleto = form.nombre.value.trim();
+            correoElectronico = form.correo.value.trim();
+
+            if (metodo === 'tarjeta') {
+                tipoDocumento = form['tipo-doc-tarjeta'].value;
+                numeroDocumento = form['num-doc-tarjeta'].value.trim();
+            } else if (metodo === 'agora') {
+                tipoDocumento = form['tipo-doc-agora'].value;
+                numeroDocumento = form['num-doc-agora'].value.trim();
+            } else if (metodo === 'billetera') {
+                tipoDocumento = form['tipo-doc-billetera'].value;
+                numeroDocumento = form['num-doc-billetera'].value.trim();
+            }
+
+            // Validar campos mínimos
+            if (!tipoDocumento || !numeroDocumento || !nombreCompleto || !correoElectronico) {
+                alert('Completa todos los campos requeridos.');
+                return;
+            }
+
+            // Consultar al backend
+            try {
+                const res = await fetch(`${BASE_API_DOMAIN}verificarDocumento.php`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        tipoDocumento,
+                        numeroDocumento,
+                        nombreCompleto,
+                        correoElectronico
+                    })
+                });
+                const data = await res.json();
+
+                if (data.status === 'socio') {
+                    alert(data.message);
+                } else if (data.status === 'usuario' || data.status === 'insertado') {
+                    alert(`ID de usuario: ${data.idUsuario}`);
+                } else {
+                    alert(data.message || 'Error desconocido');
+                }
+            } catch (err) {
+                alert('Error al verificar el documento. Intenta nuevamente.');
+            }
+        });
+    });
 });
