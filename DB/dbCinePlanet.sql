@@ -199,9 +199,6 @@ CREATE TABLE BOLETA (
     FOREIGN KEY (idUsuario) REFERENCES USUARIO(id) ON DELETE CASCADE
 );
 
--- BOLETA_ASIENTO: registra qué asiento se vendió para una boleta y función
--- Se asegura que un mismo asiento no sea asignado a la misma función más de una vez
-
 
 DROP TABLE IF EXISTS PRODUCTOS_BOLETA;
 CREATE TABLE PRODUCTOS_BOLETA (
@@ -225,8 +222,6 @@ CREATE TABLE PROMO_BOLETA (
     FOREIGN KEY (idBoleta) REFERENCES BOLETA(id) ON DELETE CASCADE,
     FOREIGN KEY (idPromo) REFERENCES PROMO(id) ON DELETE CASCADE
 );
-
--- NUEVA TABLA: registro de uso de promociones por usuario
 
 
 DROP TABLE IF EXISTS BOLETA_ASIENTO;

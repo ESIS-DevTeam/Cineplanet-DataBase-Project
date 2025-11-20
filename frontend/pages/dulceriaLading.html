@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="author" content="Willo">
+    <meta name="description" content="Formularios Cineplanet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cineplanet Formularios</title>
+    <link rel="shortcut icon" href="../images/items/icono-cine.ico" type="image/x-icon">
+    <link href="../styles/estilos.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div class="app-container">
+        <header class="main-header">
+            <div class="header-container">
+                <h1 class="visually-hidden">Cineplanet</h1>
+                <div class="header-brand">
+                    <a href="../../index.html" target="_self">
+                        <!-- ...logo svg... -->
+                    </a>
+                </div>
+                <nav class="main-nav">
+                    <div class="nav-container">
+                        <ul class="nav-list">
+                            <li class="nav-item"><a href="peliculas.html" target="_self">Películas</a></li>
+                            <li class="nav-item"><a href="cines.html" target="_self">Cines</a></li>
+                            <li class="nav-item"><a href="promociones.html" target="_self">Promociones</a></li>
+                            <li class="nav-item"><a href="socio.html" target="_self">Socio</a></li>
+                            <li class="nav-item"><a href="dulceriaLading.html" target="_self">Dulcería</a></li>
+                            <li class="nav-item"><a href="corporativo.html" target="_self">Corporativo</a></li>
+                            <li class="nav-item"><a href="blog.html" target="_blank">Blog</a></li>
+                        </ul>
+                        <div class="nav-actions">
+                            <button class="buscar-btn" aria-label="Buscar">🔍</button>
+                            <button class="socio-btn" aria-label="socio">👤</button>
+                            <button class="ayuda-btn" aria-label="ayuda">❔</button>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </header>
+    </div>
+    <div id="socio-info" style="text-align:right; margin:10px;"></div>
+    <div id="socio-popup" style="display:none; position:fixed; top:70px; right:30px; background:#fff; border:1px solid #ccc; box-shadow:0 2px 8px #0002; z-index:1000; min-width:220px; padding:16px; border-radius:8px;">
+        <div id="socio-popup-content"></div>
+    </div>
+    <!-- NUEVO: Formulario ciudad/cine -->
+    <main>
+        <h2 style="text-align:center;">Selecciona Ciudad y Cine</h2>
+        <form id="form-ciudad-cine" style="max-width:400px;margin:2em auto;">
+            <div>
+                <label for="select-ciudad">Ciudad:</label>
+                <select id="select-ciudad" name="ciudad" required>
+                    <option value="">Selecciona una ciudad</option>
+                </select>
+            </div>
+            <div>
+                <label for="select-cine">Cine:</label>
+                <select id="select-cine" name="cine" required disabled>
+                    <option value="">Selecciona un cine</option>
+                </select>
+            </div>
+            <div style="margin-top:1em;">
+                <button type="submit">Continuar</button>
+            </div>
+        </form>
+    </main>
+    <script>
+    let socioData = null;
+
+    // Verifica si hay sesión de socio y muestra el nombre
+    fetch('../../backend/auth/checkSession.php')
+        .then(res => res.json())
+        .then(data => {
+            socioData = data.socio || null;
+            if (data.loggedIn && socioData) {
+                document.getElementById('socio-info').innerHTML =
+                    '👤 Socio: ' + socioData.nombre +
+                    ' <button onclick="logout()">Cerrar sesión</button>';
+            } else {
+                document.getElementById('socio-info').innerHTML =
+                    `<a href="login.html?redirect=dulceriaLading.html">Iniciar sesión</a>`;
+            }
+        });
+
+    function logout() {
+        fetch('../../backend/auth/logout.php')
+            .then(() => window.location.reload());
+    }
+
+    // Ventana flotante socio
+    const socioBtn = document.querySelector('.socio-btn');
+    const popup = document.getElementById('socio-popup');
+    const popupContent = document.getElementById('socio-popup-content');
+
+    socioBtn.addEventListener('click', function() {
+        if (popup.style.display === 'block') {
+            popup.style.display = 'none';
+            return;
+        }
+        if (socioData) {
+            popupContent.innerHTML = `
+                <div style="font-weight:bold; margin-bottom:8px;">${socioData.nombre}</div>
+                <button onclick="window.location.href='beneficios.html'">Mis beneficios</button><br>
+                <button onclick="window.location.href='compras.html'">Mis compras</button><br>
+                <button onclick="window.location.href='datos.html'">Mis datos</button><br>
+                <button onclick="logout()">Cerrar sesión</button>
+            `;
+        } else {
+            popupContent.innerHTML = `
+                <button onclick="window.location.href='login.html?redirect=dulceriaLading.html'">Iniciar sesión</button><br>
+                <button onclick="window.location.href='registro.html'">Registrar</button>
+            `;
+        }
+        popup.style.display = 'block';
+    });
+
+    // Ocultar popup al hacer click fuera
+    document.addEventListener('click', function(e) {
+        if (!popup.contains(e.target) && e.target !== socioBtn) {
+            popup.style.display = 'none';
+        }
+    });
+    </script>
+    <script type="module" src="../js/dulceriaLading.js"></script>
+</body>
+</html>
