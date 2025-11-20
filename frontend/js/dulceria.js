@@ -162,6 +162,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (asientos) urlParams.set('asientos', asientos);
             if (promos) urlParams.set('promos', promos);
             urlParams.set('productos', productosParam);
+            console.log('Redirigiendo a pago.html con:', urlParams.toString());
             window.location.href = `pago.html?${urlParams.toString()}`;
         };
     }

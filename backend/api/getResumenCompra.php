@@ -141,12 +141,13 @@ if ($productos) {
         $stmt->execute();
         $stmt->bind_result($nombre, $descripcion, $precio);
         if ($stmt->fetch()) {
-            $subtotal = $precio * $cantidad;
+            $precioFloat = floatval($precio); // Convertir precio a float
+            $subtotal = $precioFloat * $cantidad;
             $resumen["dulceria"][] = [
                 "nombre" => $nombre,
                 "descripcion" => $descripcion,
                 "cantidad" => $cantidad,
-                "precio" => $precio,
+                "precio" => $precioFloat, // Usar el precio convertido
                 "subtotal" => $subtotal
             ];
             $resumen["totalDulceria"] += $subtotal;
