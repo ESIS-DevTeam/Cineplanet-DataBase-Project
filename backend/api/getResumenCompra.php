@@ -129,9 +129,12 @@ if ($promos) {
 if ($productos) {
     $productosArr = explode(',', $productos);
     foreach ($productosArr as $prodStr) {
+        // Solo procesa si tiene el formato id-cantidad
+        if (strpos($prodStr, '-') === false) continue;
         list($id, $cantidad) = explode('-', $prodStr);
         $id = intval($id);
         $cantidad = intval($cantidad);
+        if ($id <= 0 || $cantidad <= 0) continue;
         $sql = "SELECT nombre, descripcion, precio FROM PRODUCTO WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $id);

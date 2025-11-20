@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pago</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        #socio-display { position: absolute; top: 15px; right: 15px; font-size: 1.2em; border: 1px solid #ccc; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; user-select: none; }
+    </style>
+</head>
+<body>
+    <header id="main-header">
+        <h1>Resumen de Compra y Pago</h1>
+        <div id="socio-display"></div>
+    </header>
+
+    <main id="main-content">
+        <div id="info-container">
+            <!-- La información de la película y función se cargará aquí -->
+        </div>
+        <div id="pago-container">
+            <h2>Elige una forma de Pago</h2>
+            <form id="form-pago">
+                <div>
+                    <label for="nombre">Nombre completo</label>
+                    <input type="text" id="nombre" name="nombre" required oninvalid="this.setCustomValidity('Debes ingresar tu nombre completo.')" oninput="this.setCustomValidity('')">
+                </div>
+                <div>
+                    <label for="correo">Correo electrónico</label>
+                    <input type="email" id="correo" name="correo" required oninvalid="this.setCustomValidity('Debes ingresar tu correo electrónico.')" oninput="this.setCustomValidity('')">
+                </div>
+                <!-- Opción 1: Tarjeta de Crédito o Débito -->
+                <details>
+                    <summary>
+                        Tarjeta de Crédito o Débito
+                    </summary>
+                    <div id="detalle-tarjeta">
+                        <div>
+                            <label for="numero-tarjeta">Número de la tarjeta</label>
+                            <input type="text" id="numero-tarjeta" name="numero-tarjeta" required>
+                        </div>
+                        <div>
+                            <label for="tipo-tarjeta">Tipo de Tarjeta</label>
+                            <select id="tipo-tarjeta" name="tipo-tarjeta" required>
+                                <option value="">Selecciona</option>
+                                <option value="credito">Crédito</option>
+                                <option value="debito">Débito</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="mes">Mes</label>
+                            <select id="mes" name="mes" required>
+                                <option value="">Mes</option>
+                                <!-- Opciones de mes -->
+                            </select>
+                            <label for="anio">Año</label>
+                            <select id="anio" name="anio" required>
+                                <option value="">Año</option>
+                                <!-- Opciones de año -->
+                            </select>
+                            <label for="cvv">CVV</label>
+                            <input type="text" id="cvv" name="cvv" required>
+                        </div>
+                        <div>
+                            <label for="tipo-doc-tarjeta">Tipo de documento</label>
+                            <select id="tipo-doc-tarjeta" name="tipo-doc-tarjeta" required>
+                                <option value="">Selecciona</option>
+                                <option value="dni">DNI</option>
+                                <option value="ce">CE</option>
+                            </select>
+                            <label for="num-doc-tarjeta">Número de documento</label>
+                            <input type="text" id="num-doc-tarjeta" name="num-doc-tarjeta" required>
+                        </div>
+                        <div>
+                            <button type="submit" data-metodo="tarjeta">Pagar</button>
+                        </div>
+                    </div>
+                </details>
+                <!-- Opción 2: App agora -->
+                <details>
+                    <summary>
+                        App agora
+                    </summary>
+                    <div id="detalle-agora">
+                        <div>
+                            <label for="celular-agora">Número de Celular</label>
+                            <input type="text" id="celular-agora" name="celular-agora" required>
+                        </div>
+                        <div>
+                            <label for="tipo-doc-agora">Tipo de documento</label>
+                            <select id="tipo-doc-agora" name="tipo-doc-agora" required>
+                                <option value="">Selecciona</option>
+                                <option value="dni">DNI</option>
+                                <option value="ce">CE</option>
+                            </select>
+                            <label for="num-doc-agora">Número de documento</label>
+                            <input type="text" id="num-doc-agora" name="num-doc-agora" required>
+                        </div>
+                        <div>
+                            <button type="submit" data-metodo="agora">Pagar</button>
+                        </div>
+                    </div>
+                </details>
+                <!-- Opción 3: Billeteras Electrónicas -->
+                <details>
+                    <summary>
+                        Billeteras Electrónicas
+                    </summary>
+                    <div id="detalle-billetera">
+                        <div>
+                            <label for="tipo-doc-billetera">Tipo de documento</label>
+                            <select id="tipo-doc-billetera" name="tipo-doc-billetera" required>
+                                <option value="">Selecciona</option>
+                                <option value="dni">DNI</option>
+                                <option value="ce">CE</option>
+                            </select>
+                            <label for="num-doc-billetera">Número de documento</label>
+                            <input type="text" id="num-doc-billetera" name="num-doc-billetera" required>
+                        </div>
+                        <div>
+                            <label for="celular-billetera">Número de Celular</label>
+                            <input type="text" id="celular-billetera" name="celular-billetera" required>
+                        </div>
+                        <div>
+                            <label>Selecciona billetera:</label>
+                            <input type="radio" id="billetera-yape" name="billetera-tipo" value="yape" checked required>
+                            <label for="billetera-yape">Yape</label>
+                            <input type="radio" id="billetera-plin" name="billetera-tipo" value="plin" required>
+                            <label for="billetera-plin">Plin</label>
+                            <input type="radio" id="billetera-tunki" name="billetera-tipo" value="tunki" required>
+                            <label for="billetera-tunki">Tunki</label>
+                        </div>
+                        <div>
+                            <button type="submit" data-metodo="billetera">Pagar</button>
+                        </div>
+                    </div>
+                </details>
+                <div style="margin-top:1em;">
+                    <input type="checkbox" id="acepto-terminos" name="acepto-terminos" required>
+                    <label for="acepto-terminos">
+                        Acepto los <a href="#">Términos y Condiciones</a>, <a href="#">Política de Privacidad</a>.
+                    </label>
+                </div>
+                <div>
+                    <input type="checkbox" id="acepto-tratamiento" name="acepto-tratamiento" required>
+                    <label for="acepto-tratamiento">
+                        Acepto el <a href="#">Tratamiento Opcional de datos</a>.
+                    </label>
+                </div>
+                <div style="margin-top:1em;">
+                    <p style="font-size:0.95em;">
+                        * No se hacen cambios ni devoluciones<br>
+                        * Toda la información de pago es segura<br>
+                        * Algunas de las tarjetas de débito con CVV podrían ser rechazadas por la plataforma de pago que utilizamos debido a las políticas de seguridad del banco
+                    </p>
+                </div>
+            </form>
+        </div>
+    </main>
+    <script type="module" src="../js/pago.js"></script>
+    <script>
+        // Solo permite abrir un details a la vez
+        document.addEventListener('DOMContentLoaded', () => {
+            const detailsList = Array.from(document.querySelectorAll('#pago-container details'));
+            detailsList.forEach(details => {
+                details.addEventListener('toggle', function() {
+                    if (details.open) {
+                        detailsList.forEach(d => {
+                            if (d !== details) d.open = false;
+                        });
+                    }
+                });
+            });
+
+            // Validación personalizada para cada método de pago
+            document.querySelectorAll('#pago-container details button[type="submit"]').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    const form = document.getElementById('form-pago');
+                    // Elimina validación manual de nombre y correo
+                    if (!form.checkValidity()) {
+                        // Deja que el navegador muestre el mensaje en el input correspondiente
+                        return;
+                    }
+                    if (!form.acepto_terminos.checked) {
+                        alert('Debes aceptar los Términos y Condiciones.');
+                        e.preventDefault();
+                        return;
+                    }
+                    if (!form.acepto_tratamiento.checked) {
+                        alert('Debes aceptar el Tratamiento Opcional de datos.');
+                        e.preventDefault();
+                        return;
+                    }
+                    const metodo = btn.getAttribute('data-metodo');
+                    if (metodo === 'tarjeta') {
+                        if (!form['numero-tarjeta'].value.trim() ||
+                            !form['tipo-tarjeta'].value ||
+                            !form['mes'].value ||
+                            !form['anio'].value ||
+                            !form['cvv'].value.trim() ||
+                            !form['tipo-doc-tarjeta'].value ||
+                            !form['num-doc-tarjeta'].value.trim()) {
+                            alert('Completa todos los campos de tarjeta.');
+                            e.preventDefault();
+                            return;
+                        }
+                    }
+                    if (metodo === 'agora') {
+                        if (!form['celular-agora'].value.trim() ||
+                            !form['tipo-doc-agora'].value ||
+                            !form['num-doc-agora'].value.trim()) {
+                            alert('Completa todos los campos de App agora.');
+                            e.preventDefault();
+                            return;
+                        }
+                    }
+                    if (metodo === 'billetera') {
+                        if (!form['tipo-doc-billetera'].value ||
+                            !form['num-doc-billetera'].value.trim() ||
+                            !form['celular-billetera'].value.trim() ||
+                            !form['billetera-tipo'].value) {
+                            alert('Completa todos los campos de billetera electrónica.');
+                            e.preventDefault();
+                            return;
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

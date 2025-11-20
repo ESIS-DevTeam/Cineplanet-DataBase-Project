@@ -346,7 +346,6 @@ async function renderDetallesCines() {
       const esHoy = fechaFuncion.getTime() === ahora.getTime();
 
       funciones.forEach(funcion => {
-        // LOG para depuración
         
         // Solo filtra por hora si es hoy
         if (esHoy) {
