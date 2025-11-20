@@ -9,9 +9,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const productos = params.get('productos');
 
     // Verifica sesión para mostrar el ícono de socio
+    let sessionData = {};
     try {
         const sessionRes = await fetch('../../backend/auth/checkSession.php');
-        const sessionData = await sessionRes.json();
+        sessionData = await sessionRes.json();
         const socioDisplay = document.getElementById('socio-display');
         if (sessionData.socio && sessionData.socio.nombre) {
             const nombre = sessionData.socio.nombre;
@@ -181,4 +182,59 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Aquí irá la lógica para mostrar el resumen de la compra y el formulario de pago
+
+    // Rellenar y deshabilitar campos si el usuario está logueado
+    if (sessionData.socio) {
+        const form = document.getElementById('form-pago');
+        // Nombre
+        if (form.nombre) {
+            form.nombre.value = sessionData.socio.nombre || '';
+            form.nombre.readOnly = true;
+        }
+        // Email
+        if (form.correo) {
+            form.correo.value = sessionData.socio.email || '';
+            form.correo.readOnly = true;
+        }
+        // DNI
+        const tipoDocumento = (sessionData.socio.tipoDocumento || '').toUpperCase();
+        const numeroDocumento = sessionData.socio.numeroDocumento || '';
+        // Tarjeta
+        if (form['num-doc-tarjeta']) {
+            form['num-doc-tarjeta'].value = numeroDocumento;
+            form['num-doc-tarjeta'].readOnly = true;
+        }
+        if (form['tipo-doc-tarjeta']) {
+            form['tipo-doc-tarjeta'].value = tipoDocumento === 'DNI' ? 'dni' : '';
+            form['tipo-doc-tarjeta'].disabled = true;
+        }
+        // Agora
+        if (form['num-doc-agora']) {
+            form['num-doc-agora'].value = numeroDocumento;
+            form['num-doc-agora'].readOnly = true;
+        }
+        if (form['tipo-doc-agora']) {
+            form['tipo-doc-agora'].value = tipoDocumento === 'DNI' ? 'dni' : '';
+            form['tipo-doc-agora'].disabled = true;
+        }
+        // Billetera
+        if (form['num-doc-billetera']) {
+            form['num-doc-billetera'].value = numeroDocumento;
+            form['num-doc-billetera'].readOnly = true;
+        }
+        if (form['tipo-doc-billetera']) {
+            form['tipo-doc-billetera'].value = tipoDocumento === 'DNI' ? 'dni' : '';
+            form['tipo-doc-billetera'].disabled = true;
+        }
+        // Celular
+        const celular = sessionData.socio.celular || '';
+        if (form['celular-agora']) {
+            form['celular-agora'].value = celular;
+            form['celular-agora'].readOnly = true;
+        }
+        if (form['celular-billetera']) {
+            form['celular-billetera'].value = celular;
+            form['celular-billetera'].readOnly = true;
+        }
+    }
 });
