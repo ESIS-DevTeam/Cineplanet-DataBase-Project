@@ -241,9 +241,109 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- NUEVO: Lógica de verificación de documento y pago ---
     const form = document.getElementById('form-pago');
 
+    // Modal para errores
+    function mostrarModalError(mensaje, onAceptar) {
+        let modal = document.getElementById('modal-error');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'modal-error';
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100vw';
+            modal.style.height = '100vh';
+            modal.style.background = 'rgba(0,0,0,0.45)';
+            modal.style.zIndex = '99999';
+            modal.style.display = 'flex';
+            modal.style.alignItems = 'center';
+            modal.style.justifyContent = 'center';
+            modal.innerHTML = `
+                <div style="background:#fff; padding:2em; border-radius:10px; box-shadow:0 4px 20px #0002; max-width:350px; text-align:center;">
+                    <div id="modal-error-msg" style="margin-bottom:1em; font-size:1.1em;"></div>
+                    <button id="modal-error-aceptar" style="padding:0.5em 2em;">Aceptar</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        modal.querySelector('#modal-error-msg').textContent = mensaje;
+        modal.style.display = 'flex';
+        const btnAceptar = modal.querySelector('#modal-error-aceptar');
+        btnAceptar.onclick = () => {
+            modal.style.display = 'none';
+            if (typeof onAceptar === 'function') onAceptar();
+        };
+    }
+
+    // Loader modal
+    function mostrarLoader() {
+        let loader = document.getElementById('modal-loader');
+        if (!loader) {
+            loader = document.createElement('div');
+            loader.id = 'modal-loader';
+            loader.style.position = 'fixed';
+            loader.style.top = '0';
+            loader.style.left = '0';
+            loader.style.width = '100vw';
+            loader.style.height = '100vh';
+            loader.style.background = 'rgba(0,0,0,0.45)';
+            loader.style.zIndex = '99999';
+            loader.style.display = 'flex';
+            loader.style.alignItems = 'center';
+            loader.style.justifyContent = 'center';
+            loader.innerHTML = `
+                <div style="background:#fff; padding:2em; border-radius:10px; box-shadow:0 4px 20px #0002; text-align:center;">
+                    <div style="margin-bottom:1em;">
+                        <span style="font-size:2em;">⏳</span>
+                    </div>
+                    <div>Procesando pago...</div>
+                </div>
+            `;
+            document.body.appendChild(loader);
+        }
+        loader.style.display = 'flex';
+    }
+    function ocultarLoader() {
+        const loader = document.getElementById('modal-loader');
+        if (loader) loader.style.display = 'none';
+    }
+
+    // Modal de éxito
+    function mostrarModalExito(idBoleta) {
+        let modal = document.getElementById('modal-exito');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'modal-exito';
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100vw';
+            modal.style.height = '100vh';
+            modal.style.background = 'rgba(0,0,0,0.45)';
+            modal.style.zIndex = '99999';
+            modal.style.display = 'flex';
+            modal.style.alignItems = 'center';
+            modal.style.justifyContent = 'center';
+            modal.innerHTML = `
+                <div style="background:#fff; padding:2em; border-radius:10px; box-shadow:0 4px 20px #0002; max-width:350px; text-align:center;">
+                    <div style="margin-bottom:1em; font-size:1.3em;">✅ Pago exitoso</div>
+                    <div id="modal-exito-msg" style="margin-bottom:1em; font-size:1.1em;"></div>
+                    <button id="modal-exito-aceptar" style="padding:0.5em 2em;">Aceptar</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        modal.querySelector('#modal-exito-msg').textContent = `ID de boleta: ${idBoleta}`;
+        modal.style.display = 'flex';
+        const btnAceptar = modal.querySelector('#modal-exito-aceptar');
+        btnAceptar.onclick = () => {
+            modal.style.display = 'none';
+            window.location.href = '../../index.html';
+        };
+    }
+
     async function procesarPago(idUsuario) {
         if (!idUsuario) {
-            alert('Error: No se pudo obtener un ID de usuario para la boleta.');
+            mostrarModalError('Error: No se pudo obtener un ID de usuario para la boleta.');
             return;
         }
         datosBoleta.idUsuario = idUsuario;
@@ -256,6 +356,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             asientosBoleta: datosBoletaAsiento
         };
 
+        mostrarLoader();
+
         try {
             const res = await fetch(`${BASE_API_DOMAIN}realizarPago.php`, {
                 method: 'POST',
@@ -264,15 +366,28 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
             const resultadoPago = await res.json();
 
+            ocultarLoader();
+
             if (resultadoPago.success) {
-                alert(`¡Pago exitoso! ID de boleta: ${resultadoPago.idBoleta}`);
-                // Redirigir a una página de éxito
-                window.location.href = 'pagoExitoso.html?boleta=' + resultadoPago.idBoleta;
+                mostrarModalExito(resultadoPago.idBoleta);
             } else {
-                alert(`Error en el pago: ${resultadoPago.message}`);
+                // Manejo de error de asiento ocupado (violación UNIQUE)
+                if (
+                    resultadoPago.message &&
+                    resultadoPago.message.toLowerCase().includes('duplicate entry') &&
+                    resultadoPago.message.toLowerCase().includes('uq_funcion_asiento')
+                ) {
+                    mostrarModalError(
+                        'Uno o más asientos ya están ocupados. Por favor, selecciona otros asientos.',
+                        () => window.location.href = `peliculaSeleccion.html?pelicula=${idPelicula}`
+                    );
+                } else {
+                    mostrarModalError(`Error en el pago: ${resultadoPago.message}`);
+                }
             }
         } catch (err) {
-            alert('Error al conectar con el servidor para realizar el pago.');
+            ocultarLoader();
+            mostrarModalError('Error al conectar con el servidor para realizar el pago.');
         }
     }
 
