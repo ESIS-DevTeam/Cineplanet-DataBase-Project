@@ -296,4 +296,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Renderiza el carrito inicialmente
     renderCarrito();
+
+    // --- NUEVO: Mostrar símbolo de socio en la esquina superior derecha ---
+    let sessionData = {};
+    try {
+        const sessionRes = await fetch('../../backend/auth/checkSession.php');
+        sessionData = await sessionRes.json();
+        const socioDisplay = document.getElementById('socio-display');
+        if (socioDisplay) {
+            if (sessionData.socio && sessionData.socio.nombre) {
+                const nombre = sessionData.socio.nombre;
+                const iniciales = nombre.split(' ').map(word => word[0]).join('').toUpperCase();
+                socioDisplay.textContent = iniciales;
+            } else {
+                socioDisplay.textContent = '👤';
+            }
+        }
+    } catch (error) {
+        const socioDisplay = document.getElementById('socio-display');
+        if (socioDisplay) socioDisplay.textContent = '👤';
+    }
 });

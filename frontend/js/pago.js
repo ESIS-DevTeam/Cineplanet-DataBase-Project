@@ -396,6 +396,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         btn.addEventListener('click', async function(e) {
             e.preventDefault(); // Evita el submit normal
 
+            // Validar aceptación de términos y tratamiento de datos
+            const terminosCheckbox = document.getElementById('acepto-terminos');
+            const tratamientoCheckbox = document.getElementById('acepto-tratamiento');
+            if (!terminosCheckbox || !terminosCheckbox.checked) {
+                alert('Debes aceptar los Términos y Condiciones antes de continuar con el pago.');
+                return;
+            }
+            if (!tratamientoCheckbox || !tratamientoCheckbox.checked) {
+                alert('Debes aceptar el Tratamiento Opcional de datos antes de continuar con el pago.');
+                return;
+            }
+
             // Si está logueado, usar el id del socio
             if (sessionData.socio && sessionData.socio.id) {
                 await procesarPago(sessionData.socio.id);
