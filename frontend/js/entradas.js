@@ -109,13 +109,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('info-container').appendChild(infoDiv);
 
     // Botones
-    const btnVolver = document.getElementById('btn-volver');
     const btnContinuar = document.getElementById('btn-continuar');
-
-    btnVolver.addEventListener('click', () => {
-        const params = new URLSearchParams(window.location.search);
-        window.location.href = `asientos.html?${params.toString()}`;
-    });
 
     // btnContinuar.disabled = false; // Habilita según tu lógica
     btnContinuar.addEventListener('click', () => {

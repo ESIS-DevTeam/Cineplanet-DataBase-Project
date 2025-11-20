@@ -337,18 +337,26 @@ async function renderDetallesCines() {
 
     // Agrupar por formato+idioma
     const grupos = {};
-    const ahora = new Date();
-    const hoyStr = ahora.toISOString().split('T')[0];
-
     Object.entries(funcionesFiltradas).forEach(([fechaStr, funciones]) => {
-      const esHoy = fechaStr === hoyStr;
+      // Determina si la fecha es hoy
+      const ahora = new Date();
+      ahora.setHours(0, 0, 0, 0);
+      const fechaFuncion = new Date(fechaStr + 'T00:00:00');
+      fechaFuncion.setHours(0, 0, 0, 0);
+      const esHoy = fechaFuncion.getTime() === ahora.getTime();
+
       funciones.forEach(funcion => {
+        // LOG para depuración
+        
+        // Solo filtra por hora si es hoy
         if (esHoy) {
           const [hora, minuto] = funcion.hora.split(':');
           const horaFuncion = new Date();
           horaFuncion.setHours(hora, minuto, 0, 0);
-          if (horaFuncion < ahora) {
-            return; // Es hoy pero la hora ya pasó
+          const ahoraHora = new Date();
+          // Si la hora ya pasó hoy, no mostrar
+          if (horaFuncion < ahoraHora) {
+            return;
           }
         }
         const key = `${funcion.formato} ${funcion.idioma}`;
