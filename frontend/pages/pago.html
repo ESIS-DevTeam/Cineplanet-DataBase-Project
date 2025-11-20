@@ -26,6 +26,7 @@
                 <label>Correo Electrónico</label>
                 <input type="email" name="correoElectronico" required>
             </div>
+            <div id="pago-warning" style="color:#d50032; font-size:0.95em; margin-top:0.5em; display:none;"></div>
         </div>
 
         <!-- Métodos de pago -->
@@ -88,7 +89,7 @@
                 <div>
                     <span>Elige alguna de las opciones de pago:</span>
                     <div>
-                        <input type="radio" name="billetera" value="yape" id="yape"><label for="yape">Yape</label>
+                        <input type="radio" name="billetera" value="yape" id="yape" checked><label for="yape">Yape</label>
                         <input type="radio" name="billetera" value="plin" id="plin"><label for="plin">Plin</label>
                         <input type="radio" name="billetera" value="tunki" id="tunki"><label for="tunki">Tunki</label>
                     </div>

@@ -45,4 +45,26 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
     });
+
+    // Validación de nombre y correo antes de enviar cualquier formulario de pago
+    const pagoForms = document.querySelectorAll('details[id^="pago-"] form');
+    const warningDiv = document.getElementById('pago-warning');
+    pagoForms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const nombreInput = document.querySelector('input[name="nombreCompleto"]');
+            const emailInput = document.querySelector('input[name="correoElectronico"]');
+            if (!nombreInput.value.trim() || !emailInput.value.trim()) {
+                if (warningDiv) {
+                    warningDiv.textContent = 'Debe llenar el Nombre Completo y el Correo Electrónico para continuar con el pago.';
+                    warningDiv.style.display = 'block';
+                }
+                e.preventDefault();
+                return false;
+            } else if (warningDiv) {
+                warningDiv.textContent = '';
+                warningDiv.style.display = 'none';
+            }
+            // ...existing code for submit if any...
+        });
+    });
 });
