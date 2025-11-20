@@ -152,6 +152,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <strong>Total: S/${carrito.reduce((sum, item) => sum + item.prod.precio * item.cantidad, 0).toFixed(2)}</strong>
             </div>
             <button id="continuar-btn">Continuar</button>
+            <button id="ver-resumen-btn" type="button">Ver Resumen de compra</button>
         `;
         ordenDiv.querySelector('#continuar-btn').onclick = () => {
             // Construye productos=id-cant,id-cant,...
@@ -164,6 +165,85 @@ document.addEventListener('DOMContentLoaded', async () => {
             urlParams.set('productos', productosParam);
             console.log('Redirigiendo a pago.html con:', urlParams.toString());
             window.location.href = `pago.html?${urlParams.toString()}`;
+        };
+
+        ordenDiv.querySelector('#ver-resumen-btn').onclick = async () => {
+            // Construye productos=id-cant,id-cant,...
+            const productosParam = carrito.map(item => `${item.prod.id}-${item.cantidad}`).join(',');
+            const resumenParams = new URLSearchParams();
+            if (idPelicula) resumenParams.set('pelicula', idPelicula);
+            if (idFuncion) resumenParams.set('funcion', idFuncion);
+            if (asientos) resumenParams.set('asientos', asientos);
+            if (promos) resumenParams.set('promos', promos);
+            if (productosParam) resumenParams.set('productos', productosParam);
+
+            // Crea el modal si no existe
+            let resumenModal = document.getElementById('resumen-modal');
+            if (!resumenModal) {
+                resumenModal = document.createElement('div');
+                resumenModal.id = 'resumen-modal';
+                resumenModal.style.position = 'fixed';
+                resumenModal.style.top = '0';
+                resumenModal.style.left = '0';
+                resumenModal.style.width = '100vw';
+                resumenModal.style.height = '100vh';
+                resumenModal.style.zIndex = '9999';
+                resumenModal.style.background = 'rgba(0, 0, 0, 0.5)';
+                resumenModal.style.backdropFilter = 'blur(2px)';
+                resumenModal.innerHTML = `<div id="resumen-compra-container" style="background:#fff; max-width:500px; margin:5vh auto; border-radius:10px; padding:2em; position:relative; box-shadow: 0 4px 15px rgba(0,0,0,0.2);"></div>`;
+                document.body.appendChild(resumenModal);
+            }
+            const resumenContainer = document.getElementById('resumen-compra-container');
+
+            try {
+                const res = await fetch(BASE_API_DOMAIN + 'getResumenCompra.php?' + resumenParams.toString());
+                const resumen = await res.json();
+
+                let html = `<div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h2>Resumen de compra</h2>
+                        <button type="button" id="btn-cerrar-resumen" style="background:#d50032; color:#fff; border:none; border-radius:20px; padding:0.3em 1em; font-size:1em; cursor:pointer;">Cerrar</button>
+                    </div>
+                    <div>`;
+                if (resumen.asientos && resumen.asientos.length > 0) {
+                    html += `<div><strong>Butacas Seleccionadas:</strong><br>${resumen.asientos.join(', ')} <span style="font-style:italic;">Cant. ${resumen.asientos.length}</span></div>`;
+                }
+                if (resumen.entradas && resumen.entradas.length > 0) {
+                    html += `<div style="margin-top:1em;"><strong>Entradas:</strong></div>`;
+                    resumen.entradas.forEach(e => {
+                        html += `<div>
+                            ${e.nombre}${e.descripcion ? `<br><span style="font-size:0.95em;">${e.descripcion}</span>` : ''}
+                            <span style="font-style:italic;">Cant. ${e.cantidad}</span>
+                            <span style="float:right;">S/${e.precio.toFixed(2)}</span>
+                        </div>`;
+                    });
+                    html += `<div style="text-align:right; font-weight:bold;">Sub-Total S/${resumen.totalEntradas.toFixed(2)}</div>`;
+                }
+                if (resumen.dulceria && resumen.dulceria.length > 0) {
+                    html += `<div style="margin-top:1em;"><strong>Dulcería:</strong></div>`;
+                    resumen.dulceria.forEach(d => {
+                        html += `<div>
+                            ${d.nombre}${d.descripcion ? `<br><span style="font-size:0.95em;">${d.descripcion}</span>` : ''}
+                            <span style="font-style:italic;">Cant. ${d.cantidad}</span>
+                            <span style="float:right;">S/${d.precio.toFixed(2)}</span>
+                        </div>`;
+                    });
+                    html += `<div style="text-align:right; font-weight:bold;">Sub-Total S/${resumen.totalDulceria.toFixed(2)}</div>`;
+                }
+                html += `<hr style="margin:1em 0;">`;
+                html += `<div style="text-align:right; color:#d50032; font-size:1.3em; font-weight:bold;">Precio Total: S/${resumen.total.toFixed(2)}</div>`;
+                html += `</div></div>`;
+
+                resumenContainer.innerHTML = html;
+                resumenModal.style.display = 'block';
+
+                resumenContainer.querySelector('#btn-cerrar-resumen').onclick = () => {
+                    resumenModal.style.display = 'none';
+                };
+            } catch (error) {
+                resumenContainer.innerHTML = '<div>Error al cargar el resumen de compra.</div>';
+                resumenModal.style.display = 'block';
+            }
         };
     }
 

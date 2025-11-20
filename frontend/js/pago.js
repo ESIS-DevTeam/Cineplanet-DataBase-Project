@@ -85,7 +85,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         resumenModal.style.width = '100vw';
         resumenModal.style.height = '100vh';
         resumenModal.style.zIndex = '9999';
-        resumenModal.innerHTML = `<div id="resumen-compra-container" style="background:#fff; max-width:500px; margin:5vh auto; border-radius:10px; padding:2em; position:relative;"></div>`;
+        resumenModal.style.background = 'rgba(0, 0, 0, 0.5)';
+        resumenModal.style.backdropFilter = 'blur(2px)';
+        resumenModal.innerHTML = `<div id="resumen-compra-container" style="background:#fff; max-width:500px; margin:5vh auto; border-radius:10px; padding:2em; position:relative; box-shadow: 0 4px 15px rgba(0,0,0,0.2);"></div>`;
         document.body.appendChild(resumenModal);
     }
     const resumenContainer = document.getElementById('resumen-compra-container');
@@ -168,7 +170,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Mostrar/ocultar resumen en modal
         document.getElementById('btn-ver-resumen').onclick = () => {
-            resumenModal.style.display = '';
+            resumenModal.style.display = 'block';
         };
         resumenContainer.querySelector('#btn-cerrar-resumen').onclick = () => {
             resumenModal.style.display = 'none';
