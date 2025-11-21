@@ -2,12 +2,9 @@
 <html lang="es">
 <head>
     <meta charset="utf-8">
-    <meta name="author" content="Willo">
-    <meta name="description" content="Esta pagina replica el inicio de la pagina de Cineplanet">
+    <title>Cine Seleccionado</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cines</title>
-    <link rel="shortcut icon" href="../images/items/icono-cine.ico" type="image/x-icon">
-    <link href="../styles/estilos.css" rel="stylesheet" type="text/css" />
+    <!-- ...puedes agregar tu CSS aquí... -->
 </head>
 <body>
     <div class="app-container">
@@ -45,18 +42,11 @@
         <div id="socio-popup-content"></div>
     </div>
     <main>
-        <h2 style="text-align:center;">Cines</h2>
-        <div style="display:flex; gap:16px; justify-content:center; margin-bottom:24px;">
-            <select id="ciudad-select">
-                <option value="">Todas las ciudades</option>
-            </select>
-            <select id="formato-select">
-                <option value="">Todos los formatos</option>
-            </select>
-        </div>
-        <div id="cines-list"></div>
+        <!-- ...contenedores para info y funciones... -->
+        <div id="cine-info" style="margin-bottom:32px;"></div>
+        <div id="funciones-list"></div>
     </main>
-    <script type="module" src="../js/cines.js"></script>
+    <script type="module" src="../js/cineSeleccion.js"></script>
     <script>
     let socioData = null;
     fetch('../../backend/auth/checkSession.php')
@@ -69,7 +59,7 @@
                     ' <button onclick="logout()">Cerrar sesión</button>';
             } else {
                 document.getElementById('socio-info').innerHTML =
-                    `<a href="login.html?redirect=cines.html">Iniciar sesión</a>`;
+                    `<a href="login.html?redirect=cineSeleccion.html">Iniciar sesión</a>`;
             }
         });
     function logout() {
@@ -95,7 +85,7 @@
             `;
         } else {
             popupContent.innerHTML = `
-                <button onclick="window.location.href='login.html?redirect=cines.html'">Iniciar sesión</button><br>
+                <button onclick="window.location.href='login.html?redirect=cineSeleccion.html'">Iniciar sesión</button><br>
                 <button onclick="window.location.href='registro.html'">Registrar</button>
             `;
         }
