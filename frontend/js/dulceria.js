@@ -174,7 +174,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             </div>
             <button id="continuar-btn">Continuar</button>
         `;
-        ordenDiv.querySelector('#continuar-btn').onclick = () => {
+        const continuarBtn = ordenDiv.querySelector('#continuar-btn');
+        // Si vino de dulceriaLading, requiere al menos un producto
+        if (idCiudad && idCine) {
+            continuarBtn.disabled = carrito.length === 0;
+        }
+        continuarBtn.onclick = () => {
+            if (idCiudad && idCine && carrito.length === 0) {
+                alert('Debes elegir al menos un producto para continuar.');
+                return;
+            }
             // Construye productos=id-cant,id-cant,...
             const productosParam = carrito.map(item => `${item.prod.id}-${item.cantidad}`).join(',');
             const urlParams = new URLSearchParams();
@@ -183,6 +192,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (asientos) urlParams.set('asientos', asientos);
             if (promos) urlParams.set('promos', promos);
             urlParams.set('productos', productosParam);
+            // Agrega ciudad y cine si existen
+            if (idCiudad) urlParams.set('ciudad', idCiudad);
+            if (idCine) urlParams.set('cine', idCine);
             console.log('Redirigiendo a pago.html con:', urlParams.toString());
             window.location.href = `pago.html?${urlParams.toString()}`;
         };
