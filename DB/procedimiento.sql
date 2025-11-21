@@ -87,9 +87,17 @@ END$$
 
 -- CINE
 DROP PROCEDURE IF EXISTS cine_create$$
-CREATE PROCEDURE cine_create(IN p_nombre VARCHAR(100), IN p_direccion VARCHAR(255), IN p_telefono VARCHAR(20), IN p_email VARCHAR(100), IN p_idCiudad INT, OUT p_id INT)
+CREATE PROCEDURE cine_create(
+    IN p_nombre VARCHAR(100),
+    IN p_direccion VARCHAR(255),
+    IN p_telefono VARCHAR(20),
+    IN p_email VARCHAR(100),
+    IN p_imagen VARCHAR(255),           -- <--- AGREGADO
+    IN p_idCiudad INT,
+    OUT p_id INT)
 BEGIN
-    INSERT INTO CINE(nombre,direccion,telefono,email,idCiudad) VALUES (p_nombre,p_direccion,p_telefono,p_email,p_idCiudad);
+    INSERT INTO CINE(nombre,direccion,telefono,email,imagen,idCiudad)   -- <--- AGREGADO imagen
+    VALUES (p_nombre,p_direccion,p_telefono,p_email,p_imagen,p_idCiudad);
     SET p_id = LAST_INSERT_ID();
 END$$
 
@@ -100,9 +108,23 @@ BEGIN
 END$$
 
 DROP PROCEDURE IF EXISTS cine_update$$
-CREATE PROCEDURE cine_update(IN p_id INT, IN p_nombre VARCHAR(100), IN p_direccion VARCHAR(255), IN p_telefono VARCHAR(20), IN p_email VARCHAR(100), IN p_idCiudad INT)
+CREATE PROCEDURE cine_update(
+    IN p_id INT,
+    IN p_nombre VARCHAR(100),
+    IN p_direccion VARCHAR(255),
+    IN p_telefono VARCHAR(20),
+    IN p_email VARCHAR(100),
+    IN p_imagen VARCHAR(255),           -- <--- AGREGADO
+    IN p_idCiudad INT)
 BEGIN
-    UPDATE CINE SET nombre=p_nombre, direccion=p_direccion, telefono=p_telefono, email=p_email, idCiudad=p_idCiudad WHERE id = p_id;
+    UPDATE CINE SET
+        nombre=p_nombre,
+        direccion=p_direccion,
+        telefono=p_telefono,
+        email=p_email,
+        imagen=p_imagen,                 -- <--- AGREGADO
+        idCiudad=p_idCiudad
+    WHERE id = p_id;
 END$$
 
 DROP PROCEDURE IF EXISTS cine_delete$$

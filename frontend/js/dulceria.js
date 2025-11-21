@@ -6,52 +6,73 @@ document.addEventListener('DOMContentLoaded', async () => {
     const idPelicula = params.get('pelicula');
     const asientos = params.get('asientos');
     const promos = params.get('promos');
+    const idCiudad = params.get('ciudad');
+    const idCine = params.get('cine');
 
-    // Obtener datos de función y película
-    let infoFuncion = null;
-    if (idFuncion) {
-        try {
-            const resInfo = await fetch(BASE_API_DOMAIN + `getInfoFuncionCompleta.php?idFuncion=${idFuncion}`);
-            infoFuncion = await resInfo.json();
-        } catch {
-            // Si falla, muestra error pero sigue con productos
-        }
-    }
-
-    // Renderiza la info de función y película
     const main = document.getElementById('info-container');
     main.innerHTML = '';
-    if (infoFuncion) {
-        let fechaTexto = '';
-        if (infoFuncion.fecha) {
-            const fechaObj = new Date(infoFuncion.fecha + 'T00:00:00');
-            const hoy = new Date();
-            hoy.setHours(0,0,0,0);
-            if (fechaObj.getTime() === hoy.getTime()) {
-                fechaTexto = `Hoy, ${fechaObj.getDate()} de ${fechaObj.toLocaleString('es-ES', { month: 'short' })} de ${fechaObj.getFullYear()}`;
-            } else {
-                const diasSemana = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
-                fechaTexto = `${diasSemana[fechaObj.getDay()]}, ${fechaObj.getDate()} de ${fechaObj.toLocaleString('es-ES', { month: 'short' })} de ${fechaObj.getFullYear()}`;
+
+    // Si viene de dulceriaLading (tiene ciudad y cine), muestra solo la foto y nombre del cine
+    if (idCiudad && idCine) {
+        try {
+            const res = await fetch(BASE_API_DOMAIN + `getInfoCine.php?idCine=${idCine}`);
+            const cine = await res.json();
+            main.innerHTML = `
+                <div style="text-align:center;">
+                    ${cine.imagen ? `<img src="${cine.imagen}" alt="Foto cine" style="width:140px;height:140px;border-radius:12px;object-fit:cover;">` : ''}
+                </div>
+                <h2 style="text-align:center; margin:0.5em 0;">${cine.nombre || ''}</h2>
+                <div style="text-align:center;">${cine.direccion || ''}</div>
+                <hr style="margin:1em 0;">
+            `;
+        } catch {
+            main.textContent = 'No se pudo cargar la información del cine.';
+        }
+    } else {
+        // Obtener datos de función y película
+        let infoFuncion = null;
+        if (idFuncion) {
+            try {
+                const resInfo = await fetch(BASE_API_DOMAIN + `getInfoFuncionCompleta.php?idFuncion=${idFuncion}`);
+                infoFuncion = await resInfo.json();
+            } catch {
+                // Si falla, muestra error pero sigue con productos
             }
         }
-        main.innerHTML += `
-            <div style="text-align:center;">
-                ${infoFuncion.portada ? `<img src="${infoFuncion.portada}" alt="Portada" style="width:140px;height:140px;border-radius:50%;object-fit:cover;">` : ''}
-            </div>
-            <h2 style="font-weight:bold; margin:0.5em 0;">${infoFuncion.nombrePelicula || ''}</h2>
-            <div style="margin-bottom:0.5em;">${infoFuncion.formato || ''}${infoFuncion.formato && infoFuncion.idioma ? ', ' : ''}${infoFuncion.idioma || ''}</div>
-            <div style="font-weight:bold; margin-bottom:0.5em;">${infoFuncion.nombreCine || ''}</div>
-            <div style="margin-bottom:0.3em;">
-                <span>📅 ${fechaTexto}</span>
-            </div>
-            <div style="margin-bottom:0.3em;">
-                <span>🕒 ${infoFuncion.hora || ''}</span>
-            </div>
-            <div>
-                <span>🏢 ${infoFuncion.nombreSala || ''}</span>
-            </div>
-            <hr style="margin:1em 0;">
-        `;
+
+        // Renderiza la info de función y película
+        if (infoFuncion) {
+            let fechaTexto = '';
+            if (infoFuncion.fecha) {
+                const fechaObj = new Date(infoFuncion.fecha + 'T00:00:00');
+                const hoy = new Date();
+                hoy.setHours(0,0,0,0);
+                if (fechaObj.getTime() === hoy.getTime()) {
+                    fechaTexto = `Hoy, ${fechaObj.getDate()} de ${fechaObj.toLocaleString('es-ES', { month: 'short' })} de ${fechaObj.getFullYear()}`;
+                } else {
+                    const diasSemana = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+                    fechaTexto = `${diasSemana[fechaObj.getDay()]}, ${fechaObj.getDate()} de ${fechaObj.toLocaleString('es-ES', { month: 'short' })} de ${fechaObj.getFullYear()}`;
+                }
+            }
+            main.innerHTML += `
+                <div style="text-align:center;">
+                    ${infoFuncion.portada ? `<img src="${infoFuncion.portada}" alt="Portada" style="width:140px;height:140px;border-radius:50%;object-fit:cover;">` : ''}
+                </div>
+                <h2 style="font-weight:bold; margin:0.5em 0;">${infoFuncion.nombrePelicula || ''}</h2>
+                <div style="margin-bottom:0.5em;">${infoFuncion.formato || ''}${infoFuncion.formato && infoFuncion.idioma ? ', ' : ''}${infoFuncion.idioma || ''}</div>
+                <div style="font-weight:bold; margin-bottom:0.5em;">${infoFuncion.nombreCine || ''}</div>
+                <div style="margin-bottom:0.3em;">
+                    <span>📅 ${fechaTexto}</span>
+                </div>
+                <div style="margin-bottom:0.3em;">
+                    <span>🕒 ${infoFuncion.hora || ''}</span>
+                </div>
+                <div>
+                    <span>🏢 ${infoFuncion.nombreSala || ''}</span>
+                </div>
+                <hr style="margin:1em 0;">
+            `;
+        }
     }
 
     // Obtén todos los productos activos
@@ -216,7 +237,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Modifica renderProducto para agregar al carrito con cantidad
+    // Modifica renderProducto para agregar al carrito with quantity
     function renderProducto(prod, esSocio) {
         const divProd = document.createElement('div');
         divProd.style.border = '1px solid #ccc';

@@ -23,6 +23,7 @@ CREATE TABLE CINE (
     direccion VARCHAR(255) NOT NULL,
     telefono VARCHAR(20) NOT NULL,
     email VARCHAR(100) NOT NULL,
+    imagen VARCHAR(255), -- <--- AGREGADO
     -- referencia normalizada a CIUDAD
     idCiudad INT NULL,
     FOREIGN KEY (idCiudad) REFERENCES CIUDAD(id) ON DELETE SET NULL
