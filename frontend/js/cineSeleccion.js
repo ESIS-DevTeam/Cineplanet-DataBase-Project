@@ -105,7 +105,7 @@ function renderPeliculas(peliculas) {
     funcionesListDiv.innerHTML = `
         <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:32px;">
             ${peliculas.map(peli => `
-                <div>
+                <div style="cursor:pointer;" onclick="window.location.href='peliculaSeleccion.html?cine=${cineId}&pelicula=${peli.id}'">
                     <img src="${peli.portada || '../images/items/icono-cine.ico'}" alt="${peli.nombre}" style="width:100%; height:260px; object-fit:cover;">
                     <div style="font-weight:bold; margin-top:8px;">${peli.nombre}</div>
                     <div>${peli.generoNombre}, ${peli.duracionStr}, ${peli.restriccionNombre}</div>
