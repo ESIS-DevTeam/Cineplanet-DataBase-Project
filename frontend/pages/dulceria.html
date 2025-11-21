@@ -8,6 +8,24 @@
         body { font-family: sans-serif; }
         #info-container { margin: 2em auto; max-width: 800px; }
         #socio-display { position: absolute; top: 15px; right: 15px; font-size: 1.2em; border: 1px solid #ccc; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; user-select: none; }
+        .oculto-por-modal { display: none !important; }
+        #login-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.3);
+            z-index: 2000;
+        }
+        #login-frame {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 350px; height: 340px;
+            border: none;
+            background: #fff;
+            box-shadow: 0 2px 12px #0003;
+            border-radius: 10px;
+        }
     </style>
 </head>
 <body>
@@ -19,6 +37,39 @@
         <div id="info-container"></div>
         <!-- Aquí irá el contenido de dulcería -->
     </main>
+    <!-- Modal login solo con iframe -->
+    <div id="login-modal">
+        <iframe id="login-frame"></iframe>
+    </div>
+    <script type="module">
+    // Verifica si llegó desde dulceriaLading.html
+    const params = new URLSearchParams(window.location.search);
+    const fromLanding = document.referrer.includes('dulceriaLading.html') || params.has('ciudad') || params.has('cine');
+    const esInvitado = params.get('invitado') === '1';
+
+    // Chequea sesión
+    fetch('../../backend/auth/checkSession.php')
+        .then(res => res.json())
+        .then(data => {
+            if (!data.loggedIn && fromLanding && !esInvitado) {
+                document.getElementById('main-content').classList.add('oculto-por-modal');
+                document.getElementById('main-header').classList.add('oculto-por-modal');
+                const loginModal = document.getElementById('login-modal');
+                const loginFrame = document.getElementById('login-frame');
+                params.set('redirect', window.location.pathname + '?' + params.toString());
+                params.set('fromEntradas', '1'); // <-- Agrega este parámetro
+                loginFrame.src = `login.html?${params.toString()}`;
+                loginModal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            } else {
+                // Si está logueado o es invitado, asegura que el contenido esté visible
+                document.getElementById('main-content').classList.remove('oculto-por-modal');
+                document.getElementById('main-header').classList.remove('oculto-por-modal');
+                document.getElementById('login-modal').style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        });
+    </script>
     <script type="module" src="../js/dulceria.js"></script>
 </body>
 </html>
