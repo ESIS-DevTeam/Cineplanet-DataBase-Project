@@ -11,7 +11,7 @@ SELECT
     p.nombre AS nombrePelicula,
     g.id AS idGenero,
     g.nombre AS genero,
-    r.id AS idRestriccion,           -- <--- Añade esta línea
+    r.id AS idRestriccion,
     r.nombre AS restriccionEdad,
     p.restriccionComercial,
     p.sinopsis,
@@ -24,6 +24,7 @@ SELECT
     f.hora,
     f.precio,
     f.estado AS estadoFuncion,
+    (f.estado = 'preventa') AS esPreventa, -- <--- NUEVO: indica si es preventa
     f.idFormato,
     f.idIdioma,
     c.id AS idCine,
@@ -44,7 +45,7 @@ INNER JOIN CINE c ON s.idCine = c.id
 INNER JOIN CIUDAD ciu ON c.idCiudad = ciu.id
 INNER JOIN FORMATO fo ON f.idFormato = fo.id
 INNER JOIN IDIOMA i ON f.idIdioma = i.id
-WHERE f.estado = 'activa' AND p.estado = 'activa';
+WHERE (f.estado = 'activa' OR f.estado = 'preventa') AND p.estado = 'activa';
 
 
 

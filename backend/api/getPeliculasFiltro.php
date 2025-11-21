@@ -10,6 +10,13 @@ $types = "";
 // Filtro para mostrar solo funciones desde hoy en adelante
 $filtros[] = "pf.fecha >= CURDATE()";
 
+// ======= PREVENTA =======
+if (!empty($_GET['preventa']) && $_GET['preventa'] == '1') {
+    $filtros[] = "pf.estadoFuncion = 'preventa'";
+} else {
+    $filtros[] = "pf.estadoFuncion = 'activa'";
+}
+
 // ======= CIUDAD =======
 if (!empty($_GET['ciudad'])) {
     $filtros[] = "pf.idCiudad = ?";

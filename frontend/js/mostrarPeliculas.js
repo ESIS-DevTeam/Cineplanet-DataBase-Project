@@ -9,6 +9,70 @@ document.addEventListener('DOMContentLoaded', () => {
     cargarPeliculasYFiltros(filtrosDesdeURL);
     // Finalmente, añade el listener para futuros cambios.
     document.getElementById('filtros-peliculas').addEventListener('change', onFiltroChange);
+
+    // Agrega los botones/tabs
+    const contenedor = document.getElementById('contenedorPeliculas');
+    contenedor.innerHTML = `
+        <div id="peliculas-tabs" style="display:flex; justify-content:center; align-items:center; gap:32px; margin-bottom:24px;">
+            <button id="tab-cartelera" style="background:none; border:none; font-weight:bold; font-size:1.1em; cursor:pointer; border-bottom:2px solid #007bff; padding:8px 24px;">En cartelera</button>
+            <button id="tab-preventa" style="background:none; border:none; font-weight:normal; font-size:1.1em; cursor:pointer; padding:8px 24px;">Preventa</button>
+        </div>
+        <div id="peliculas-seccion"></div>
+    `;
+    let modo = 'cartelera';
+    const seccion = document.getElementById('peliculas-seccion');
+
+    function cargarCartelera() {
+        const filtros = obtenerFiltrosSeleccionados();
+        const params = new URLSearchParams(filtros).toString();
+        fetch(BASE_API_DOMAIN + `getPeliculasFiltro.php?${params}`)
+            .then(res => res.json())
+            .then(peliculas => {
+                seccion.innerHTML = '';
+                mostrarPeliculas(peliculas, filtros);
+                mostrarFiltrosDinamicos(peliculas, filtros); // Actualiza filtros según cartelera
+                mostrarFiltroFechas(peliculas, filtros);
+            });
+    }
+
+    function cargarPreventa() {
+        const filtros = obtenerFiltrosSeleccionados();
+        const params = new URLSearchParams({...filtros, preventa: 1}).toString();
+        fetch(BASE_API_DOMAIN + `getPeliculasFiltro.php?${params}`)
+            .then(res => res.json())
+            .then(peliculas => {
+                seccion.innerHTML = '';
+                mostrarPeliculas(peliculas, filtros);
+                mostrarFiltrosDinamicos(peliculas, filtros); // Actualiza filtros según preventa
+                mostrarFiltroFechas(peliculas, filtros);
+            });
+    }
+
+    document.getElementById('tab-cartelera').onclick = () => {
+        modo = 'cartelera';
+        document.getElementById('tab-cartelera').style.fontWeight = 'bold';
+        document.getElementById('tab-cartelera').style.borderBottom = '2px solid #007bff';
+        document.getElementById('tab-preventa').style.fontWeight = 'normal';
+        document.getElementById('tab-preventa').style.borderBottom = 'none';
+        cargarCartelera();
+    };
+    document.getElementById('tab-preventa').onclick = () => {
+        modo = 'preventa';
+        document.getElementById('tab-preventa').style.fontWeight = 'bold';
+        document.getElementById('tab-preventa').style.borderBottom = '2px solid #007bff';
+        document.getElementById('tab-cartelera').style.fontWeight = 'normal';
+        document.getElementById('tab-cartelera').style.borderBottom = 'none';
+        cargarPreventa();
+    };
+
+    // Inicializa mostrando cartelera
+    cargarCartelera();
+
+    // Filtros afectan la sección activa y se regeneran
+    document.getElementById('filtros-peliculas').addEventListener('change', () => {
+        if (modo === 'cartelera') cargarCartelera();
+        else cargarPreventa();
+    });
 });
 
 function onFiltroChange(e) {
@@ -30,50 +94,84 @@ function cargarPeliculasYFiltros(seleccionadosPrevios = null) {
 }
 
 function mostrarPeliculas(peliculas, filtros) {
-    const contenedor = document.getElementById('contenedorPeliculas');
-    contenedor.innerHTML = '';
-    const idsMostrados = new Set();
+    const seccion = document.getElementById('peliculas-seccion');
+    if (!seccion) return;
+    seccion.innerHTML = '';
 
-    // Crear un objeto URLSearchParams con los filtros actuales
+    // Animación fade-in
+    seccion.style.opacity = 0;
+    setTimeout(() => { seccion.style.opacity = 1; }, 50);
+
+    const idsMostrados = new Set();
+    const grid = document.createElement('div');
+    grid.style.display = 'grid';
+    grid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(220px, 1fr))';
+    grid.style.gap = '32px';
+    grid.style.marginTop = '0px'; // Sin margen arriba, para que quede pegado debajo de los tabs
+
     const paramsFiltro = new URLSearchParams(filtros);
 
     peliculas.forEach(pelicula => {
         if (idsMostrados.has(pelicula.idPelicula)) return;
         idsMostrados.add(pelicula.idPelicula);
 
-        // Crear el enlace
         const link = document.createElement('a');
         const linkParams = new URLSearchParams(paramsFiltro);
-        linkParams.set('pelicula', pelicula.idPelicula); // Añadir el id de la película
+        linkParams.set('pelicula', pelicula.idPelicula);
         link.href = `peliculaSeleccion.html?${linkParams.toString()}`;
         link.style.textDecoration = 'none';
         link.style.color = 'inherit';
 
         const card = document.createElement('div');
-        card.className = 'pelicula-card'; // Clase para el cuadro
+        card.className = 'pelicula-card';
+        card.style.background = '#fff';
+        card.style.border = '2px solid #007bff';
+        card.style.borderRadius = '10px';
+        card.style.boxShadow = '0 2px 8px #0002';
+        card.style.padding = '12px';
+        card.style.display = 'flex';
+        card.style.flexDirection = 'column';
+        card.style.alignItems = 'center';
+        card.style.transition = 'box-shadow 0.2s';
+        card.onmouseover = () => card.style.boxShadow = '0 4px 16px #007bff44';
+        card.onmouseout = () => card.style.boxShadow = '0 2px 8px #0002';
 
         const img = document.createElement('img');
         img.src = pelicula.portada || 'img/default-pelicula.jpg';
         img.alt = pelicula.nombrePelicula || 'Sin título';
+        img.style.width = '180px';
+        img.style.height = '260px';
+        img.style.objectFit = 'cover';
+        img.style.borderRadius = '8px';
+        img.style.marginBottom = '10px';
 
         const titulo = document.createElement('h3');
         titulo.textContent = pelicula.nombrePelicula || 'Sin título';
+        titulo.style.margin = '8px 0 6px 0';
+        titulo.style.textAlign = 'center';
+        titulo.style.fontWeight = 'bold';
+        titulo.style.color = '#007bff';
 
         const duracion = document.createElement('p');
         duracion.textContent = `Duración: ${pelicula.duracion || 'N/A'} min`;
+        duracion.style.margin = '2px 0';
+        duracion.style.textAlign = 'center';
 
         const restriccion = document.createElement('p');
         restriccion.textContent = `Restricción: ${pelicula.restriccionEdad || 'N/A'}`;
+        restriccion.style.margin = '2px 0';
+        restriccion.style.textAlign = 'center';
 
         card.appendChild(img);
         card.appendChild(titulo);
         card.appendChild(duracion);
         card.appendChild(restriccion);
 
-        // Añadir la tarjeta al enlace y el enlace al contenedor
         link.appendChild(card);
-        contenedor.appendChild(link);
+        grid.appendChild(link);
     });
+
+    seccion.appendChild(grid);
 }
 
 function mostrarFiltrosDinamicos(peliculas, seleccionados) {
