@@ -594,7 +594,9 @@ END$$
 
 -- FUNCION
 DROP PROCEDURE IF EXISTS funcion_create$$
-CREATE PROCEDURE funcion_create(IN p_idPelicula INT, IN p_idSala INT, IN p_idFormato INT, IN p_fecha DATE, IN p_hora TIME, IN p_precio DECIMAL(6,2), IN p_idIdioma INT, IN p_estado ENUM('activa','inactiva'), OUT p_id INT)
+CREATE PROCEDURE funcion_create(
+    IN p_idPelicula INT, IN p_idSala INT, IN p_idFormato INT, IN p_fecha DATE, IN p_hora TIME, IN p_precio DECIMAL(6,2), IN p_idIdioma INT, IN p_estado ENUM('activa','inactiva','preventa'), OUT p_id INT -- <--- MODIFICADO
+)
 BEGIN
     INSERT INTO FUNCION(idPelicula,idSala,idFormato,fecha,hora,precio,idIdioma,estado) VALUES (p_idPelicula,p_idSala,p_idFormato,p_fecha,p_hora,p_precio,p_idIdioma,p_estado);
     SET p_id = LAST_INSERT_ID();
@@ -607,7 +609,9 @@ BEGIN
 END$$
 
 DROP PROCEDURE IF EXISTS funcion_update$$
-CREATE PROCEDURE funcion_update(IN p_id INT, IN p_idPelicula INT, IN p_idSala INT, IN p_idFormato INT, IN p_fecha DATE, IN p_hora TIME, IN p_precio DECIMAL(6,2), IN p_idIdioma INT, IN p_estado ENUM('activa','inactiva'))
+CREATE PROCEDURE funcion_update(
+    IN p_id INT, IN p_idPelicula INT, IN p_idSala INT, IN p_idFormato INT, IN p_fecha DATE, IN p_hora TIME, IN p_precio DECIMAL(6,2), IN p_idIdioma INT, IN p_estado ENUM('activa','inactiva','preventa') -- <--- MODIFICADO
+)
 BEGIN
     UPDATE FUNCION SET idPelicula=p_idPelicula, idSala=p_idSala, idFormato=p_idFormato, fecha=p_fecha, hora=p_hora, precio=p_precio, idIdioma=p_idIdioma, estado=p_estado WHERE id = p_id;
 END$$

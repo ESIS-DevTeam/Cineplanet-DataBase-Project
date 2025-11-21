@@ -259,7 +259,7 @@ CREATE TABLE FUNCION (
     hora TIME NOT NULL,
     precio DECIMAL(6,2) NOT NULL,
     idIdioma INT,
-    estado ENUM('activa','inactiva') DEFAULT 'activa',
+    estado ENUM('activa','inactiva','preventa') DEFAULT 'activa', -- <--- MODIFICADO
     FOREIGN KEY (idPelicula) REFERENCES PELICULA(id) ON DELETE CASCADE,
     FOREIGN KEY (idSala) REFERENCES SALA(id) ON DELETE CASCADE,
     FOREIGN KEY (idFormato) REFERENCES FORMATO(id) ON DELETE CASCADE,
