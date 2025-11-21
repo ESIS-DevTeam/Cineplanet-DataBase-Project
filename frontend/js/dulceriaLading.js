@@ -52,9 +52,11 @@ form.addEventListener('submit', e => {
         alert('Selecciona una ciudad y un cine.');
         return;
     }
-    // Redirige o realiza la acción deseada
-    alert(`Ciudad seleccionada: ${ciudadId}, Cine seleccionado: ${cineId}`);
-    // window.location.href = `...?ciudad=${ciudadId}&cine=${cineId}`;
+    // Redirige a dulceria.html con los datos por la URL
+    const params = new URLSearchParams();
+    params.set('ciudad', ciudadId);
+    params.set('cine', cineId);
+    window.location.href = `dulceria.html?${params.toString()}`;
 });
 
 cargarCiudades();
