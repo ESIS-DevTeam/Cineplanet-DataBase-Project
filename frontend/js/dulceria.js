@@ -195,8 +195,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Agrega ciudad y cine si existen
             if (idCiudad) urlParams.set('ciudad', idCiudad);
             if (idCine) urlParams.set('cine', idCine);
-            console.log('Redirigiendo a pago.html con:', urlParams.toString());
-            window.location.href = `pago.html?${urlParams.toString()}`;
+            console.log('Redirigiendo a pago con:', urlParams.toString());
+            if (idCiudad && idCine) {
+                window.location.href = `pagoDulceria.html?${urlParams.toString()}`;
+            } else {
+                window.location.href = `pago.html?${urlParams.toString()}`;
+            }
         };
     }
 
