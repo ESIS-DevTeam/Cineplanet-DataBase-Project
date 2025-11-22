@@ -3,18 +3,18 @@
 -- ===========================================
 
 -- USUARIOS
-INSERT INTO USUARIO (nombre, email, tipoDocumento, numeroDocumento) VALUES
-('Carlos Gómez', 'carlos.gomez@gmail.com', 'DNI', '12345678'),
-('Ana Torres', 'ana.torres@gmail.com', 'DNI', '87654321'),
-('Luis Fernández', 'luis.fernandez@gmail.com', 'DNI', '11223344'),
-('María López', 'maria.lopez@gmail.com', 'DNI', '22334455'),
-('Pedro Ramos', 'pedro.ramos@gmail.com', 'DNI', '33445566'),
-('Lucía Vega', 'lucia.vega@gmail.com', 'DNI', '44556677'),
-('Jorge Silva', 'jorge.silva@gmail.com', 'DNI', '55667788'),
-('Rosa Díaz', 'rosa.diaz@gmail.com', 'DNI', '66778899'),
-('Andrés Castillo', 'andres.castillo@gmail.com', 'DNI', '77889900'),
-('Patricia Ríos', 'patricia.rios@gmail.com', 'DNI', '88990011');
-
+INSERT INTO USUARIO (nombre, email, tipoDocumento, numeroDocumento, tipo) VALUES
+('Carlos Gómez', 'carlos.gomez@gmail.com', 'DNI', '12345678', 'cliente'),
+('Ana Torres', 'ana.torres@gmail.com', 'DNI', '87654321', 'cliente'),
+('Luis Fernández', 'luis.fernandez@gmail.com', 'DNI', '11223344', 'cliente'),
+('María López', 'maria.lopez@gmail.com', 'DNI', '22334455', 'cliente'),
+('Pedro Ramos', 'pedro.ramos@gmail.com', 'DNI', '33445566', 'cliente'),
+('Lucía Vega', 'lucia.vega@gmail.com', 'DNI', '44556677', 'cliente'),
+('Jorge Silva', 'jorge.silva@gmail.com', 'DNI', '55667788', 'cliente'),
+('Rosa Díaz', 'rosa.diaz@gmail.com', 'DNI', '66778899', 'cliente'),
+('Andrés Castillo', 'andres.castillo@gmail.com', 'DNI', '77889900', 'cliente'),
+('Patricia Ríos', 'patricia.rios@gmail.com', 'DNI', '88990011', 'cliente'),
+('Juan Admin', 'admin@cineplanet.com', 'DNI', '99999999', 'admin');
 -- CIUDAD
 INSERT INTO CIUDAD (nombre) VALUES
 ('Lima'),
@@ -261,7 +261,8 @@ VALUES
 (7, 'pass7', 'Junín', 'Huancayo', 'El Tambo', 'Silva', 'Reyes', 'Cineplanet Huancayo', '1994-07-30', '955999111', 'M', 'clasico'),
 (8, 'pass8', 'Tacna', 'Tacna', 'Gregorio Albarracín', 'Díaz', 'Campos', 'Cineplanet Tacna', '2000-02-14', '977333444', 'F', 'plata'),
 (9, 'pass9', 'Loreto', 'Iquitos', 'Punchana', 'Castillo', 'Vargas', 'Cineplanet Iquitos', '1992-12-25', '966111777', 'M', 'black'),
-(10, 'pass10', 'Puno', 'Puno', 'Centro', 'Ríos', 'Salas', 'Cineplanet Puno', '1996-10-05', '955222333', 'F', 'oro');
+(10, 'pass10', 'Puno', 'Puno', 'Centro', 'Ríos', 'Salas', 'Cineplanet Puno', '1996-10-05', '955222333', 'F', 'oro'),
+(11, 'admin123', 'Puno', 'Puno', 'Centro', 'Ríos', 'Salas', 'Cineplanet Puno', '1996-10-05', '955222333', 'F', 'oro');
 
 -- SALAS
 INSERT INTO SALA (nombre, capacidad, tipo, idCine) VALUES

@@ -218,6 +218,10 @@ document.getElementById('guardar-plano').addEventListener('click', async functio
     }
 });
 
+// El endpoint guardarPlanoSala.php ahora realiza una inserción masiva (bulk insert).
+// El array plano se envía como JSON y el backend lo procesa eficientemente.
+// No es necesario modificar el método de envío en el frontend.
+
 document.addEventListener('DOMContentLoaded', () => {
     cargarCiudadesYCines();
 });

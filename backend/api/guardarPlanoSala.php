@@ -18,16 +18,21 @@ $stmtDel->bind_param("i", $idSala);
 $stmtDel->execute();
 $stmtDel->close();
 
-// Insertar nuevo plano
-$stmtIns = $conn->prepare("CALL plano_sala_create(?, ?, ?, ?, @new_id)");
+// Inserción masiva
+$values = [];
 foreach ($data as $asiento) {
-    $fila = $asiento['fila'];
+    $fila = $conn->real_escape_string($asiento['fila']);
     $numero = intval($asiento['numero']);
-    $tipo = $asiento['tipo'];
-    $stmtIns->bind_param("isis", $idSala, $fila, $numero, $tipo);
-    $stmtIns->execute();
+    $tipo = $conn->real_escape_string($asiento['tipo']);
+    $values[] = "($idSala, '$fila', $numero, '$tipo')";
 }
-$stmtIns->close();
+$sql = "INSERT INTO PLANO_SALA (idSala, fila, numero, tipo) VALUES " . implode(',', $values);
+$result = $conn->query($sql);
 
-echo json_encode(["success" => true]);
+if ($result) {
+    echo json_encode(["success" => true]);
+} else {
+    http_response_code(500);
+    echo json_encode(["error" => $conn->error]);
+}
 ?>

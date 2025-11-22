@@ -6,7 +6,8 @@ CREATE TABLE USUARIO (
     nombre VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     tipoDocumento VARCHAR(20) NOT NULL,
-    numeroDocumento VARCHAR(20) UNIQUE NOT NULL
+    numeroDocumento VARCHAR(20) UNIQUE NOT NULL,
+    tipo ENUM('cliente','admin') NOT NULL DEFAULT 'cliente'
 );
 
 -- CIUDAD: normalización de ciudades para CINE

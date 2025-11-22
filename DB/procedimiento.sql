@@ -61,9 +61,15 @@ DELIMITER $$
 -- USUARIO
 DROP PROCEDURE IF EXISTS usuario_create$$
 CREATE PROCEDURE usuario_create(
-    IN p_nombre VARCHAR(100), IN p_email VARCHAR(100), IN p_tipoDocumento VARCHAR(20), IN p_numeroDocumento VARCHAR(20), OUT p_id INT)
+    IN p_nombre VARCHAR(100),
+    IN p_email VARCHAR(100),
+    IN p_tipoDocumento VARCHAR(20),
+    IN p_numeroDocumento VARCHAR(20),
+    IN p_tipo ENUM('cliente','admin'), -- <--- AGREGADO
+    OUT p_id INT)
 BEGIN
-    INSERT INTO USUARIO(nombre,email,tipoDocumento,numeroDocumento) VALUES (p_nombre,p_email,p_tipoDocumento,p_numeroDocumento);
+    INSERT INTO USUARIO(nombre, email, tipoDocumento, numeroDocumento, tipo)
+    VALUES (p_nombre, p_email, p_tipoDocumento, p_numeroDocumento, p_tipo);
     SET p_id = LAST_INSERT_ID();
 END$$
 
@@ -986,6 +992,7 @@ BEGIN
         u.email,
         u.tipoDocumento,
         u.numeroDocumento,
+        u.tipo AS rol,
         s.password,
         s.departamento,
         s.provincia,
