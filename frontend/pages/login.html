@@ -24,7 +24,7 @@
             if (data.success) {
                 // Redirección según tipo de usuario
                 if (data.socio && data.socio.tipo === 'admin') {
-                    window.location.replace('../../admin/adminPanel.html');
+                    window.location.replace('admin/adminPanel.html');
                     return;
                 }
                 // Si está en iframe/modal, recarga la página principal y cierra el modal
