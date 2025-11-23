@@ -41,13 +41,21 @@
         <input type="text" name="celular" required><br>
 
         <label>Departamento:</label>
-        <input type="text" name="departamento" required><br>
+        <select id="departamentoSelect" name="departamento" required>
+            <option value="">Seleccione departamento</option>
+        </select><br>
 
         <label>Provincia:</label>
-        <input type="text" name="provincia" required><br>
+        <select id="provinciaSelect" name="provincia" required disabled>
+            <option value="">Seleccione provincia</option>
+        </select>
+        <span id="provinciaLoading" style="display:none; color: blue;">Cargando provincias...</span><br>
 
         <label>Distrito:</label>
-        <input type="text" name="distrito" required><br>
+        <select id="distritoSelect" name="distrito" required disabled>
+            <option value="">Seleccione distrito</option>
+        </select>
+        <span id="distritoLoading" style="display:none; color: blue;">Cargando distritos...</span><br>
 
         <label>Tu Cineplanet favorito:</label>
         <input type="text" name="cineplanetFavorito"><br>
@@ -61,5 +69,150 @@
 
         <button type="submit">Registrarse</button>
     </form>
+
+    <script>
+        const departamentoSelect = document.getElementById('departamentoSelect');
+        const provinciaSelect = document.getElementById('provinciaSelect');
+        const provinciaLoading = document.getElementById('provinciaLoading');
+        const distritoSelect = document.getElementById('distritoSelect');
+        const distritoLoading = document.getElementById('distritoLoading');
+
+        let departamentos = [];
+        let provincias = [];
+        let distritos = [];
+
+        // Cargar departamentos
+        async function cargarDepartamentos() {
+          try {
+            const respuesta = await fetch('https://raw.githubusercontent.com/joseluisq/ubigeos-peru/master/json/departamentos.json');
+            const data = await respuesta.json();
+            departamentos = Object.values(data);
+
+            departamentos.forEach(dep => {
+              const option = document.createElement('option');
+              option.value = dep.id_ubigeo;
+              option.textContent = dep.nombre_ubigeo;
+              departamentoSelect.appendChild(option);
+            });
+          } catch (error) {
+            console.error("Error al cargar departamentos:", error);
+          }
+        }
+
+        // Cargar TODAS las provincias
+        async function cargarProvincias() {
+          try {
+            const respuesta = await fetch('https://raw.githubusercontent.com/joseluisq/ubigeos-peru/master/json/provincias.json');
+            const data = await respuesta.json();
+            // Convierte cualquier estructura en un solo array plano
+            if (Array.isArray(data)) {
+              provincias = data.flat(Infinity);
+            } else if (Array.isArray(data.provincias)) {
+              provincias = data.provincias.flat(Infinity);
+            } else if (typeof data === 'object') {
+              provincias = Object.values(data).flat(Infinity);
+            } else {
+              provincias = [];
+            }
+            console.log("Array de provincias plano:", provincias);
+          } catch (error) {
+            console.error("Error al cargar provincias:", error);
+          }
+        }
+
+        // Cargar TODOS los distritos
+        async function cargarDistritos() {
+          try {
+            const respuesta = await fetch('https://raw.githubusercontent.com/joseluisq/ubigeos-peru/master/json/distritos.json');
+            const data = await respuesta.json();
+            // Convierte cualquier estructura en un solo array plano
+            if (Array.isArray(data)) {
+              distritos = data.flat(Infinity);
+            } else if (Array.isArray(data.distritos)) {
+              distritos = data.distritos.flat(Infinity);
+            } else if (typeof data === 'object') {
+              distritos = Object.values(data).flat(Infinity);
+            } else {
+              distritos = [];
+            }
+            console.log("Array de distritos plano:", distritos);
+          } catch (error) {
+            console.error("Error al cargar distritos:", error);
+          }
+        }
+
+        // Evento: cuando cambia el departamento
+        departamentoSelect.addEventListener('change', function () {
+          provinciaSelect.innerHTML = '<option value="">Seleccione provincia</option>';
+          provinciaSelect.disabled = true;
+          provinciaLoading.style.display = 'inline';
+
+          const idDepartamento = String(this.value).trim();
+
+          // Imprime solo los id_padre_ubigeo de todas las provincias
+          provincias.forEach(p => {
+            console.log(p.id_padre_ubigeo);
+          });
+
+          // Filtrar provincias que pertenezcan a este departamento
+          const provinciasFiltradas = provincias.filter(
+            p => typeof p.id_padre_ubigeo !== "undefined" &&
+                 String(p.id_padre_ubigeo).trim() === idDepartamento
+          );
+
+          // Debug: muestra el resultado del filtro
+          console.log("ID departamento seleccionado:", idDepartamento);
+          console.log("Provincias filtradas:", provinciasFiltradas);
+
+          if (provinciasFiltradas.length > 0) {
+            provinciasFiltradas.forEach(prov => {
+              const option = document.createElement('option');
+              option.value = prov.id_ubigeo;
+              option.textContent = prov.nombre_ubigeo;
+              provinciaSelect.appendChild(option);
+            });
+            provinciaSelect.disabled = false;
+          } else {
+            provinciaSelect.innerHTML = '<option value="">No hay provincias</option>';
+          }
+          provinciaLoading.style.display = 'none';
+        });
+
+        // Evento: cuando cambia la provincia
+        provinciaSelect.addEventListener('change', function () {
+          distritoSelect.innerHTML = '<option value="">Seleccione distrito</option>';
+          distritoSelect.disabled = true;
+          distritoLoading.style.display = 'inline';
+
+          const idProvincia = String(this.value).trim();
+
+          // Filtrar distritos que pertenezcan a esta provincia
+          const distritosFiltrados = distritos.filter(
+            d => typeof d.id_padre_ubigeo !== "undefined" &&
+                 String(d.id_padre_ubigeo).trim() === idProvincia
+          );
+
+          console.log("ID provincia seleccionada:", idProvincia);
+          console.log("Distritos filtrados:", distritosFiltrados);
+
+          if (distritosFiltrados.length > 0) {
+            distritosFiltrados.forEach(dist => {
+              const option = document.createElement('option');
+              option.value = dist.id_ubigeo;
+              option.textContent = dist.nombre_ubigeo;
+              distritoSelect.appendChild(option);
+            });
+            distritoSelect.disabled = false;
+          } else {
+            distritoSelect.innerHTML = '<option value="">No hay distritos</option>';
+          }
+          distritoLoading.style.display = 'none';
+        });
+
+        // Inicializar
+        cargarDepartamentos();
+        cargarProvincias();
+        cargarDistritos();
+    </script>
 </body>
 </html>
