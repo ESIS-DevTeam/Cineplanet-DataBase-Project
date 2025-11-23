@@ -992,7 +992,7 @@ BEGIN
         u.email,
         u.tipoDocumento,
         u.numeroDocumento,
-        u.tipo AS rol,
+        u.tipo ,
         s.password,
         s.departamento,
         s.provincia,

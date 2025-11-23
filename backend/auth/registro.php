@@ -28,6 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $genero = $input['genero'] ?? '';
     $acepta_terminos = !empty($input['acepta_terminos']);
     $acepta_finalidades = !empty($input['acepta_finalidades']);
+    $tipo = $input['tipo'] ?? 'cliente'; // Nuevo: tipo de usuario, por defecto 'cliente'
 
     // Validación básica
     if (!$acepta_terminos || !$acepta_finalidades) {
@@ -54,8 +55,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt_check->close();
 
     // 1. Crear usuario usando procedimiento almacenado
-    $stmt = $conn->prepare("CALL usuario_create(?, ?, ?, ?, @idUsuario)");
-    $stmt->bind_param("ssss", $nombre, $email, $tipoDocumento, $numeroDocumento);
+    $stmt = $conn->prepare("CALL usuario_create(?, ?, ?, ?, ?, @idUsuario)");
+    $stmt->bind_param("sssss", $nombre, $email, $tipoDocumento, $numeroDocumento, $tipo); // Añadido $tipo
     $stmt->execute();
     $stmt->close();
 
