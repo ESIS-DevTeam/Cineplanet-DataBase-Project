@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Registro de Socio</title>
+    <meta charset="UTF-8">
 </head>
 <body>
     <h2>Únete</h2>
@@ -58,7 +59,9 @@
         <span id="distritoLoading" style="display:none; color: blue;">Cargando distritos...</span><br>
 
         <label>Tu Cineplanet favorito:</label>
-        <input type="text" name="cineplanetFavorito"><br>
+        <select id="cineplanetFavoritoSelect" name="cineplanetFavorito" required>
+            <option value="">Seleccione un cine</option>
+        </select><br>
 
         <label>Género:</label>
         <input type="radio" name="genero" value="Hombre" required> Hombre
@@ -141,6 +144,27 @@
           }
         }
 
+        // Cargar cines desde el endpoint API
+        async function cargarCines() {
+          try {
+            const respuesta = await fetch('../../backend/api/getCines.php');
+            const data = await respuesta.json();
+            const cineSelect = document.getElementById('cineplanetFavoritoSelect');
+            cineSelect.innerHTML = '<option value="">Seleccione un cine</option>';
+            data.forEach(cine => {
+              // Soporta tanto objetos como arrays asociativos
+              const id = cine.id ?? cine['id'];
+              const nombre = cine.nombre ?? cine['nombre'];
+              const option = document.createElement('option');
+              option.value = id;
+              option.textContent = nombre;
+              cineSelect.appendChild(option);
+            });
+          } catch (error) {
+            console.error("Error al cargar cines:", error);
+          }
+        }
+
         // Evento: cuando cambia el departamento
         departamentoSelect.addEventListener('change', function () {
           provinciaSelect.innerHTML = '<option value="">Seleccione provincia</option>';
@@ -213,6 +237,7 @@
         cargarDepartamentos();
         cargarProvincias();
         cargarDistritos();
+        cargarCines();
     </script>
 </body>
 </html>
