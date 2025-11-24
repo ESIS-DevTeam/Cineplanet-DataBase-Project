@@ -142,6 +142,61 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Formulario de pago
     const form = document.getElementById('form-pago');
 
+    // Rellenar y deshabilitar campos si el usuario está logueado
+    if (sessionData.socio) {
+        const form = document.getElementById('form-pago');
+        // Nombre
+        if (form.nombre) {
+            form.nombre.value = sessionData.socio.nombre || '';
+            form.nombre.readOnly = true;
+        }
+        // Email
+        if (form.correo) {
+            form.correo.value = sessionData.socio.email || '';
+            form.correo.readOnly = true;
+        }
+        // DNI
+        const tipoDocumento = (sessionData.socio.tipoDocumento || '').toUpperCase();
+        const numeroDocumento = sessionData.socio.numeroDocumento || '';
+        // Tarjeta
+        if (form['num-doc-tarjeta']) {
+            form['num-doc-tarjeta'].value = numeroDocumento;
+            form['num-doc-tarjeta'].readOnly = true;
+        }
+        if (form['tipo-doc-tarjeta']) {
+            form['tipo-doc-tarjeta'].value = tipoDocumento === 'DNI' ? 'dni' : '';
+            form['tipo-doc-tarjeta'].disabled = true;
+        }
+        // Agora
+        if (form['num-doc-agora']) {
+            form['num-doc-agora'].value = numeroDocumento;
+            form['num-doc-agora'].readOnly = true;
+        }
+        if (form['tipo-doc-agora']) {
+            form['tipo-doc-agora'].value = tipoDocumento === 'DNI' ? 'dni' : '';
+            form['tipo-doc-agora'].disabled = true;
+        }
+        // Billetera
+        if (form['num-doc-billetera']) {
+            form['num-doc-billetera'].value = numeroDocumento;
+            form['num-doc-billetera'].readOnly = true;
+        }
+        if (form['tipo-doc-billetera']) {
+            form['tipo-doc-billetera'].value = tipoDocumento === 'DNI' ? 'dni' : '';
+            form['tipo-doc-billetera'].disabled = true;
+        }
+        // Celular
+        const celular = sessionData.socio.celular || '';
+        if (form['celular-agora']) {
+            form['celular-agora'].value = celular;
+            form['celular-agora'].readOnly = true;
+        }
+        if (form['celular-billetera']) {
+            form['celular-billetera'].value = celular;
+            form['celular-billetera'].readOnly = true;
+        }
+    }
+
     // Modal de error y éxito
     function mostrarModalError(mensaje, onAceptar) {
         let modal = document.getElementById('modal-error');
@@ -297,6 +352,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 alert('Debes aceptar el Tratamiento Opcional de datos antes de continuar con el pago.');
                 return;
             }
+
+            // Si está logueado, usar el id del socio y omitir verificación de documento
+            if (sessionData.socio && sessionData.socio.id) {
+                await procesarPago(sessionData.socio.id);
+                return;
+            }
+
             // Validar campos mínimos
             const nombreCompleto = form.nombre.value.trim();
             const correoElectronico = form.correo.value.trim();

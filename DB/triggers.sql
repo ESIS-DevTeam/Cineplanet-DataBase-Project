@@ -24,11 +24,9 @@ BEGIN
     DECLARE requierePuntosPromo INT DEFAULT 0;
     DECLARE puntosRestar INT DEFAULT 0;
     DECLARE puntosSumarBoleta INT DEFAULT 1;
-    DECLARE puntosSumarProductos DECIMAL(10,2) DEFAULT 0;
     DECLARE visitasActuales INT DEFAULT 0;
     DECLARE nuevoGrado VARCHAR(10);
     DECLARE idUsuarioBoleta INT;
-    DECLARE promosEnBoleta INT DEFAULT 0;
 
     -- Obtener el usuario de la boleta
     SELECT idUsuario INTO idUsuarioBoleta FROM BOLETA WHERE id = NEW.idBoleta;
@@ -44,60 +42,75 @@ BEGIN
     VALUES (
         idUsuarioBoleta,
         NEW.idPromo,
-        1,
+        NEW.cantidad,
         NOW()
     );
 
-    -- Solo ejecutar la lógica si es la primera promo insertada para la boleta
-    SELECT COUNT(*) INTO promosEnBoleta FROM PROMO_BOLETA WHERE idBoleta = NEW.idBoleta;
-    IF promosEnBoleta = 1 THEN
-        SELECT COUNT(*) INTO esSocio FROM SOCIO WHERE id = idUsuarioBoleta;
-        IF esSocio > 0 THEN
-            -- Verifica si la boleta tiene alguna promo que requiere puntos
-            SELECT SUM(PROMO.requierePuntos) INTO requierePuntosPromo
-            FROM PROMO_BOLETA
-            JOIN PROMO ON PROMO_BOLETA.idPromo = PROMO.id
-            WHERE PROMO_BOLETA.idBoleta = NEW.idBoleta;
+    -- Ejecutar la lógica por cada inserción
+    SELECT COUNT(*) INTO esSocio FROM SOCIO WHERE id = idUsuarioBoleta;
+    IF esSocio > 0 THEN
+        -- Verifica si la promo requiere puntos
+        SELECT requierePuntos, puntosNecesarios INTO requierePuntosPromo, puntosRestar FROM PROMO WHERE id = NEW.idPromo;
 
-            -- Suma puntos por productos (10% del precio * cantidad)
-            SELECT IFNULL(SUM(precioUnitario * cantidad * 0.10), 0)
-                INTO puntosSumarProductos
-            FROM PRODUCTOS_BOLETA
-            WHERE idBoleta = NEW.idBoleta;
+        IF requierePuntosPromo > 0 THEN
+            -- Restar puntos según la cantidad y puntos necesarios de la promo usada
+            SET puntosRestar = puntosRestar * IFNULL(NEW.cantidad, 1);
 
-            IF requierePuntosPromo > 0 THEN
-                -- Restar puntos según la cantidad y puntos necesarios de cada promo usada
-                SELECT SUM(PROMO.puntosNecesarios * IFNULL(PROMO_BOLETA.cantidad, 1)) INTO puntosRestar
-                FROM PROMO_BOLETA
-                JOIN PROMO ON PROMO_BOLETA.idPromo = PROMO.id
-                WHERE PROMO_BOLETA.idBoleta = NEW.idBoleta AND PROMO.requierePuntos = 1;
-
-                -- Actualiza visitas (+1), resta puntos por promo, suma puntos solo por productos
-                UPDATE SOCIO SET
-                    visitas = visitas + 1,
-                    puntos = puntos + puntosSumarProductos - IFNULL(puntosRestar,0)
-                WHERE id = idUsuarioBoleta;
-            ELSE
-                -- Suma puntos por boleta (+1) y productos
-                UPDATE SOCIO SET
-                    visitas = visitas + 1,
-                    puntos = puntos + puntosSumarBoleta + puntosSumarProductos
-                WHERE id = idUsuarioBoleta;
-            END IF;
-
-            -- Actualiza el grado según visitas
-            SELECT visitas INTO visitasActuales FROM SOCIO WHERE id = idUsuarioBoleta;
-            IF visitasActuales >= 60 THEN
-                SET nuevoGrado = 'black';
-            ELSEIF visitasActuales >= 40 THEN
-                SET nuevoGrado = 'oro';
-            ELSEIF visitasActuales >= 20 THEN
-                SET nuevoGrado = 'plata';
-            ELSE
-                SET nuevoGrado = 'clasico';
-            END IF;
-            UPDATE SOCIO SET grado = nuevoGrado WHERE id = idUsuarioBoleta;
+            -- Suma visita (+1) y resta puntos por promo
+            UPDATE SOCIO SET
+                visitas = visitas + 1,
+                puntos = puntos - IFNULL(puntosRestar,0)
+            WHERE id = idUsuarioBoleta;
+        ELSE
+            -- Suma puntos por boleta (+1)
+            UPDATE SOCIO SET
+                visitas = visitas + 1,
+                puntos = puntos + puntosSumarBoleta
+            WHERE id = idUsuarioBoleta;
         END IF;
+
+        -- Actualiza el grado según visitas
+        SELECT visitas INTO visitasActuales FROM SOCIO WHERE id = idUsuarioBoleta;
+        IF visitasActuales >= 60 THEN
+            SET nuevoGrado = 'black';
+        ELSEIF visitasActuales >= 40 THEN
+            SET nuevoGrado = 'oro';
+        ELSEIF visitasActuales >= 20 THEN
+            SET nuevoGrado = 'plata';
+        ELSE
+            SET nuevoGrado = 'clasico';
+        END IF;
+        UPDATE SOCIO SET grado = nuevoGrado WHERE id = idUsuarioBoleta;
+    END IF;
+END;
+//
+
+-- Trigger para sumar puntos por productos al insertar en PRODUCTOS_BOLETA
+DELIMITER //
+
+DROP TRIGGER IF EXISTS tr_productos_boleta_insert;
+//
+CREATE TRIGGER tr_productos_boleta_insert AFTER INSERT ON PRODUCTOS_BOLETA
+FOR EACH ROW
+BEGIN
+    DECLARE idUsuarioBoleta INT;
+    DECLARE esSocio INT DEFAULT 0;
+    DECLARE puntosProducto DECIMAL(10,2) DEFAULT 0;
+
+    -- Obtener el usuario de la boleta
+    SELECT idUsuario INTO idUsuarioBoleta FROM BOLETA WHERE id = NEW.idBoleta;
+
+    -- Verificar si es socio
+    SELECT COUNT(*) INTO esSocio FROM SOCIO WHERE id = idUsuarioBoleta;
+
+    IF esSocio > 0 THEN
+        -- Calcular puntos por producto (10% del precio * cantidad)
+        SET puntosProducto = NEW.precioUnitario * NEW.cantidad * 0.10;
+
+        -- Sumar puntos por producto
+        UPDATE SOCIO SET
+            puntos = puntos + puntosProducto
+        WHERE id = idUsuarioBoleta;
     END IF;
 END;
 //
