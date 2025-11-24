@@ -36,7 +36,7 @@
         <input type="password" name="confirm_password" required><br>
 
         <label>Fecha de Nacimiento:</label>
-        <input type="date" name="fechaNacimiento" required><br>
+        <input type="date" name="fechaNacimiento" id="fechaNacimiento" required><br>
 
         <label>Número de Celular:</label>
         <input type="text" name="celular" required><br>
@@ -231,6 +231,17 @@
             distritoSelect.innerHTML = '<option value="">No hay distritos</option>';
           }
           distritoLoading.style.display = 'none';
+        });
+
+        // Limita la fecha de nacimiento para mayores de 18 años
+        document.addEventListener('DOMContentLoaded', function () {
+            const fechaInput = document.getElementById('fechaNacimiento');
+            if (fechaInput) {
+                const hoy = new Date();
+                hoy.setFullYear(hoy.getFullYear() - 18);
+                const maxFecha = hoy.toISOString().split('T')[0];
+                fechaInput.max = maxFecha;
+            }
         });
 
         // Inicializar
