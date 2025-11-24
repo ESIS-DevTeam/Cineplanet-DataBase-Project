@@ -35,10 +35,11 @@ try {
 
     // Insertar promos boleta
     if (!empty($data['promosBoleta'])) {
-        $stmt = $conn->prepare("INSERT INTO PROMO_BOLETA (idBoleta, idPromo, montoDescuento, detalle) VALUES (?, ?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO PROMO_BOLETA (idBoleta, idPromo, montoDescuento, cantidad, detalle) VALUES (?, ?, ?, ?, ?)");
         foreach ($data['promosBoleta'] as $promo) {
             $detalle = isset($promo['detalle']) ? $promo['detalle'] : '';
-            $stmt->bind_param("iids", $idBoleta, $promo['idPromo'], $promo['montoDescuento'], $detalle);
+            $cantidad = isset($promo['cantidad']) ? $promo['cantidad'] : 1;
+            $stmt->bind_param("iidis", $idBoleta, $promo['idPromo'], $promo['montoDescuento'], $cantidad, $detalle);
             $stmt->execute();
         }
         $stmt->close();

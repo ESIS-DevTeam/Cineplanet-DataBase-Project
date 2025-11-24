@@ -352,7 +352,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             ...datosBoleta,
             idFuncion: idFuncion,
             productosBoleta: datosProductosBoleta,
-            promosBoleta: datosPromoBoleta,
+            promosBoleta: datosPromoBoleta, // <--- asegúrate que cada promo tiene 'cantidad'
             asientosBoleta: datosBoletaAsiento
         };
 

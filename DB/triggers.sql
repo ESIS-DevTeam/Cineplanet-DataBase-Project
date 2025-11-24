@@ -22,6 +22,7 @@ BEGIN
     DECLARE stockActual INT DEFAULT 0;
     DECLARE esSocio INT DEFAULT 0;
     DECLARE requierePuntosPromo INT DEFAULT 0;
+    DECLARE puntosNecesariosPromo INT DEFAULT 0;
     DECLARE puntosRestar INT DEFAULT 0;
     DECLARE puntosSumarBoleta INT DEFAULT 1;
     DECLARE visitasActuales INT DEFAULT 0;
@@ -34,7 +35,7 @@ BEGIN
     -- Disminuir stock si aplica
     SELECT tieneStock, stock INTO tieneStock, stockActual FROM PROMO WHERE id = NEW.idPromo;
     IF tieneStock = 1 AND stockActual IS NOT NULL AND stockActual > 0 THEN
-        UPDATE PROMO SET stock = stock - 1 WHERE id = NEW.idPromo;
+        UPDATE PROMO SET stock = stock - NEW.cantidad WHERE id = NEW.idPromo;
     END IF;
 
     -- Registrar el uso de la promo
@@ -49,23 +50,23 @@ BEGIN
     -- Ejecutar la lógica por cada inserción
     SELECT COUNT(*) INTO esSocio FROM SOCIO WHERE id = idUsuarioBoleta;
     IF esSocio > 0 THEN
-        -- Verifica si la promo requiere puntos
-        SELECT requierePuntos, puntosNecesarios INTO requierePuntosPromo, puntosRestar FROM PROMO WHERE id = NEW.idPromo;
+        -- Verifica si la promo requiere puntos y obtiene puntos necesarios
+        SELECT requierePuntos, puntosNecesarios INTO requierePuntosPromo, puntosNecesariosPromo FROM PROMO WHERE id = NEW.idPromo;
 
         IF requierePuntosPromo > 0 THEN
             -- Restar puntos según la cantidad y puntos necesarios de la promo usada
-            SET puntosRestar = puntosRestar * IFNULL(NEW.cantidad, 1);
+            SET puntosRestar = puntosNecesariosPromo * IFNULL(NEW.cantidad, 1);
 
-            -- Suma visita (+1) y resta puntos por promo
+            -- Suma visitas (+cantidad) y resta puntos por promo
             UPDATE SOCIO SET
-                visitas = visitas + 1,
+                visitas = visitas + IFNULL(NEW.cantidad, 1),
                 puntos = puntos - IFNULL(puntosRestar,0)
             WHERE id = idUsuarioBoleta;
         ELSE
-            -- Suma puntos por boleta (+1)
+            -- Suma puntos por boleta (+cantidad)
             UPDATE SOCIO SET
-                visitas = visitas + 1,
-                puntos = puntos + puntosSumarBoleta
+                visitas = visitas + IFNULL(NEW.cantidad, 1),
+                puntos = puntos + (puntosSumarBoleta * IFNULL(NEW.cantidad, 1))
             WHERE id = idUsuarioBoleta;
         END IF;
 
