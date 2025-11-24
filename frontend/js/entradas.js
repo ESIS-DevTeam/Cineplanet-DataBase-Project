@@ -54,7 +54,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let socioData = sessionData.socio || null;
     let esEmpleado = socioData && socioData.empleado == 1;
-    let puntosSocio = socioData && socioData.puntos ? socioData.puntos : 0;
+    let puntosSocio = 0;
+
+    // NUEVO: función para obtener puntos del socio desde endpoint
+    async function obtenerPuntosSocio(idSocio) {
+        if (!idSocio) return 0;
+        try {
+            const res = await fetch(BASE_API_DOMAIN + `getPuntosSocio.php?idSocio=${idSocio}`);
+            const data = await res.json();
+            if (data && typeof data.puntos === 'number') {
+                return data.puntos;
+            }
+        } catch {}
+        return 0;
+    }
 
     // Extrae parámetros de la URL
     if (!idFuncion) {
@@ -147,6 +160,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch {
         document.getElementById('info-container').innerHTML += '<div>Error al obtener las promociones.</div>';
         return;
+    }
+
+    // NUEVO: obtener puntos del socio antes de renderizar beneficios
+    if (socioData && socioData.id) {
+        puntosSocio = await obtenerPuntosSocio(socioData.id);
     }
 
     // NUEVO: obtener el stock disponible por usuario para cada promo con stock

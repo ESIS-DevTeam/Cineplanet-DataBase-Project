@@ -483,11 +483,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function parsePromos(str) {
+        // Espera formato promos=1:2,3:1 (idPromo:cantidad)
         return str ? str.split(',').map(item => {
-            const [id] = item.split(':');
+            const [id, cantidad] = item.split(':');
             return {
                 idPromo: id,
                 montoDescuento: null,
+                cantidad: cantidad ? parseInt(cantidad, 10) : 1, // <--- AGREGADO
                 detalle: ''
             };
         }).filter(p => p.idPromo) : [];
