@@ -62,7 +62,7 @@ try {
             $insertSocio->bind_param("issssssssss", $idUsuario, $password, $departamento, $provincia, $distrito, $apellidoPaterno, $apellidoMaterno, $cineplanetFavorito, $fechaNacimiento, $celular, $genero);
             $insertSocio->execute();
 
-            echo json_encode(['success' => true, 'message' => 'Usuario actualizado y registrado como socio.', 'idUsuario' => $idUsuario]);
+            echo json_encode(['success' => true, 'message' => 'Usuario registrado correctamente', 'idUsuario' => $idUsuario]);
             exit;
         }
     } else {

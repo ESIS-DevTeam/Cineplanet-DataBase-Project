@@ -33,8 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (result.success) {
                 alert(result.message);
-                // Opcional: redirigir o limpiar el formulario
-                // window.location.href = 'login.html';
+                window.location.href = '../../index.html';
             } else if (
                 typeof result.message === 'string' &&
                 result.message.includes('Duplicate entry') &&
