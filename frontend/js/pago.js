@@ -307,8 +307,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (loader) loader.style.display = 'none';
     }
 
-    // Modal de éxito
-    function mostrarModalExito(idBoleta) {
+    // --- NUEVO: Obtener info de asientos y sala ---
+    async function getAsientosSalaInfo(idsPlanoSala) {
+        if (!idsPlanoSala || idsPlanoSala.length === 0) return { salaNombre: '', asientos: [] };
+        try {
+            const res = await fetch(BASE_API_DOMAIN + 'getAsientosSalaInfo.php?ids=' + idsPlanoSala.join(','));
+            return await res.json();
+        } catch {
+            return { salaNombre: '', asientos: [] };
+        }
+    }
+
+    // Modal de éxito con resumen visual y botón PDF
+    async function mostrarModalExito(idBoleta, resumen, datosBoleta, datosBoletaAsiento, datosPromoBoleta) {
         let modal = document.getElementById('modal-exito');
         if (!modal) {
             modal = document.createElement('div');
@@ -323,19 +334,94 @@ document.addEventListener('DOMContentLoaded', async () => {
             modal.style.display = 'flex';
             modal.style.alignItems = 'center';
             modal.style.justifyContent = 'center';
-            modal.innerHTML = `
-                <div style="background:#fff; padding:2em; border-radius:10px; box-shadow:0 4px 20px #0002; max-width:350px; text-align:center;">
-                    <div style="margin-bottom:1em; font-size:1.3em;">✅ Pago exitoso</div>
-                    <div id="modal-exito-msg" style="margin-bottom:1em; font-size:1.1em;"></div>
-                    <button id="modal-exito-aceptar" style="padding:0.5em 2em;">Aceptar</button>
-                </div>
-            `;
+            modal.innerHTML = `<div id="modal-exito-content" style="background:#fff; max-width:600px; margin:5vh auto; border-radius:10px; padding:2em; position:relative; box-shadow:0 4px 20px #0002;"></div>`;
             document.body.appendChild(modal);
         }
-        modal.querySelector('#modal-exito-msg').textContent = `ID de boleta: ${idBoleta}`;
+
+        // Obtener info de asientos y sala
+        const idsPlanoSala = datosBoletaAsiento.map(a => a.idPlanoSala);
+        const asientosSalaInfo = await getAsientosSalaInfo(idsPlanoSala);
+        const salaNombre = asientosSalaInfo.salaNombre || resumen?.nombreSala || '';
+        const asientosFormateados = asientosSalaInfo.asientos.length > 0
+            ? asientosSalaInfo.asientos.map(a => `${a.fila}${a.numero}`).join(', ')
+            : datosBoletaAsiento.map(a => a.idPlanoSala).join(', ');
+
+        // Obtener la hora correctamente
+        let horaFuncion = resumen?.hora || infoFuncion?.hora || '';
+        // Obtener el nombre del cine
+        let nombreCine = resumen?.nombreCine || infoFuncion?.nombreCine || '';
+
+        // Generar QR
+        const qrUrl = `${BASE_API_DOMAIN}verificarQR.php?idBoleta=${idBoleta}`;
+        const qrImg = `<img id="qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(qrUrl)}" alt="QR" style="width:120px;height:120px;display:block;margin:auto;">`;
+
+        // Resumen visual (sin botones)
+        let resumenHtml = `
+            <h2 style="text-align:center; margin-bottom:1em;">${resumen?.nombrePelicula || infoFuncion?.nombrePelicula || ''}</h2>
+            <div style="text-align:center; font-weight:bold; margin-bottom:0.5em;">${nombreCine}</div>
+            <div style="display:flex;gap:2em;align-items:center;">
+                <div>${qrImg}</div>
+                <div>
+                    <div><strong>Nro. de Compra:</strong> ${idBoleta}</div>
+                    <div><strong>Cliente:</strong> ${sessionData.socio?.nombre || ''}</div>
+                    <div><strong>Fecha:</strong> ${datosBoleta.fecha}</div>
+                    <div><strong>Hora:</strong> ${horaFuncion}</div>
+                    <div><strong>Sala:</strong> ${salaNombre}</div>
+                    <div><strong>Asientos:</strong> ${asientosFormateados}</div>
+                </div>
+            </div>
+            <hr>
+            <div>
+                <strong>Entradas:</strong>
+                <ul>
+                    ${(resumen.entradas || []).map(e => `<li>${e.nombre} Cant: ${e.cantidad} S/${e.precio.toFixed(2)}</li>`).join('')}
+                </ul>
+                ${
+                    resumen.dulceria && resumen.dulceria.length > 0
+                    ? `<strong>Dulcería:</strong>
+                        <ul>
+                            ${resumen.dulceria.map(d => `<li>${d.nombre} Cant: ${d.cantidad} S/${d.precio.toFixed(2)}</li>`).join('')}
+                        </ul>`
+                    : ''
+                }
+                <div><strong>Sub Total:</strong> S/${datosBoleta.subtotal.toFixed(2)}</div>
+                <div><strong>Costo Total:</strong> S/${datosBoleta.total.toFixed(2)}</div>
+            </div>
+        `;
+
+        // Botones fuera del contenedor PDF
+        let botonesHtml = `
+            <div style="text-align:center;margin-top:1em;">
+                <button id="btn-descargar-pdf">Descargar PDF</button>
+                <button id="modal-exito-aceptar" style="margin-left:1em;">Aceptar</button>
+            </div>
+        `;
+
+        // Contenedor para PDF
+        let pdfContainer = document.getElementById('modal-exito-pdf');
+        if (!pdfContainer) {
+            pdfContainer = document.createElement('div');
+            pdfContainer.id = 'modal-exito-pdf';
+            pdfContainer.style.display = 'none';
+            document.body.appendChild(pdfContainer);
+        }
+        pdfContainer.innerHTML = resumenHtml;
+
+        // Mostrar en modal
+        modal.querySelector('#modal-exito-content').innerHTML = resumenHtml + botonesHtml;
         modal.style.display = 'flex';
-        const btnAceptar = modal.querySelector('#modal-exito-aceptar');
-        btnAceptar.onclick = () => {
+
+        // Descargar PDF solo del resumen (sin botones)
+        document.getElementById('btn-descargar-pdf').onclick = () => {
+            import('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js').then(() => {
+                pdfContainer.style.display = 'block';
+                html2pdf().from(pdfContainer).set({ margin: 10, filename: `boleta_${idBoleta}.pdf` }).save().then(() => {
+                    pdfContainer.style.display = 'none';
+                });
+            });
+        };
+
+        document.getElementById('modal-exito-aceptar').onclick = () => {
             modal.style.display = 'none';
             window.location.href = '../../index.html';
         };
@@ -352,7 +438,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             ...datosBoleta,
             idFuncion: idFuncion,
             productosBoleta: datosProductosBoleta,
-            promosBoleta: datosPromoBoleta, // <--- asegúrate que cada promo tiene 'cantidad'
+            promosBoleta: datosPromoBoleta,
             asientosBoleta: datosBoletaAsiento
         };
 
@@ -369,7 +455,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             ocultarLoader();
 
             if (resultadoPago.success) {
-                mostrarModalExito(resultadoPago.idBoleta);
+                // Obtener resumen para mostrarlo en el modal
+                const resumenRes = await fetch(BASE_API_DOMAIN + 'getResumenCompra.php?' + resumenParams.toString());
+                const resumen = await resumenRes.json();
+                await mostrarModalExito(resultadoPago.idBoleta, resumen, datosBoleta, datosBoletaAsiento, datosPromoBoleta);
             } else {
                 // Manejo de error de asiento ocupado (violación UNIQUE)
                 if (

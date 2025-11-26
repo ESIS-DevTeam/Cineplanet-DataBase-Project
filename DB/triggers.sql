@@ -28,24 +28,20 @@ BEGIN
     DECLARE visitasActuales INT DEFAULT 0;
     DECLARE nuevoGrado VARCHAR(10);
     DECLARE idUsuarioBoleta INT;
+    DECLARE promoUsoId INT DEFAULT 0;
 
     -- Obtener el usuario de la boleta
     SELECT idUsuario INTO idUsuarioBoleta FROM BOLETA WHERE id = NEW.idBoleta;
 
-    -- Disminuir stock si aplica
-    SELECT tieneStock, stock INTO tieneStock, stockActual FROM PROMO WHERE id = NEW.idPromo;
-    IF tieneStock = 1 AND stockActual IS NOT NULL AND stockActual > 0 THEN
-        UPDATE PROMO SET stock = stock - NEW.cantidad WHERE id = NEW.idPromo;
-    END IF;
 
-    -- Registrar el uso de la promo
-    INSERT INTO PROMO_USO (idUsuario, idPromo, cantidad, fechaUso)
-    VALUES (
-        idUsuarioBoleta,
-        NEW.idPromo,
-        NEW.cantidad,
-        NOW()
-    );
+    -- Solo actualizar el uso de la promo (nunca insertar)
+    SELECT id INTO promoUsoId FROM PROMO_USO WHERE idUsuario = idUsuarioBoleta AND idPromo = NEW.idPromo LIMIT 1;
+    IF promoUsoId IS NOT NULL AND promoUsoId > 0 THEN
+        UPDATE PROMO_USO
+        SET cantidad = cantidad + NEW.cantidad,
+            fechaUso = NOW()
+        WHERE id = promoUsoId;
+    END IF;
 
     -- Ejecutar la lógica por cada inserción
     SELECT COUNT(*) INTO esSocio FROM SOCIO WHERE id = idUsuarioBoleta;
