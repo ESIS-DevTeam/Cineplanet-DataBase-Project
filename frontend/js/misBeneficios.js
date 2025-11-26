@@ -40,6 +40,47 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('btn-beneficios').onclick = () => {};
         document.getElementById('btn-compras').onclick = () => window.location.href = 'misCompras.html';
         document.getElementById('btn-datos').onclick = () => window.location.href = 'misDatos.html';
+
+        // Mostrar beneficios de entradas y dulcería
+        const beneficiosRes = await fetch(BASE_API_DOMAIN + 'socioBeneficios.php?id=' + id);
+        const beneficios = await beneficiosRes.json();
+
+        let html = '<h2>Entradas</h2><div>';
+        if (beneficios.entradas && beneficios.entradas.length > 0) {
+            html += '<div style="display:flex; gap:32px;">';
+            beneficios.entradas.forEach(b => {
+                html += `<div>
+                    <div style="font-weight:bold;">${b.nombre}</div>
+                    <div>${b.descripcion || ''}</div>
+                    ${b.requierePuntos == 1 ? `<div>Canjea por puntos: ${b.puntosNecesarios}</div>` : ''}
+                    ${b.tieneStock == 1 ? `<div>Stock: ${b.stock}</div>` : ''}
+                </div>`;
+            });
+            html += '</div>';
+        } else {
+            html += '<div>No hay beneficios de entradas disponibles.</div>';
+        }
+        html += '</div>';
+
+        html += '<h2>Dulcería</h2><div>';
+        if (beneficios.dulceria && beneficios.dulceria.length > 0) {
+            html += '<div style="display:flex; gap:32px;">';
+            beneficios.dulceria.forEach(d => {
+                html += `<div>
+                    <div style="font-weight:bold;">${d.nombre}</div>
+                    <div>${d.descripcion || ''}</div>
+                    <div>Precio: S/${d.precio}</div>
+                    ${d.canjeaPuntos == 1 ? `<div>Canjea por puntos: ${d.puntosNecesarios}</div>` : ''}
+                </div>`;
+            });
+            html += '</div>';
+        } else {
+            html += '<div>No hay beneficios de dulcería disponibles.</div>';
+        }
+        html += '</div>';
+
+        resumenDiv.insertAdjacentHTML('afterend', html);
+
     } catch (e) {
         resumenDiv.innerHTML = '<div>Error al cargar datos</div>';
     }
