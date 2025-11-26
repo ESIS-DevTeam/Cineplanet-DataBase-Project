@@ -471,9 +471,20 @@ document.addEventListener('DOMContentLoaded', async () => {
             mostrarModalError('Error: No se pudo obtener un ID de usuario para la boleta.');
             return;
         }
+        // Obtener la fecha de Perú (UTC-5)
+        function getFechaPeru() {
+            const now = new Date();
+            const peruOffset = -5 * 60;
+            const localOffset = now.getTimezoneOffset();
+            const diff = peruOffset - localOffset;
+            const peruDate = new Date(now.getTime() + diff * 60000);
+            return peruDate.toISOString().slice(0, 10);
+        }
+        const fechaPeru = getFechaPeru();
+
         const datosBoleta = {
             idUsuario: idUsuario,
-            fecha: new Date().toISOString().slice(0, 10),
+            fecha: fechaPeru, // Usar la fecha de Perú
             subtotal: total,
             descuentoTotal: 0,
             total: total
