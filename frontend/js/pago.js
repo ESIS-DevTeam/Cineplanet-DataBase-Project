@@ -557,7 +557,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             mostrarModalError('Error: No se pudo obtener un ID de usuario para la boleta.');
             return;
         }
+        // Corrige la fecha para Perú (GMT-5) antes de enviar a la BD
+        function getFechaPeru() {
+            const now = new Date();
+            const peruOffset = -5 * 60;
+            const localOffset = now.getTimezoneOffset();
+            const diff = peruOffset - localOffset;
+            const peruDate = new Date(now.getTime() + diff * 60000);
+            return peruDate.toISOString().slice(0, 10);
+        }
         datosBoleta.idUsuario = idUsuario;
+        datosBoleta.fecha = getFechaPeru();
 
         const payload = {
             ...datosBoleta,
