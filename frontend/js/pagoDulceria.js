@@ -43,18 +43,36 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Renderiza la info y resumen de dulcería
-    function parseProductos(str) {
-        return str ? str.split(',').map(item => {
+    async function getNombreProducto(idProducto) {
+        try {
+            const res = await fetch(`${BASE_API_DOMAIN}getProductoNombre.php?idProducto=${idProducto}`);
+            const data = await res.json();
+            return data.nombre; // <-- Usar solo el nombre que devuelve el endpoint
+        } catch {
+            return ""; // <-- Si hay error, retorna string vacío
+        }
+    }
+
+    async function parseProductos(str) {
+        if (!str) return [];
+        const arr = str.split(',').map(item => {
             const [id, cantidad] = item.split('-');
             return {
                 idProducto: id,
                 cantidad: cantidad ? parseInt(cantidad, 10) : 1,
                 precioUnitario: null,
-                subtotal: null
+                subtotal: null,
+                nombre: null
             };
-        }).filter(p => p.idProducto) : [];
+        }).filter(p => p.idProducto);
+        for (const p of arr) {
+            const nombreProducto = await getNombreProducto(p.idProducto);
+            p.nombre = nombreProducto;
+            console.log(`Producto ${p.idProducto}: nombre = "${p.nombre}"`); // <-- Imprime el nombre en consola
+        }
+        return arr;
     }
-    const productosArr = parseProductos(productos);
+    const productosArr = await parseProductos(productos);
 
     // Obtén precios y muestra resumen
     async function completarPreciosProductos(arr) {
@@ -64,9 +82,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const data = await res.json();
                 prod.precioUnitario = data.precioUnitario ?? null;
                 prod.subtotal = prod.precioUnitario !== null ? prod.precioUnitario * prod.cantidad : null;
+                // prod.nombre = data.nombre ?? prod.idProducto; // <-- Elimina esta línea
             } catch {
                 prod.precioUnitario = null;
                 prod.subtotal = null;
+                // prod.nombre = prod.idProducto; // <-- Elimina esta línea
             }
         }
     }
@@ -76,6 +96,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Calcula totales
     const subtotal = productosArr.reduce((acc, prod) => acc + (prod.subtotal || 0), 0);
     const total = subtotal;
+
+    // Agrega la clase CSS global para ocultar el scrollbar si no existe
+    if (!document.getElementById('hide-scrollbar-style')) {
+        const style = document.createElement('style');
+        style.id = 'hide-scrollbar-style';
+        style.innerHTML = `
+            .hide-scrollbar {
+                scrollbar-width: none;
+            }
+            .hide-scrollbar::-webkit-scrollbar {
+                display: none;
+            }
+        `;
+        document.head.appendChild(style);
+    }
 
     // Renderiza resumen
     let resumenModal = document.getElementById('resumen-modal');
@@ -91,7 +126,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         resumenModal.style.zIndex = '9999';
         resumenModal.style.background = 'rgba(0, 0, 0, 0.5)';
         resumenModal.style.backdropFilter = 'blur(2px)';
-        resumenModal.innerHTML = `<div id="resumen-compra-container" style="background:#fff; max-width:500px; margin:5vh auto; border-radius:10px; padding:2em; position:relative; box-shadow: 0 4px 15px rgba(0,0,0,0.2);"></div>`;
+        // scroll interno invisible para el contenido
+        resumenModal.innerHTML = `<div id="resumen-compra-container" class="hide-scrollbar" style="background:#fff; max-width:500px; max-height:80vh; overflow:auto; margin:5vh auto; border-radius:10px; padding:2em; position:relative; box-shadow: 0 4px 15px rgba(0,0,0,0.2);"></div>`;
         document.body.appendChild(resumenModal);
     }
     const resumenContainer = document.getElementById('resumen-compra-container');
@@ -122,7 +158,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         <div>
             <div><strong>Dulcería:</strong></div>
             <ul>
-                ${productosArr.map(p => `<li>${p.cantidad} x ${p.idProducto} - S/${p.precioUnitario} = S/${p.subtotal?.toFixed(2) ?? '0.00'}</li>`).join('')}
+                ${productosArr.map(p => `<li>${p.nombre} - S/${p.precioUnitario} = S/${p.subtotal?.toFixed(2) ?? '0.00'}</li>`).join('')}
             </ul>
             <div>Sub-Total S/${total.toFixed(2)}</div>
             <hr>
@@ -131,12 +167,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     </div>`;
     resumenContainer.innerHTML = html;
 
-    // Mostrar/ocultar resumen en modal
+    // Mostrar/ocultar resumen en modal (sin modificar el scroll del body)
     document.getElementById('btn-ver-resumen').onclick = () => {
         resumenModal.style.display = 'block';
+        // document.body.style.overflow = 'hidden'; // <-- Elimina/desactiva esta línea
     };
     resumenContainer.querySelector('#btn-cerrar-resumen').onclick = () => {
         resumenModal.style.display = 'none';
+        // document.body.style.overflow = ''; // <-- Elimina/desactiva esta línea
     };
 
     // Formulario de pago
@@ -279,10 +317,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             modal.style.display = 'flex';
             modal.style.alignItems = 'center';
             modal.style.justifyContent = 'center';
-            modal.innerHTML = `
-                <div id="modal-exito-content" style="background:#fff; max-width:700px; margin:5vh auto; border-radius:16px; padding:40px 40px 28px 40px; position:relative; box-shadow:0 4px 20px #0002;">
-                </div>
-            `;
+            // scroll interno invisible para el contenido
+            modal.innerHTML = `<div id="modal-exito-content" class="hide-scrollbar" style="background:#fff; max-width:700px; max-height:80vh; overflow:auto; margin:5vh auto; border-radius:16px; padding:40px 40px 28px 40px; position:relative; box-shadow:0 4px 20px #0002;"></div>`;
             document.body.appendChild(modal);
         }
 
@@ -364,7 +400,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <div style="padding:1em 0.5em;">
                 ${productosArr.map(p => `
                     <div style="display:flex;align-items:center;justify-content:space-between;font-weight:500;color:#1565c0;">
-                        <span>${p.cantidad} x ${p.idProducto}</span>
+                        <span>${p.nombre}</span>
                         <span>S/${p.precioUnitario}</span>
                         <span>S/${p.subtotal?.toFixed(2) ?? '0.00'}</span>
                     </div>
@@ -424,6 +460,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Mostrar en modal
         modal.querySelector('#modal-exito-content').innerHTML = resumenHtml + botonesHtml;
         modal.style.display = 'flex';
+        // document.body.style.overflow = 'hidden'; // <-- Elimina/desactiva esta línea
 
         // Descargar PDF solo del resumen (sin botones)
         document.getElementById('btn-descargar-pdf').onclick = () => {
@@ -462,6 +499,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         document.getElementById('modal-exito-aceptar').onclick = () => {
             modal.style.display = 'none';
+            // document.body.style.overflow = ''; // <-- Elimina/desactiva esta línea
             window.location.href = '../../index.html';
         };
     }
