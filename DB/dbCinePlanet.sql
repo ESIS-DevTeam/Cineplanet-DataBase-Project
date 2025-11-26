@@ -6,7 +6,8 @@ CREATE TABLE USUARIO (
     nombre VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     tipoDocumento VARCHAR(20) NOT NULL,
-    numeroDocumento VARCHAR(20) UNIQUE NOT NULL
+    numeroDocumento VARCHAR(20) UNIQUE NOT NULL,
+    tipo ENUM('cliente','admin') NOT NULL DEFAULT 'cliente'
 );
 
 -- CIUDAD: normalización de ciudades para CINE
@@ -219,6 +220,7 @@ CREATE TABLE PROMO_BOLETA (
     idBoleta INT NOT NULL,
     idPromo INT NOT NULL,
     montoDescuento DECIMAL(10,2) DEFAULT 0,
+    cantidad INT DEFAULT 1,
     detalle VARCHAR(255),
     FOREIGN KEY (idBoleta) REFERENCES BOLETA(id) ON DELETE CASCADE,
     FOREIGN KEY (idPromo) REFERENCES PROMO(id) ON DELETE CASCADE

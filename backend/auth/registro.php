@@ -1,88 +1,94 @@
 <?php
-session_start();
 require_once '../config/conexion.php';
 
-// Detecta si la petición es JSON
-if (strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false) {
-    $input = json_decode(file_get_contents('php://input'), true);
-} else {
-    $input = $_POST;
-}
+header('Content-Type: application/json');
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Recoge los datos del formulario
-    $tipoDocumento = $input['tipoDocumento'] ?? '';
-    $numeroDocumento = $input['numeroDocumento'] ?? '';
-    $email = $input['email'] ?? '';
-    $nombre = $input['nombre'] ?? '';
-    $apellidoPaterno = $input['apellidoPaterno'] ?? '';
-    $apellidoMaterno = $input['apellidoMaterno'] ?? '';
-    $password = $input['password'] ?? '';
-    $confirm_password = $input['confirm_password'] ?? '';
-    $fechaNacimiento = $input['fechaNacimiento'] ?? '';
-    $celular = $input['celular'] ?? '';
-    $departamento = $input['departamento'] ?? '';
-    $provincia = $input['provincia'] ?? '';
-    $distrito = $input['distrito'] ?? '';
-    $cineplanetFavorito = $input['cineplanetFavorito'] ?? '';
-    $genero = $input['genero'] ?? '';
-    $acepta_terminos = !empty($input['acepta_terminos']);
-    $acepta_finalidades = !empty($input['acepta_finalidades']);
-
-    // Validación básica
-    if (!$acepta_terminos || !$acepta_finalidades) {
-        echo "Debes aceptar los términos y finalidades.";
-        exit;
-    }
-    if ($password !== $confirm_password) {
-        echo "Las contraseñas no coinciden.";
-        exit;
-    }
+try {
+    // Recibe datos del formulario
+    $tipoDocumento = $_POST['tipoDocumento'] ?? '';
+    $numeroDocumento = $_POST['numeroDocumento'] ?? '';
+    $email = $_POST['email'] ?? '';
+    $nombre = $_POST['nombre'] ?? '';
+    $apellidoPaterno = $_POST['apellidoPaterno'] ?? '';
+    $apellidoMaterno = $_POST['apellidoMaterno'] ?? '';
+    $password = $_POST['password'] ?? '';
+    $fechaNacimiento = $_POST['fechaNacimiento'] ?? '';
+    $celular = $_POST['celular'] ?? '';
+    $departamento = $_POST['departamento'] ?? '';
+    $provincia = $_POST['provincia'] ?? '';
+    $distrito = $_POST['distrito'] ?? '';
+    $cineplanetFavorito = $_POST['cineplanetFavorito'] ?? '';
+    $genero = $_POST['genero'] ?? '';
 
     $conn = conexion::conectar();
+    if (!$conn || $conn->connect_error) {
+        throw new Exception("Error de conexión a la base de datos.");
+    }
+    $conn->set_charset("utf8");
 
-    // Validar si el email o número de documento ya existen
-    $stmt_check = $conn->prepare("SELECT id FROM USUARIO WHERE email = ? OR numeroDocumento = ?");
-    $stmt_check->bind_param("ss", $email, $numeroDocumento);
-    $stmt_check->execute();
-    $stmt_check->store_result();
-    if ($stmt_check->num_rows > 0) {
-        echo "El correo o número de documento ya está registrado.";
-        $stmt_check->close();
+    // Verifica si el usuario existe por tipoDocumento y numeroDocumento
+    $stmt = $conn->prepare("SELECT id FROM USUARIO WHERE tipoDocumento = ? AND numeroDocumento = ?");
+    if (!$stmt) throw new Exception("Error en la consulta USUARIO.");
+    $stmt->bind_param("ss", $tipoDocumento, $numeroDocumento);
+    $stmt->execute();
+    $stmt->store_result();
+
+    if ($stmt->num_rows > 0) {
+        // Usuario existe
+        $stmt->bind_result($idUsuario);
+        $stmt->fetch();
+
+        // Verifica si ya existe en SOCIO
+        $stmtSocio = $conn->prepare("SELECT id FROM SOCIO WHERE id=?");
+        if (!$stmtSocio) throw new Exception("Error en la consulta SOCIO.");
+        $stmtSocio->bind_param("i", $idUsuario);
+        $stmtSocio->execute();
+        $stmtSocio->store_result();
+
+        if ($stmtSocio->num_rows > 0) {
+            // Ya es socio, no se puede registrar
+            echo json_encode(['success' => false, 'message' => 'Ya existe una cuenta asociada a este documento.']);
+            exit;
+        } else {
+            // Actualiza datos en USUARIO
+            $updateUsuario = $conn->prepare("UPDATE USUARIO SET nombre=?, email=?, tipo='cliente' WHERE id=?");
+            if (!$updateUsuario) throw new Exception("Error al actualizar USUARIO.");
+            $updateUsuario->bind_param("ssi", $nombre, $email, $idUsuario);
+            $updateUsuario->execute();
+
+            // Inserta en SOCIO
+            $insertSocio = $conn->prepare("INSERT INTO SOCIO (id, password, departamento, provincia, distrito, apellidoPaterno, apellidoMaterno, cineplanetFavorito, fechaNacimiento, celular, genero) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            if (!$insertSocio) throw new Exception("Error al insertar en SOCIO.");
+            $insertSocio->bind_param("issssssssss", $idUsuario, $password, $departamento, $provincia, $distrito, $apellidoPaterno, $apellidoMaterno, $cineplanetFavorito, $fechaNacimiento, $celular, $genero);
+            $insertSocio->execute();
+
+            echo json_encode(['success' => true, 'message' => 'Usuario registrado correctamente', 'idUsuario' => $idUsuario]);
+            exit;
+        }
+    } else {
+        // Usuario no existe, inserta en USUARIO
+        $tipo = 'cliente';
+        $insertUsuario = $conn->prepare("INSERT INTO USUARIO (nombre, email, tipoDocumento, numeroDocumento, tipo) VALUES (?, ?, ?, ?, ?)");
+        if (!$insertUsuario) throw new Exception("Error al preparar inserción en USUARIO.");
+        $insertUsuario->bind_param("sssss", $nombre, $email, $tipoDocumento, $numeroDocumento, $tipo);
+        if (!$insertUsuario->execute()) {
+            // Envía el mensaje de error tal cual
+            echo json_encode(['success' => false, 'message' => $conn->error]);
+            exit;
+        }
+        $idUsuario = $conn->insert_id;
+
+        // Inserta en SOCIO
+        $insertSocio = $conn->prepare("INSERT INTO SOCIO (id, password, departamento, provincia, distrito, apellidoPaterno, apellidoMaterno, cineplanetFavorito, fechaNacimiento, celular, genero) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        if (!$insertSocio) throw new Exception("Error al insertar en SOCIO.");
+        $insertSocio->bind_param("issssssssss", $idUsuario, $password, $departamento, $provincia, $distrito, $apellidoPaterno, $apellidoMaterno, $cineplanetFavorito, $fechaNacimiento, $celular, $genero);
+        $insertSocio->execute();
+
+        echo json_encode(['success' => true, 'message' => 'Usuario registrado correctamente', 'idUsuario' => $idUsuario]);
         exit;
     }
-    $stmt_check->close();
-
-    // 1. Crear usuario usando procedimiento almacenado
-    $stmt = $conn->prepare("CALL usuario_create(?, ?, ?, ?, @idUsuario)");
-    $stmt->bind_param("ssss", $nombre, $email, $tipoDocumento, $numeroDocumento);
-    $stmt->execute();
-    $stmt->close();
-
-    // Obtener el id generado
-    $result = $conn->query("SELECT @idUsuario AS idUsuario");
-    $row = $result->fetch_assoc();
-    $idUsuario = $row['idUsuario'];
-
-    // 2. Crear socio usando procedimiento almacenado (sin cp)
-    $stmt2 = $conn->prepare("CALL socio_create(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, 0, 'clasico')");
-    $stmt2->bind_param(
-        "issssssssss", // 11 parámetros: 1 int, 10 strings
-        $idUsuario,           // idUsuario
-        $password,            // password
-        $departamento,        // departamento
-        $provincia,           // provincia
-        $distrito,            // distrito
-        $apellidoPaterno,     // apellidoPaterno
-        $apellidoMaterno,     // apellidoMaterno
-        $cineplanetFavorito,  // cineplanetFavorito
-        $fechaNacimiento,     // fechaNacimiento
-        $celular,             // celular
-        $genero               // genero
-    );
-    $stmt2->execute();
-    $stmt2->close();
-
-    echo "Registro exitoso. Ahora puedes iniciar sesión.";
+} catch (Exception $ex) {
+    echo json_encode(['success' => false, 'message' => $ex->getMessage()]);
+    exit;
 }
 ?>

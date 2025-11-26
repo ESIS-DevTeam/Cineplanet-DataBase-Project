@@ -118,11 +118,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Botón para productos de socio (solo si hay productos y el usuario está logueado)
     let socioData = null;
     let empleadoData = null;
+    let puntosSocio = 0;
+
+    // NUEVO: función para obtener puntos del socio desde endpoint (igual que en entradas.js)
+    async function obtenerPuntosSocio(idSocio) {
+        if (!idSocio) return 0;
+        try {
+            const res = await fetch(BASE_API_DOMAIN + `getPuntosSocio.php?idSocio=${idSocio}`);
+            const data = await res.json();
+            if (data && typeof data.puntos === 'number') {
+                return data.puntos;
+            }
+        } catch {}
+        return 0;
+    }
+
     try {
         const res = await fetch('../../backend/auth/checkSession.php');
         const data = await res.json();
         if (data.loggedIn && data.socio) {
             socioData = data.socio;
+            // NUEVO: obtener puntos del socio
+            puntosSocio = await obtenerPuntosSocio(socioData.id);
         }
         // Verifica si el usuario tiene atributo 'empleado' en su cuenta
         if (data.loggedIn && data.socio && data.socio.empleado == 1) {
@@ -206,6 +223,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Función global para quitar producto del carrito
     window.__removeCarritoItem = function(idx) {
+        const item = carrito[idx];
+        // NUEVO: restaurar puntos si el producto se canjeaba por puntos
+        if (item.prod.canjeaPuntos && item.prod.puntosNecesarios && socioData) {
+            const puntosARestaurar = item.cantidad * item.prod.puntosNecesarios;
+            puntosSocio += puntosARestaurar;
+            
+            // NUEVO: actualizar el display de puntos disponibles en la vista normal del producto
+            const puntosDisplayDiv = document.getElementById(`puntos-disponibles-${item.prod.id}`);
+            if (puntosDisplayDiv) {
+                puntosDisplayDiv.textContent = `Puntos disponibles: ${puntosSocio} | Necesarios: ${item.prod.puntosNecesarios}`;
+            }
+        }
         carrito.splice(idx, 1);
         renderCarrito();
     };
@@ -267,7 +296,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <span>${prod.descripcion || ''}</span><br>
                 <span>Precio: S/${prod.precio}</span>
                 ${esSocio ? `<div>Solo para socios</div>` : ''}
-                ${prod.canjeaPuntos && esSocio ? `<div>Puedes canjear por ${prod.puntosNecesarios} puntos</div>` : ''}
+                ${prod.canjeaPuntos && esSocio && socioData ? `<div id="puntos-disponibles-${prod.id}">Puntos disponibles: ${puntosSocio} | Necesarios: ${prod.puntosNecesarios}</div>` : ''}
                 <button class="agregar-btn">Agregar</button>
             `;
             divProd.querySelector('.agregar-btn').onclick = () => renderCantidad();
@@ -276,9 +305,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         function renderCantidad() {
             // Calcular cantidad máxima posible
             const totalActual = carrito.reduce((sum, item) => sum + item.cantidad, 0);
-            const maxAgregar = 10 - totalActual;
+            let maxAgregar = 10 - totalActual;
+
+            // NUEVO: Si el producto se puede canjear por puntos, limitar por puntos disponibles
+            if (prod.canjeaPuntos && esSocio && socioData && prod.puntosNecesarios) {
+                const maxPorPuntos = Math.floor(puntosSocio / prod.puntosNecesarios);
+                maxAgregar = Math.min(maxAgregar, maxPorPuntos);
+            }
+
             if (maxAgregar <= 0) {
-                alert('Máximo 10 productos en la orden.');
+                if (prod.canjeaPuntos && esSocio && socioData) {
+                    alert('No tienes suficientes puntos para canjear este producto.');
+                } else {
+                    alert('Máximo 10 productos en la orden.');
+                }
                 return;
             }
             let cantidad = 1;
@@ -287,6 +327,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <strong>${prod.nombre}</strong><br>
                 <span>${prod.descripcion || ''}</span><br>
                 <span>Precio: S/${prod.precio}</span>
+                ${prod.canjeaPuntos && esSocio && socioData ? `<div id="puntos-restantes-${prod.id}">Puntos disponibles: ${puntosSocio} | Necesarios: ${prod.puntosNecesarios}</div>` : ''}
                 <div>
                     <button class="menos-btn">-</button>
                     <span class="cantidad-span">${cantidad}</span>
@@ -299,19 +340,38 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </div>
             `;
             const cantidadSpan = divProd.querySelector('.cantidad-span');
+            const puntosRestantesDiv = divProd.querySelector(`#puntos-restantes-${prod.id}`);
+            
+            // NUEVO: función para actualizar puntos restantes
+            function actualizarPuntosRestantes() {
+                if (prod.canjeaPuntos && esSocio && socioData && puntosRestantesDiv) {
+                    const puntosUsados = cantidad * (prod.puntosNecesarios || 0);
+                    const puntosRestantes = puntosSocio - puntosUsados;
+                    puntosRestantesDiv.textContent = `Puntos disponibles: ${puntosRestantes} | Necesarios: ${prod.puntosNecesarios}`;
+                }
+            }
+
             divProd.querySelector('.menos-btn').onclick = () => {
                 if (cantidad > 1) {
                     cantidad--;
                     cantidadSpan.textContent = cantidad;
+                    actualizarPuntosRestantes();
                 }
             };
             divProd.querySelector('.mas-btn').onclick = () => {
                 if (cantidad < maxAgregar) {
                     cantidad++;
                     cantidadSpan.textContent = cantidad;
+                    actualizarPuntosRestantes();
                 }
             };
             divProd.querySelector('.aceptar-btn').onclick = () => {
+                // NUEVO: descontar puntos del total global antes de agregar al carrito
+                if (prod.canjeaPuntos && prod.puntosNecesarios && socioData) {
+                    const puntosADescontar = cantidad * prod.puntosNecesarios;
+                    puntosSocio -= puntosADescontar;
+                }
+
                 const idx = carrito.findIndex(item => item.prod.id === prod.id);
                 if (idx >= 0) {
                     carrito[idx].cantidad += cantidad;
@@ -322,6 +382,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 renderNormal();
             };
             divProd.querySelector('.cancelar-btn').onclick = renderNormal;
+
+            // Inicializar puntos restantes
+            actualizarPuntosRestantes();
         }
 
         renderNormal();

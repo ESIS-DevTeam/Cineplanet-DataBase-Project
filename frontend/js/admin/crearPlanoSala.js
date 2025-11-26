@@ -55,7 +55,10 @@ async function cargarSalas(idCine) {
     try {
         const res = await fetch(BASE_API_DOMAIN + `getSalasPorCine.php?idCine=${idCine}`);
         const salas = await res.json();
-        
+
+        // Mostrar en consola lo recibido del backend
+        console.log('Salas recibidas para idCine', idCine, salas);
+
         if (salas.length > 0) {
             const ul = document.createElement('ul');
             salas.forEach(sala => {
@@ -214,6 +217,10 @@ document.getElementById('guardar-plano').addEventListener('click', async functio
         alert(error.message);
     }
 });
+
+// El endpoint guardarPlanoSala.php ahora realiza una inserción masiva (bulk insert).
+// El array plano se envía como JSON y el backend lo procesa eficientemente.
+// No es necesario modificar el método de envío en el frontend.
 
 document.addEventListener('DOMContentLoaded', () => {
     cargarCiudadesYCines();

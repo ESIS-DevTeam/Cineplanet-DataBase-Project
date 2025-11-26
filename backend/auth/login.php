@@ -13,13 +13,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $result = $stmt->get_result();
 
     if ($row = $result->fetch_assoc()) {
-        // Usa el operador ?? null para evitar warnings si el campo no existe
+        // Depuración: loguea el array recibido
+        error_log('LOGIN ROW: ' . print_r($row, true));
+
         $_SESSION['socio'] = [
             'id' => $row['id'] ?? null,
             'nombre' => $row['nombre'] ?? null,
             'email' => $row['email'] ?? null,
             'tipoDocumento' => $row['tipoDocumento'] ?? null,
             'numeroDocumento' => $row['numeroDocumento'] ?? null,
+            'tipo' => $row['tipo'] ?? null,
             'departamento' => $row['departamento'] ?? null,
             'provincia' => $row['provincia'] ?? null,
             'distrito' => $row['distrito'] ?? null,

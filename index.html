@@ -131,16 +131,16 @@
         if (socioData) {
             popupContent.innerHTML = `
                 <div style="font-weight:bold; margin-bottom:8px;">${socioData.nombre}</div>
-                <button onclick="window.location.href='beneficios.html'">Mis beneficios</button><br>
-                <button onclick="window.location.href='compras.html'">Mis compras</button><br>
-                <button onclick="window.location.href='datos.html'">Mis datos</button><br>
+                <button onclick="window.location.href='frontend/pages/misBeneficos.html'">Mis beneficios</button><br>
+                <button onclick="window.location.href='frontend/pages/misCompras.html'">Mis compras</button><br>
+                <button onclick="window.location.href='frontend/pages/misDatos.html'">Mis datos</button><br>
                 <button onclick="logout()">Cerrar sesión</button>
             `;
         } else {
             // Botón de login con redirect dinámico
             popupContent.innerHTML = `
                 <button onclick="window.location.href='frontend/pages/login.html?redirect=${encodeURIComponent(window.location.pathname)}'">Iniciar sesión</button><br>
-                <button onclick="window.location.href='registro.html'">Registrar</button>
+                <button onclick="window.location.href='frontend/pages/registro.html'">Registrar</button>
             `;
         }
         popup.style.display = 'block';

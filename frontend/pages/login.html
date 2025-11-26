@@ -20,7 +20,13 @@
         })
         .then(res => res.json())
         .then(data => {
+            console.log('Login response:', data); // <-- Depuración
             if (data.success) {
+                // Redirección según tipo de usuario
+                if (data.socio && data.socio.tipo === 'admin') {
+                    window.location.replace('admin/adminPanel.html');
+                    return;
+                }
                 // Si está en iframe/modal, recarga la página principal y cierra el modal
                 if (window.parent && window.parent !== window) {
                     window.parent.location.reload();
