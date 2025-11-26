@@ -93,6 +93,8 @@ BEGIN
     DECLARE idUsuarioBoleta INT;
     DECLARE esSocio INT DEFAULT 0;
     DECLARE puntosProducto DECIMAL(10,2) DEFAULT 0;
+    DECLARE canjeaPuntosProducto TINYINT DEFAULT 0;
+    DECLARE puntosNecesariosProducto INT DEFAULT 0;
 
     -- Obtener el usuario de la boleta
     SELECT idUsuario INTO idUsuarioBoleta FROM BOLETA WHERE id = NEW.idBoleta;
@@ -101,13 +103,21 @@ BEGIN
     SELECT COUNT(*) INTO esSocio FROM SOCIO WHERE id = idUsuarioBoleta;
 
     IF esSocio > 0 THEN
-        -- Calcular puntos por producto (10% del precio * cantidad)
-        SET puntosProducto = NEW.precioUnitario * NEW.cantidad * 0.10;
+        -- Verificar si el producto requiere puntos y obtener puntos necesarios
+        SELECT canjeaPuntos, puntosNecesarios INTO canjeaPuntosProducto, puntosNecesariosProducto FROM PRODUCTO WHERE id = NEW.idProducto;
 
-        -- Sumar puntos por producto
-        UPDATE SOCIO SET
-            puntos = puntos + puntosProducto
-        WHERE id = idUsuarioBoleta;
+        IF canjeaPuntosProducto = 1 THEN
+            -- Si el producto se canjea por puntos, restar puntos y NO sumar puntos por precio
+            UPDATE SOCIO SET
+                puntos = puntos - (IFNULL(puntosNecesariosProducto,0) * NEW.cantidad)
+            WHERE id = idUsuarioBoleta;
+        ELSE
+            -- Si no se canjea por puntos, sumar puntos por producto (10% del precio * cantidad)
+            SET puntosProducto = NEW.precioUnitario * NEW.cantidad * 0.10;
+            UPDATE SOCIO SET
+                puntos = puntos + puntosProducto
+            WHERE id = idUsuarioBoleta;
+        END IF;
     END IF;
 END;
 //
