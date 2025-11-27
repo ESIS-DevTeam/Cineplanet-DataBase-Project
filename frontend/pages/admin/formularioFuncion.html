@@ -1,0 +1,108 @@
+<div class="card">
+    <div class="form-section">
+        <h2>🎞️ Formulario de Función</h2>
+        
+        <div class="info-box">
+            <p>ℹ️ Selecciona la ciudad, cine y sala. Luego elige película, formato e idioma.</p>
+        </div>
+        
+        <form id="funcionForm">
+            <input type="hidden" id="funcionId">
+            
+            <!-- PASO 1: Ubicación -->
+            <div class="form-row full">
+                <h3 style="color: #1a73e8; margin-top: 15px; margin-bottom: 15px;">📍 Paso 1: Ubicación</h3>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Ciudad *</label>
+                    <select id="funcionIdCiudad" required>
+                        <option value="">-- Cargando ciudades --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Cineplanet *</label>
+                    <select id="funcionIdCine" required disabled>
+                        <option value="">-- Selecciona ciudad primero --</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Sala *</label>
+                    <select id="funcionIdSala" required disabled>
+                        <option value="">-- Selecciona cine primero --</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- PASO 2: Contenido -->
+            <div class="form-row full">
+                <h3 style="color: #1a73e8; margin-top: 15px; margin-bottom: 15px;">🎬 Paso 2: Contenido</h3>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Película *</label>
+                    <select id="funcionIdPelicula" required>
+                        <option value="">-- Cargando películas --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Formato *</label>
+                    <select id="funcionIdFormato" required>
+                        <option value="">-- Cargando formatos --</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Idioma *</label>
+                    <select id="funcionIdIdioma" required>
+                        <option value="">-- Cargando idiomas --</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- PASO 3: Horario y Precio -->
+            <div class="form-row full">
+                <h3 style="color: #1a73e8; margin-top: 15px; margin-bottom: 15px;">⏰ Paso 3: Horario y Precio</h3>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Fecha *</label>
+                    <input type="date" id="funcionFecha" required>
+                </div>
+                <div class="form-group">
+                    <label>Hora *</label>
+                    <input type="time" id="funcionHora" required>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Precio *</label>
+                    <input type="number" id="funcionPrecio" required placeholder="Ej: 25.00" step="0.01" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Estado *</label>
+                    <select id="funcionEstado" required>
+                        <option value="">-- Seleccionar --</option>
+                        <option value="activa">Activa</option>
+                        <option value="inactiva">Inactiva</option>
+                        <option value="preventa">Preventa</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="button-group">
+                <button type="button" class="btn-save" onclick="window.guardarFuncion()">💾 Guardar</button>
+                <button type="reset" class="btn-reset">🔄 Limpiar</button>
+            </div>
+        </form>
+    </div>
+</div>

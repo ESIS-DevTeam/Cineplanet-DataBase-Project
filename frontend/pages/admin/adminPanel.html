@@ -171,6 +171,7 @@
             <button class="tab-btn active" onclick="window.switchTab('usuarios')">👥 Usuarios</button>
             <button class="tab-btn" onclick="window.switchTab('socios')">⭐ Socios</button>
             <button class="tab-btn" onclick="window.switchTab('peliculas')">🎬 Películas</button>
+            <button class="tab-btn" onclick="window.switchTab('funciones')">🎞️ Funciones</button>
         </div>
         
         <!-- ======================== USUARIOS ======================== -->
@@ -253,6 +254,36 @@
                 </table>
                 <div class="empty-state" id="emptyStatePeliculas" style="display: none;">
                     <p>📭 No hay películas registradas</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ======================== FUNCIONES ======================== -->
+        <div id="funciones" class="tab-content">
+            <div id="formularioFuncionContainer"></div>
+            <div class="card">
+                <div class="table-section">
+                    <h2>📊 Listado de Funciones</h2>
+                </div>
+                <table id="funcionesTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Película</th>
+                            <th>Sala</th>
+                            <th>Formato</th>
+                            <th>Idioma</th>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Precio</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div class="empty-state" id="emptyStateFunciones" style="display: none;">
+                    <p>📭 No hay funciones registradas</p>
                 </div>
             </div>
         </div>

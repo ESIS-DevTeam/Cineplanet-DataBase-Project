@@ -2,6 +2,7 @@ import BASE_API_DOMAIN from '../config.js';
 import { cargarUsuarios, guardarUsuario, editarUsuario, eliminarUsuario } from './usuarios.js';
 import { cargarUsuariosSelect, cargarSocios, guardarSocio, editarSocio, eliminarSocio, inicializarSocios } from './socios.js';
 import { cargarPeliculas, guardarPelicula, editarPelicula, eliminarPelicula, inicializarPeliculas } from './peliculas.js';
+import { cargarFunciones, guardarFuncion, editarFuncion, eliminarFuncion, inicializarFunciones } from './funciones.js';
 
 const API = BASE_API_DOMAIN + 'admin/';
 
@@ -43,10 +44,14 @@ async function cargarFormularios() {
         const resPelicula = await fetch('./formularioPelicula.html');
         const resPeliculaText = await resPelicula.text();
         document.getElementById('formularioPeliculaContainer').innerHTML = resPeliculaText;
-        await inicializarPeliculas();
         
-        // Inicializar UBIGEO y eventos después de cargar formularios
+        const resFuncion = await fetch('./formularioFuncion.html');
+        const resFuncionText = await resFuncion.text();
+        document.getElementById('formularioFuncionContainer').innerHTML = resFuncionText;
+        
+        await inicializarPeliculas();
         await inicializarSocios();
+        await inicializarFunciones();
     } catch (error) {
         console.error('Error al cargar formularios:', error);
         mostrarAlerta('❌ Error al cargar formularios', 'error');
@@ -64,6 +69,7 @@ function switchTab(tabName) {
     if (tabName === 'usuarios') cargarUsuarios();
     if (tabName === 'socios') { cargarSocios(); cargarUsuariosSelect(); }
     if (tabName === 'peliculas') cargarPeliculas();
+    if (tabName === 'funciones') { cargarFunciones(); inicializarFunciones(); }
 }
 
 // ==================== EXPORTAR AL SCOPE GLOBAL ====================
@@ -77,6 +83,9 @@ window.eliminarSocio = eliminarSocio;
 window.guardarPelicula = guardarPelicula;
 window.editarPelicula = editarPelicula;
 window.eliminarPelicula = eliminarPelicula;
+window.guardarFuncion = guardarFuncion;
+window.editarFuncion = editarFuncion;
+window.eliminarFuncion = eliminarFuncion;
 
 // ==================== INICIALIZAR ====================
 window.addEventListener('DOMContentLoaded', async () => {
