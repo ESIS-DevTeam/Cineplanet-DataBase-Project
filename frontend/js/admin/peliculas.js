@@ -122,6 +122,9 @@ async function guardarPelicula() {
             mostrarAlerta(id ? '✅ Película actualizada' : '✅ Película creada', 'success');
             document.getElementById('peliculaForm').reset();
             document.getElementById('peliculaId').value = '';
+            // Oculta el nombre de la imagen actual
+            const portadaNombre = document.getElementById('portadaNombre');
+            if (portadaNombre) portadaNombre.textContent = '';
             cargarPeliculas();
         } else {
             mostrarAlerta('❌ ' + (data.message || 'Error'), 'error');
@@ -192,6 +195,9 @@ export async function inicializarPeliculas() {
     if (form) {
         form.addEventListener('reset', () => {
             document.getElementById('peliculaId').value = '';
+            // Oculta el nombre de la imagen actual
+            const portadaNombre = document.getElementById('portadaNombre');
+            if (portadaNombre) portadaNombre.textContent = '';
         });
     }
 }

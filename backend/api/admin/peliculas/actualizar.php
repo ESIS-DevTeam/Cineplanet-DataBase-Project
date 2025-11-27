@@ -30,10 +30,11 @@ if (isset($_FILES['portada']) && $_FILES['portada']['error'] === UPLOAD_ERR_OK) 
     if (!is_dir($dirDestino)) {
         mkdir($dirDestino, 0777, true);
     }
-    $nombreArchivo = uniqid('movie_') . '_' . basename($_FILES['portada']['name']);
+    // Cambia aquí para usar el nombre original
+    $nombreArchivo = basename($_FILES['portada']['name']);
     $rutaCompleta = $dirDestino . $nombreArchivo;
     if (move_uploaded_file($_FILES['portada']['tmp_name'], $rutaCompleta)) {
-        $portadaNombre = $nombreArchivo; // Solo el nombre del archivo
+        $portadaNombre = $nombreArchivo;
         // Eliminar imagen anterior si existe y es distinta de la nueva
         if ($portadaActual && $portadaActual !== $portadaNombre) {
             $rutaAnterior = $dirDestino . $portadaActual;
