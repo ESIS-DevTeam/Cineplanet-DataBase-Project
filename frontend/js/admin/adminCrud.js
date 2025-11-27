@@ -3,6 +3,7 @@ import { cargarUsuarios, guardarUsuario, editarUsuario, eliminarUsuario } from '
 import { cargarUsuariosSelect, cargarSocios, guardarSocio, editarSocio, eliminarSocio, inicializarSocios } from './socios.js';
 import { cargarPeliculas, guardarPelicula, editarPelicula, eliminarPelicula, inicializarPeliculas } from './peliculas.js';
 import { cargarFunciones, guardarFuncion, editarFuncion, eliminarFuncion, inicializarFunciones } from './funciones.js';
+import { cargarProductos, guardarProducto, editarProducto, eliminarProducto } from './productos.js';
 
 const API = BASE_API_DOMAIN + 'admin/';
 
@@ -49,6 +50,10 @@ async function cargarFormularios() {
         const resFuncionText = await resFuncion.text();
         document.getElementById('formularioFuncionContainer').innerHTML = resFuncionText;
         
+        const resProducto = await fetch('./formularioProducto.html');
+        const resProductoText = await resProducto.text();
+        document.getElementById('formularioProductoContainer').innerHTML = resProductoText;
+        
         await inicializarPeliculas();
         await inicializarSocios();
         await inicializarFunciones();
@@ -70,6 +75,7 @@ function switchTab(tabName) {
     if (tabName === 'socios') { cargarSocios(); cargarUsuariosSelect(); }
     if (tabName === 'peliculas') cargarPeliculas();
     if (tabName === 'funciones') { cargarFunciones(); inicializarFunciones(); }
+    if (tabName === 'productos') cargarProductos();
 }
 
 // ==================== EXPORTAR AL SCOPE GLOBAL ====================
@@ -86,6 +92,9 @@ window.eliminarPelicula = eliminarPelicula;
 window.guardarFuncion = guardarFuncion;
 window.editarFuncion = editarFuncion;
 window.eliminarFuncion = eliminarFuncion;
+window.guardarProducto = guardarProducto;
+window.editarProducto = editarProducto;
+window.eliminarProducto = eliminarProducto;
 window.mostrarAlerta = mostrarAlerta;
 
 // ==================== INICIALIZAR ====================

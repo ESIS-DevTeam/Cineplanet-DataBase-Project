@@ -291,7 +291,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         function renderNormal() {
             divProd.innerHTML = `
-                ${prod.imagen ? `<img src="${prod.imagen}" alt="${prod.nombre}" width="80" height="80">` : ''}
+                ${prod.imagen ? `<img src="../images/portrait/candy/${prod.imagen}" alt="${prod.nombre}" width="80" height="80">` : ''}
                 <strong>${prod.nombre}</strong><br>
                 <span>${prod.descripcion || ''}</span><br>
                 <span>Precio: S/${prod.precio}</span>
@@ -323,7 +323,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             let cantidad = 1;
             divProd.innerHTML = `
-                ${prod.imagen ? `<img src="${prod.imagen}" alt="${prod.nombre}" width="80" height="80">` : ''}
+                ${prod.imagen ? `<img src="../images/portrait/candy/${prod.imagen}" alt="${prod.nombre}" width="80" height="80">` : ''}
                 <strong>${prod.nombre}</strong><br>
                 <span>${prod.descripcion || ''}</span><br>
                 <span>Precio: S/${prod.precio}</span>
