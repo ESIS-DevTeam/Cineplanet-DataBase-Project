@@ -36,8 +36,10 @@ async function cargarUsuariosSelect() {
             // Filtrar solo usuarios que NO tienen socio
             const usuariosSinSocio = data.data.filter(u => u.estado_cliente !== 'Socio');
             const select = document.getElementById('socioIdUsuario');
-            select.innerHTML = '<option value="">-- Seleccionar usuario --</option>' +
-                usuariosSinSocio.map(u => `<option value="${u.id}">${u.nombre} (${u.email})</option>`).join('');
+            if (select) {
+                select.innerHTML = '<option value="">-- Seleccionar usuario --</option>' +
+                    usuariosSinSocio.map(u => `<option value="${u.id}">${u.nombre} (${u.email})</option>`).join('');
+            }
         }
     } catch (error) {
         console.error('Error:', error);
@@ -163,7 +165,6 @@ async function editarSocio(id) {
         if (data.success) {
             const s = data.data;
             document.getElementById('socioId').value = s.id;
-            // Mostrar solo el usuario actual en el select y deshabilitarlo
             const select = document.getElementById('socioIdUsuario');
             select.innerHTML = `<option value="${s.id}">${s.nombre} (${s.email})</option>`;
             select.value = s.id;
@@ -193,15 +194,22 @@ async function editarSocio(id) {
     }
 }
 
-// Al limpiar el formulario, habilita el select y recarga los usuarios disponibles
-document.getElementById('socioForm').addEventListener('reset', () => {
-    const select = document.getElementById('socioIdUsuario');
-    select.disabled = false;
-    cargarUsuariosSelect();
-});
-
 function afterGuardarSocio() {
-    document.getElementById('socioIdUsuario').disabled = false;
+    const select = document.getElementById('socioIdUsuario');
+    if (select) select.disabled = false;
+}
+
+function inicializarEventosSocio() {
+    const socioForm = document.getElementById('socioForm');
+    if (socioForm) {
+        socioForm.addEventListener('reset', () => {
+            const select = document.getElementById('socioIdUsuario');
+            if (select) {
+                select.disabled = false;
+                cargarUsuariosSelect();
+            }
+        });
+    }
 }
 
 async function eliminarSocio(id) {
@@ -285,12 +293,7 @@ async function cargarDistritos() {
     }
 }
 
-// Eventos para selects
-document.addEventListener('DOMContentLoaded', async () => {
-    await cargarDepartamentos();
-    await cargarProvincias();
-    await cargarDistritos();
-
+function inicializarUBIGEO() {
     const departamentoSelect = document.getElementById('socioDepartamento');
     const provinciaSelect = document.getElementById('socioProvincia');
     const distritoSelect = document.getElementById('socioDistrito');
@@ -346,7 +349,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
     }
-});
+}
+
+// ==================== INICIALIZACIÓN ====================
+export async function inicializarSocios() {
+    inicializarEventosSocio();
+    await cargarDepartamentos();
+    await cargarProvincias();
+    await cargarDistritos();
+    inicializarUBIGEO();
+}
 
 // ==================== EXPORTAR ====================
 export { cargarUsuariosSelect, cargarSocios, guardarSocio, editarSocio, eliminarSocio };
