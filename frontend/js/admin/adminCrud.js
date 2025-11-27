@@ -86,9 +86,11 @@ window.eliminarPelicula = eliminarPelicula;
 window.guardarFuncion = guardarFuncion;
 window.editarFuncion = editarFuncion;
 window.eliminarFuncion = eliminarFuncion;
+window.mostrarAlerta = mostrarAlerta;
 
 // ==================== INICIALIZAR ====================
 window.addEventListener('DOMContentLoaded', async () => {
+    console.log('✅ DOM Cargado - Inicializando Admin Panel');
     await cargarFormularios();
     cargarUsuarios();
 });

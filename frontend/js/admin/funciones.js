@@ -1,6 +1,7 @@
 import BASE_API_DOMAIN from '../config.js';
 
 const API = BASE_API_DOMAIN + 'admin/';
+let horariosDisponiblesCache = {};
 
 // ==================== FUNCIONES DE UTILIDAD ====================
 function mostrarAlerta(mensaje, tipo) {
@@ -142,10 +143,103 @@ async function cargarIdiomasSelect() {
     }
 }
 
+// ==================== CONVERTIR HORA A ZONA HORARIA DE PERÚ ====================
+function convertirAHoraPeruana(horaSelect) {
+    // horaSelect es un string en formato "HH:MM" del select
+    const [horas, minutos] = horaSelect.split(':').map(Number);
+    
+    // Crear una fecha con la hora actual para obtener la zona horaria del cliente
+    const ahora = new Date();
+    const offsetLocal = ahora.getTimezoneOffset() * 60000; // en milisegundos
+    
+    // Zona horaria de Perú: UTC-5 (siempre, no tiene horario de verano)
+    const offsetPeru = -5 * 60 * 60000; // UTC-5 en milisegundos
+    
+    // Crear una fecha con la hora ingresada
+    const fecha = new Date();
+    fecha.setHours(horas, minutos, 0, 0);
+    
+    // Calcular la diferencia de zonas horarias
+    const diferencia = (offsetLocal + offsetPeru) / 3600000; // en horas
+    
+    // Ajustar la hora
+    fecha.setHours(fecha.getHours() + diferencia);
+    
+    // Retornar en formato HH:MM
+    const horasAjustadas = String(fecha.getHours()).padStart(2, '0');
+    const minutosAjustados = String(fecha.getMinutes()).padStart(2, '0');
+    
+    return `${horasAjustadas}:${minutosAjustados}`;
+}
+
+// ==================== CONVERTIR FECHA Y HORA A ZONA HORARIA DE PERÚ ====================
+function convertirAFechaHoraPeruana(fecha, hora) {
+    // fecha: "YYYY-MM-DD", hora: "HH:MM"
+    // Construye la fecha local
+    const [year, month, day] = fecha.split('-').map(Number);
+    const [horas, minutos] = hora.split(':').map(Number);
+    const fechaLocal = new Date(year, month - 1, day, horas, minutos, 0);
+
+    // Convierte a la zona horaria de Perú usando toLocaleString
+    const fechaPeruana = new Date(fechaLocal.toLocaleString('en-US', { timeZone: 'America/Lima' }));
+
+    // Formatea la fecha y hora en formato YYYY-MM-DD y HH:MM
+    const yearP = fechaPeruana.getFullYear();
+    const mesP = String(fechaPeruana.getMonth() + 1).padStart(2, '0');
+    const diaP = String(fechaPeruana.getDate()).padStart(2, '0');
+    const horasP = String(fechaPeruana.getHours()).padStart(2, '0');
+    const minutosP = String(fechaPeruana.getMinutes()).padStart(2, '0');
+
+    return {
+        fecha: `${yearP}-${mesP}-${diaP}`,
+        hora: `${horasP}:${minutosP}`
+    };
+}
+
+// ==================== VALIDACIÓN DE DISPONIBILIDAD ====================
+async function cargarDisponibilidad(idSala, idPelicula) {
+    try {
+        const response = await fetch(API + `funciones/disponibilidad.php?idSala=${idSala}&idPelicula=${idPelicula}`);
+        const data = await manejarRespuesta(response, 'cargar disponibilidad');
+        
+        if (data.success) {
+            horariosDisponiblesCache = data.horariosDisponibles;
+            const selectFecha = document.getElementById('funcionFecha');
+            const selectHora = document.getElementById('funcionHora');
+            
+            if (selectFecha) {
+                selectFecha.innerHTML = '<option value="">-- Seleccionar fecha --</option>';
+                Object.keys(data.horariosDisponibles).forEach(fecha => {
+                    if (data.horariosDisponibles[fecha].length > 0) {
+                        const option = document.createElement('option');
+                        // Mostrar la fecha tal como la entrega el backend
+                        option.value = fecha;
+                        option.textContent = `${fecha} (${data.horariosDisponibles[fecha].length} horarios)`;
+                        selectFecha.appendChild(option);
+                    }
+                });
+                selectFecha.disabled = false;
+            }
+            
+            // Limpiar horas
+            if (selectHora) {
+                selectHora.innerHTML = '<option value="">-- Selecciona fecha primero --</option>';
+                selectHora.disabled = true;
+            }
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        mostrarAlerta('❌ Error al cargar disponibilidad', 'error');
+    }
+}
+
 // ==================== EVENTOS DE SELECTS EN CASCADA ====================
 function inicializarEventosCascada() {
     const selectCiudad = document.getElementById('funcionIdCiudad');
     const selectCine = document.getElementById('funcionIdCine');
+    const selectSala = document.getElementById('funcionIdSala');
+    const selectPelicula = document.getElementById('funcionIdPelicula');
+    const selectFecha = document.getElementById('funcionFecha');
     
     if (selectCiudad) {
         selectCiudad.addEventListener('change', function() {
@@ -159,6 +253,47 @@ function inicializarEventosCascada() {
         selectCine.addEventListener('change', function() {
             if (this.value) {
                 cargarSalasPorCine(this.value);
+            }
+        });
+    }
+    
+    if (selectSala) {
+        selectSala.addEventListener('change', function() {
+            if (this.value && selectPelicula.value) {
+                cargarDisponibilidad(this.value, selectPelicula.value);
+            } else if (this.value) {
+                selectFecha.disabled = true;
+                selectFecha.innerHTML = '<option value="">-- Selecciona película primero --</option>';
+            }
+        });
+    }
+    
+    if (selectPelicula) {
+        selectPelicula.addEventListener('change', function() {
+            if (this.value && selectSala.value) {
+                cargarDisponibilidad(selectSala.value, this.value);
+            } else if (this.value) {
+                selectFecha.disabled = true;
+                selectFecha.innerHTML = '<option value="">-- Selecciona sala primero --</option>';
+            }
+        });
+    }
+    
+    if (selectFecha) {
+        selectFecha.addEventListener('change', function() {
+            const selectHora = document.getElementById('funcionHora');
+            if (this.value && horariosDisponiblesCache[this.value]) {
+                selectHora.innerHTML = '<option value="">-- Seleccionar hora --</option>';
+                horariosDisponiblesCache[this.value].forEach(hora => {
+                    const option = document.createElement('option');
+                    option.value = hora;
+                    option.textContent = hora;
+                    selectHora.appendChild(option);
+                });
+                selectHora.disabled = false;
+            } else {
+                selectHora.innerHTML = '<option value="">-- Selecciona fecha primero --</option>';
+                selectHora.disabled = true;
             }
         });
     }
@@ -212,26 +347,31 @@ async function cargarFunciones() {
 
 async function guardarFuncion() {
     const id = document.getElementById('funcionId').value;
-    
+    const fechaSeleccionada = document.getElementById('funcionFecha').value;
+    const horaSeleccionada = document.getElementById('funcionHora').value;
+
+    // NO USAR Date ni conversiones aquí
     const datos = {
         idPelicula: parseInt(document.getElementById('funcionIdPelicula').value),
         idSala: parseInt(document.getElementById('funcionIdSala').value),
         idFormato: parseInt(document.getElementById('funcionIdFormato').value),
         idIdioma: parseInt(document.getElementById('funcionIdIdioma').value),
-        fecha: document.getElementById('funcionFecha').value,
-        hora: document.getElementById('funcionHora').value,
+        fecha: fechaSeleccionada, // Enviar tal cual
+        hora: horaSeleccionada,   // Enviar tal cual
         precio: parseFloat(document.getElementById('funcionPrecio').value),
         estado: document.getElementById('funcionEstado').value
     };
-    
+
+    console.log('📦 Datos enviados a BD:', datos);
+
     if (!datos.idPelicula || !datos.idSala || !datos.idFormato || !datos.idIdioma || !datos.fecha || !datos.hora || !datos.precio || !datos.estado) {
         mostrarAlerta('⚠️ Completa todos los campos requeridos', 'error');
         return;
     }
-    
+
     const url = id ? API + `funciones/actualizar.php?id=${id}` : API + 'funciones/crear.php';
     const metodo = id ? 'PUT' : 'POST';
-    
+
     mostrarCarga(true);
     try {
         const response = await fetch(url, {
@@ -240,13 +380,15 @@ async function guardarFuncion() {
             body: JSON.stringify(datos)
         });
         const data = await manejarRespuesta(response, 'guardar función');
-        
+
         if (data.success) {
             mostrarAlerta(id ? '✅ Función actualizada' : '✅ Función creada', 'success');
             document.getElementById('funcionForm').reset();
             document.getElementById('funcionId').value = '';
             document.getElementById('funcionIdCine').disabled = true;
             document.getElementById('funcionIdSala').disabled = true;
+            document.getElementById('funcionFecha').disabled = true;
+            document.getElementById('funcionHora').disabled = true;
             cargarFunciones();
         } else {
             mostrarAlerta('❌ ' + (data.message || 'Error'), 'error');

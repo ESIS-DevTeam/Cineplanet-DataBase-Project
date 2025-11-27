@@ -3,7 +3,7 @@
         <h2>🎞️ Formulario de Función</h2>
         
         <div class="info-box">
-            <p>ℹ️ Selecciona la ciudad, cine y sala. Luego elige película, formato e idioma.</p>
+            <p>ℹ️ Selecciona la ciudad, cine y sala. Luego elige película, formato e idioma. Los horarios se actualizarán automáticamente según disponibilidad.</p>
         </div>
         
         <form id="funcionForm">
@@ -75,11 +75,17 @@
             <div class="form-row">
                 <div class="form-group">
                     <label>Fecha *</label>
-                    <input type="date" id="funcionFecha" required>
+                    <select id="funcionFecha" required disabled>
+                        <option value="">-- Selecciona sala y película primero --</option>
+                    </select>
+                    <small style="color: #666; font-size: 12px; margin-top: 4px;">📅 Se guardará en zona horaria de Perú (UTC-5)</small>
                 </div>
                 <div class="form-group">
-                    <label>Hora *</label>
-                    <input type="time" id="funcionHora" required>
+                    <label>Hora (Zona Horaria Perú) *</label>
+                    <select id="funcionHora" required disabled>
+                        <option value="">-- Selecciona fecha primero --</option>
+                    </select>
+                    <small style="color: #666; font-size: 12px; margin-top: 4px;">⏰ Se guardará en zona horaria de Perú (UTC-5)</small>
                 </div>
             </div>
             
