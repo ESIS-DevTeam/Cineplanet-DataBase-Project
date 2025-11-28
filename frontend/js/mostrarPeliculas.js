@@ -137,7 +137,9 @@ function mostrarPeliculas(peliculas, filtros) {
         card.onmouseout = () => card.style.boxShadow = '0 2px 8px #0002';
 
         const img = document.createElement('img');
-        img.src = pelicula.portada || 'img/default-pelicula.jpg';
+        img.src = pelicula.portada
+            ? `../images/portrait/movie/${pelicula.portada}`
+            : 'img/default-pelicula.jpg';
         img.alt = pelicula.nombrePelicula || 'Sin título';
         img.style.width = '180px';
         img.style.height = '260px';

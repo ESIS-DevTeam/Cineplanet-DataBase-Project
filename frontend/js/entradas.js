@@ -43,16 +43,26 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.body.style.overflow = '';
     }
 
+    // Botón cancelar compra al lado del logo de usuario
     const socioDisplay = document.getElementById('socio-display');
-    if (sessionData.socio && sessionData.socio.nombre) {
-        const nombre = sessionData.socio.nombre;
-        const iniciales = nombre.split(' ').map(word => word[0]).join('').toUpperCase();
-        socioDisplay.textContent = iniciales;
-    } else {
-        socioDisplay.textContent = '👤';
+    if (socioDisplay && idPelicula) {
+        const cancelarBtn = document.createElement('button');
+        cancelarBtn.textContent = 'Cancelar compra';
+        cancelarBtn.style.marginLeft = '1em';
+        cancelarBtn.style.background = '#d32f2f';
+        cancelarBtn.style.color = '#fff';
+        cancelarBtn.style.border = 'none';
+        cancelarBtn.style.padding = '0.7em 1.5em';
+        cancelarBtn.style.borderRadius = '8px';
+        cancelarBtn.style.fontWeight = 'bold';
+        cancelarBtn.style.cursor = 'pointer';
+        cancelarBtn.onclick = () => {
+            window.location.href = `peliculaSeleccion.html?pelicula=${idPelicula}`;
+        };
+        socioDisplay.parentNode.insertBefore(cancelarBtn, socioDisplay.nextSibling);
     }
 
-    let socioData = sessionData.socio || null;
+    const socioData = sessionData.socio || null;
     let esEmpleado = socioData && socioData.empleado == 1;
     let puntosSocio = 0;
 

@@ -56,7 +56,7 @@ async function mostrarInfoPelicula() {
     infoDiv.innerHTML = `
       ${trailerHtml}
       <h2>${pelicula.nombrePelicula || pelicula.nombre || 'Sin título'}</h2>
-      ${pelicula.portada ? `<img src="${pelicula.portada}" alt="Portada" style="max-width:200px;">` : ''}
+      ${pelicula.portada ? `<img src="../images/portrait/movie/${pelicula.portada}" alt="Portada" style="max-width:200px;">` : ''}
       <p><strong>Sinopsis:</strong> ${pelicula.sinopsis || ''}</p>
       <p><strong>Género:</strong> ${pelicula.genero || pelicula.generoPelicula || ''}</p>
       <p><strong>Duración:</strong> ${pelicula.duracion || ''} min</p>

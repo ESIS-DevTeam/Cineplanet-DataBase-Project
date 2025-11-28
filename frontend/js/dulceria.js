@@ -291,7 +291,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         function renderNormal() {
             divProd.innerHTML = `
-                ${prod.imagen ? `<img src="${prod.imagen}" alt="${prod.nombre}" width="80" height="80">` : ''}
+                ${prod.imagen ? `<img src="../images/portrait/candy/${prod.imagen}" alt="${prod.nombre}" width="80" height="80">` : ''}
                 <strong>${prod.nombre}</strong><br>
                 <span>${prod.descripcion || ''}</span><br>
                 <span>Precio: S/${prod.precio}</span>
@@ -323,7 +323,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             let cantidad = 1;
             divProd.innerHTML = `
-                ${prod.imagen ? `<img src="${prod.imagen}" alt="${prod.nombre}" width="80" height="80">` : ''}
+                ${prod.imagen ? `<img src="../images/portrait/candy/${prod.imagen}" alt="${prod.nombre}" width="80" height="80">` : ''}
                 <strong>${prod.nombre}</strong><br>
                 <span>${prod.descripcion || ''}</span><br>
                 <span>Precio: S/${prod.precio}</span>
@@ -415,5 +415,32 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (error) {
         const socioDisplay = document.getElementById('socio-display');
         if (socioDisplay) socioDisplay.textContent = '👤';
+    }
+
+    // Botón cancelar compra al lado del logo de usuario
+    const socioDisplay = document.getElementById('socio-display');
+    if (socioDisplay) {
+        const cancelarBtn = document.createElement('button');
+        cancelarBtn.textContent = 'Cancelar compra';
+        cancelarBtn.style.marginLeft = '1em';
+        cancelarBtn.style.background = '#d32f2f';
+        cancelarBtn.style.color = '#fff';
+        cancelarBtn.style.border = 'none';
+        cancelarBtn.style.padding = '0.7em 1.5em';
+        cancelarBtn.style.borderRadius = '8px';
+        cancelarBtn.style.fontWeight = 'bold';
+        cancelarBtn.style.cursor = 'pointer';
+
+        cancelarBtn.onclick = () => {
+            if (idCiudad && idCine) {
+                window.location.href = `dulceriaLading.html?ciudad=${idCiudad}&cine=${idCine}`;
+            } else if (idPelicula) {
+                window.location.href = `peliculaSeleccion.html?pelicula=${idPelicula}`;
+            } else {
+                window.location.href = 'peliculas.html';
+            }
+        };
+
+        socioDisplay.parentNode.insertBefore(cancelarBtn, socioDisplay.nextSibling);
     }
 });
