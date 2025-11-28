@@ -1,3 +1,5 @@
-header.visually-hidden {
+header.main-header {
     text-align: left;
+    border: 2px solid white;
+    background-color: rgba(0, 0, 0, 0.14);
 }

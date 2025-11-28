@@ -1,9 +1,5 @@
-h1.visually-hidden {
-    color: brown;
-}
-
 body {
-    background-color: lightblue;
+    background-color: white;
 }
 
 .nav-list li a:link {
