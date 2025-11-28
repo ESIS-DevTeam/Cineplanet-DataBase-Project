@@ -1,9 +1,32 @@
 {
+    // ===== CSS desde HTML =====
     "css.remoteStyleSheets": [
-        "frontend/styles/estilos.css"
+        "frontend/styles/header.css",
+        "frontend/styles/index.css"
     ],
     "css.styleSheets": [
-        "frontend/styles/estilos.css",
-        "frontend/styles/*.css" 
-    ]
+        "${workspaceFolder}/frontend/styles/header.css",
+        "${workspaceFolder}/frontend/styles/index.css"
+    ],
+    
+    // ===== HTML to CSS autocompletion =====
+    "html-to-css-autocompletion.autocompletionFilesScope": "workspace",
+    "html-to-css-autocompletion.getSelectorsFromFileTypes": [
+        "html",
+        "php"
+    ],
+    
+    // ===== Editor =====
+    "editor.quickSuggestions": {
+        "strings": true,
+        "comments": false,
+        "other": true
+    },
+    "editor.suggest.snippetsPreventQuickSuggestions": false,
+    
+    // ===== Asociaciones =====
+    "files.associations": {
+        "*.css": "css",
+        "*.html": "html"
+    }
 }
