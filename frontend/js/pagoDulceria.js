@@ -3,6 +3,9 @@ import BASE_API_DOMAIN from "./config.js";
 document.addEventListener('DOMContentLoaded', async () => {
     const params = new URLSearchParams(window.location.search);
     const productos = params.get('productos');
+    const idCiudad = params.get('ciudad');
+    const idCine = params.get('cine');
+    const idPelicula = params.get('pelicula');
 
     // Verifica sesión para mostrar el ícono de socio
     let sessionData = {};
@@ -17,13 +20,37 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else {
             socioDisplay.textContent = '👤';
         }
+
+        // Botón cancelar compra al lado del logo de usuario
+        if (socioDisplay) {
+            const cancelarBtn = document.createElement('button');
+            cancelarBtn.textContent = 'Cancelar compra';
+            cancelarBtn.style.marginLeft = '1em';
+            cancelarBtn.style.background = '#d32f2f';
+            cancelarBtn.style.color = '#fff';
+            cancelarBtn.style.border = 'none';
+            cancelarBtn.style.padding = '0.7em 1.5em';
+            cancelarBtn.style.borderRadius = '8px';
+            cancelarBtn.style.fontWeight = 'bold';
+            cancelarBtn.style.cursor = 'pointer';
+
+            cancelarBtn.onclick = () => {
+                if (idCiudad && idCine) {
+                    window.location.href = `dulceriaLading.html?ciudad=${idCiudad}&cine=${idCine}`;
+                } else if (idPelicula) {
+                    window.location.href = `peliculaSeleccion.html?pelicula=${idPelicula}`;
+                } else {
+                    window.location.href = 'peliculas.html';
+                }
+            };
+
+            socioDisplay.parentNode.insertBefore(cancelarBtn, socioDisplay.nextSibling);
+        }
     } catch (error) {
         document.getElementById('socio-display').textContent = '👤';
     }
 
     // Renderiza solo la info del cine si hay ciudad y cine
-    const idCiudad = params.get('ciudad');
-    const idCine = params.get('cine');
     const infoContainer = document.getElementById('info-container');
     if (idCiudad && idCine) {
         try {
