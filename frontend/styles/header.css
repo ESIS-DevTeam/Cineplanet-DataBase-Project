@@ -3,3 +3,7 @@ header.main-header {
     border: 2px solid white;
     background-color: rgba(0, 0, 0, 0.14);
 }
+
+.visually-hidden {
+    display: none;
+}
