@@ -9,6 +9,7 @@
   <link rel="shortcut icon" href="frontend/images/items/icono-cine.ico" type="image/x-icon">
   <link href="frontend/styles/header.css" rel="stylesheet" type="text/css" />
   <link href="frontend/styles/index.css" rel="stylesheet" type="text/css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
   <div class="app-container">
@@ -32,9 +33,15 @@
             <li class="nav-item"><a href="frontend/pages/blog.html" target="_blank">Blog</a></li>
           </ul>
             <div class="nav-actions">
-              <button class="buscar-btn" aria-label="Buscar">🔍</button>
-              <button class="socio-btn" aria-label="socio">👤</button>
-              <button class="ayuda-btn" aria-label="ayuda">❔</button>
+              <button class="buscar-btn" aria-label="Buscar">
+                <i class="fas fa-search"></i>
+              </button>
+              <button class="socio-btn" aria-label="socio">
+                <i class="fas fa-user"></i>
+              </button>
+              <button class="ayuda-btn" aria-label="ayuda">
+                <i class="fas fa-question-circle"></i>
+              </button>
             </div>
         </nav>
       </div>
@@ -92,6 +99,7 @@
   <div id="socio-popup" style="display:none; position:fixed; top:70px; right:30px; background:#fff; border:1px solid #ccc; box-shadow:0 2px 8px #0002; z-index:1000; min-width:220px; padding:16px; border-radius:8px;">
     <div id="socio-popup-content"></div>
   </div>
+  <script src="frontend/js/header.js"></script>
   <script type="module" src="frontend/js/filtrosIndex.js"></script>
   <script>
   let socioData = null;
