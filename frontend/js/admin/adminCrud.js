@@ -4,6 +4,7 @@ import { cargarUsuariosSelect, cargarSocios, guardarSocio, editarSocio, eliminar
 import { cargarPeliculas, guardarPelicula, editarPelicula, eliminarPelicula, inicializarPeliculas } from './peliculas.js';
 import { cargarFunciones, guardarFuncion, editarFuncion, eliminarFuncion, inicializarFunciones } from './funciones.js';
 import { cargarProductos, guardarProducto, editarProducto, eliminarProducto } from './productos.js';
+import { cargarCines, editarCine, eliminarCine, inicializarCines, guardarCine } from './cines.js';
 
 const API = BASE_API_DOMAIN + 'admin/';
 
@@ -53,10 +54,15 @@ async function cargarFormularios() {
         const resProducto = await fetch('./formularioProducto.html');
         const resProductoText = await resProducto.text();
         document.getElementById('formularioProductoContainer').innerHTML = resProductoText;
+
+        const resCine = await fetch('./formularioCine.html');
+        const resCineText = await resCine.text();
+        document.getElementById('formularioCineContainer').innerHTML = resCineText;
         
         await inicializarPeliculas();
         await inicializarSocios();
         await inicializarFunciones();
+        await inicializarCines();
     } catch (error) {
         console.error('Error al cargar formularios:', error);
         mostrarAlerta('❌ Error al cargar formularios', 'error');
@@ -76,6 +82,7 @@ function switchTab(tabName) {
     if (tabName === 'peliculas') cargarPeliculas();
     if (tabName === 'funciones') { cargarFunciones(); inicializarFunciones(); }
     if (tabName === 'productos') cargarProductos();
+    if (tabName === 'cines') cargarCines();
 }
 
 // ==================== EXPORTAR AL SCOPE GLOBAL ====================
@@ -95,6 +102,9 @@ window.eliminarFuncion = eliminarFuncion;
 window.guardarProducto = guardarProducto;
 window.editarProducto = editarProducto;
 window.eliminarProducto = eliminarProducto;
+window.guardarCine = guardarCine;
+window.editarCine = editarCine;
+window.eliminarCine = eliminarCine;
 window.mostrarAlerta = mostrarAlerta;
 
 // ==================== INICIALIZAR ====================
