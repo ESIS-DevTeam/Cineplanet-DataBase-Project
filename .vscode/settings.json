@@ -6,7 +6,8 @@
     ],
     "css.styleSheets": [
         "${workspaceFolder}/frontend/styles/header.css",
-        "${workspaceFolder}/frontend/styles/index.css"
+        "${workspaceFolder}/frontend/styles/index.css",
+        "${workspaceFolder}/frontend/styles/footer.css"
     ],
     
     // ===== HTML to CSS autocompletion =====
