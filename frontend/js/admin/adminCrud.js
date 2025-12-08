@@ -7,6 +7,7 @@ import { cargarProductos, guardarProducto, editarProducto, eliminarProducto } fr
 import { cargarCines, editarCine, eliminarCine, inicializarCines, guardarCine } from './cines.js';
 import { cargarSalas, guardarSala, editarSala, eliminarSala, inicializarSalas } from './salas.js';
 import { cargarPromos, guardarPromo, editarPromo, eliminarPromo, inicializarPromos } from './promos.js';
+import { setCatalogo, inicializarCatalogo } from './catalogo.js';
 
 const API = BASE_API_DOMAIN + 'admin/';
 
@@ -69,6 +70,10 @@ async function cargarFormularios() {
         const resPromoText = await resPromo.text();
         document.getElementById('formularioPromoContainer').innerHTML = resPromoText;
         
+        // Catálogo: un solo formulario reutilizable
+        const resCatalogo = await fetch('./formularioCatalogo.html');
+        document.getElementById('formularioCatalogoContainer').innerHTML = await resCatalogo.text();
+        
         await inicializarPeliculas();
         await inicializarSocios();
         await inicializarFunciones();
@@ -127,9 +132,17 @@ window.editarPromo = editarPromo;
 window.eliminarPromo = eliminarPromo;
 window.mostrarAlerta = mostrarAlerta;
 
+window.switchCatalogo = function(tabName, event) {
+    document.querySelectorAll('.tab-btn-catalogo').forEach(btn => btn.classList.remove('active'));
+    if (event) event.target.classList.add('active');
+    setCatalogo(tabName);
+    inicializarCatalogo();
+};
+
 // ==================== INICIALIZAR ====================
 window.addEventListener('DOMContentLoaded', async () => {
     console.log('✅ DOM Cargado - Inicializando Admin Panel');
     await cargarFormularios();
+    window.switchCatalogo('generos');
     cargarUsuarios();
 });

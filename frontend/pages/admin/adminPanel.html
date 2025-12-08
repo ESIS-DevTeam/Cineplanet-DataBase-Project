@@ -177,6 +177,7 @@
             <button class="tab-btn" onclick="window.switchTab('cines', event)">🏢 Cines</button>
             <button class="tab-btn" onclick="window.switchTab('salas', event)">🏟️ Salas</button>
             <button class="tab-btn" onclick="window.switchTab('promos', event)">🎟️ Promos</button>
+            <button class="tab-btn" onclick="window.switchTab('catalogo', event)">📚 Catálogo</button>
         </div>
         
         <!-- ======================== USUARIOS ======================== -->
@@ -400,6 +401,23 @@
                 </table>
                 <div class="empty-state" id="emptyStatePromos" style="display: none;">
                     <p>📭 No hay promociones registradas</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ======================== CATÁLOGO ======================== -->
+        <div id="catalogo" class="tab-content">
+            <div class="card">
+                <div class="tabs" id="catalogoTabs" style="margin-bottom: 20px;">
+                    <button class="tab-btn-catalogo active" onclick="window.switchCatalogo('generos', event)">Géneros</button>
+                    <button class="tab-btn-catalogo" onclick="window.switchCatalogo('idiomas', event)">Idiomas</button>
+                    <button class="tab-btn-catalogo" onclick="window.switchCatalogo('formatos', event)">Formatos</button>
+                    <button class="tab-btn-catalogo" onclick="window.switchCatalogo('restricciones', event)">Restricciones</button>
+                    <button class="tab-btn-catalogo" onclick="window.switchCatalogo('ciudades', event)">Ciudades</button>
+                </div>
+                <div id="catalogoContent">
+                    <div id="formularioCatalogoContainer"></div>
+                    <div id="tablaCatalogoContainer"></div>
                 </div>
             </div>
         </div>
