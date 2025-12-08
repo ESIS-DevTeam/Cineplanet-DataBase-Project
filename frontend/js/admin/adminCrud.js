@@ -6,6 +6,7 @@ import { cargarFunciones, guardarFuncion, editarFuncion, eliminarFuncion, inicia
 import { cargarProductos, guardarProducto, editarProducto, eliminarProducto } from './productos.js';
 import { cargarCines, editarCine, eliminarCine, inicializarCines, guardarCine } from './cines.js';
 import { cargarSalas, guardarSala, editarSala, eliminarSala, inicializarSalas } from './salas.js';
+import { cargarPromos, guardarPromo, editarPromo, eliminarPromo, inicializarPromos } from './promos.js';
 
 const API = BASE_API_DOMAIN + 'admin/';
 
@@ -64,11 +65,16 @@ async function cargarFormularios() {
         const resSalaText = await resSala.text();
         document.getElementById('formularioSalaContainer').innerHTML = resSalaText;
         
+        const resPromo = await fetch('./formularioPromo.html');
+        const resPromoText = await resPromo.text();
+        document.getElementById('formularioPromoContainer').innerHTML = resPromoText;
+        
         await inicializarPeliculas();
         await inicializarSocios();
         await inicializarFunciones();
         await inicializarCines();
         await inicializarSalas();
+        await inicializarPromos();
     } catch (error) {
         console.error('Error al cargar formularios:', error);
         mostrarAlerta('❌ Error al cargar formularios', 'error');
@@ -76,13 +82,13 @@ async function cargarFormularios() {
 }
 
 // ==================== CAMBIO DE PESTAÑAS ====================
-function switchTab(tabName) {
+function switchTab(tabName, event) {
     document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    
+
     document.getElementById(tabName).classList.add('active');
-    event.target.classList.add('active');
-    
+    if (event) event.target.classList.add('active');
+
     if (tabName === 'usuarios') cargarUsuarios();
     if (tabName === 'socios') { cargarSocios(); cargarUsuariosSelect(); }
     if (tabName === 'peliculas') cargarPeliculas();
@@ -90,6 +96,7 @@ function switchTab(tabName) {
     if (tabName === 'productos') cargarProductos();
     if (tabName === 'cines') cargarCines();
     if (tabName === 'salas') { cargarSalas(); inicializarSalas(); }
+    if (tabName === 'promos') { cargarPromos(); inicializarPromos(); }
 }
 
 // ==================== EXPORTAR AL SCOPE GLOBAL ====================
@@ -115,6 +122,9 @@ window.eliminarCine = eliminarCine;
 window.guardarSala = guardarSala;
 window.editarSala = editarSala;
 window.eliminarSala = eliminarSala;
+window.guardarPromo = guardarPromo;
+window.editarPromo = editarPromo;
+window.eliminarPromo = eliminarPromo;
 window.mostrarAlerta = mostrarAlerta;
 
 // ==================== INICIALIZAR ====================

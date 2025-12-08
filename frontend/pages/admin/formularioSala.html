@@ -38,5 +38,23 @@
                 <button type="reset" class="btn-reset">🔄 Limpiar</button>
             </div>
         </form>
+        <!-- Plano de Sala -->
+        <div id="planoSalaSection" style="margin-top:2em;">
+            <h3>🪑 Plano de Sala</h3>
+            <div>
+                <label>Filas:</label>
+                <input type="number" id="planoFilas" min="1" value="1" style="width:60px;">
+                <label>Asientos por fila:</label>
+                <input type="number" id="planoAsientosPorFila" min="1" value="1" style="width:60px;">
+                <button type="button" onclick="window.generarPlanoSala()">Generar Plano</button>
+            </div>
+            <div style="margin:1em 0;">
+                <span>Tipo de asiento:</span>
+                <button type="button" id="btnTipoNormal" class="btn-tipo-asiento selected" onclick="window.seleccionarTipoAsiento('normal')">🪑 Normal</button>
+                <button type="button" id="btnTipoDiscapacidad" class="btn-tipo-asiento" onclick="window.seleccionarTipoAsiento('discapacidad')">♿ Discapacidad</button>
+                <button type="button" id="btnTipoPasillo" class="btn-tipo-asiento" onclick="window.seleccionarTipoAsiento('pasillo')">⬜ Pasillo</button>
+            </div>
+            <div id="planoSalaContainer" style="margin-top:1em;"></div>
+        </div>
     </div>
 </div>

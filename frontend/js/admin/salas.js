@@ -55,13 +55,82 @@ export async function cargarSalas() {
     }
 }
 
+// Tipo de asiento seleccionado global
+window.tipoAsientoSeleccionado = 'normal';
+
+window.seleccionarTipoAsiento = function(tipo) {
+    window.tipoAsientoSeleccionado = tipo;
+    // Actualiza estilos de los botones
+    document.querySelectorAll('.btn-tipo-asiento').forEach(btn => btn.classList.remove('selected'));
+    if (tipo === 'normal') document.getElementById('btnTipoNormal').classList.add('selected');
+    if (tipo === 'discapacidad') document.getElementById('btnTipoDiscapacidad').classList.add('selected');
+    if (tipo === 'pasillo') document.getElementById('btnTipoPasillo').classList.add('selected');
+};
+
+window.generarPlanoSala = function() {
+    const filas = parseInt(document.getElementById('planoFilas').value);
+    const asientosPorFila = parseInt(document.getElementById('planoAsientosPorFila').value);
+    const container = document.getElementById('planoSalaContainer');
+    container.innerHTML = '';
+    for (let f = 0; f < filas; f++) {
+        const filaLetra = String.fromCharCode(65 + f);
+        let rowDiv = document.createElement('div');
+        rowDiv.className = 'plano-fila';
+        let label = document.createElement('span');
+        label.textContent = filaLetra + ': ';
+        rowDiv.appendChild(label);
+        for (let n = 1; n <= asientosPorFila; n++) {
+            let seat = document.createElement('span');
+            seat.className = 'plano-asiento plano-normal';
+            seat.dataset.fila = filaLetra;
+            seat.dataset.numero = n;
+            seat.dataset.tipo = 'normal';
+            seat.textContent = '🪑';
+            seat.onclick = function() {
+                // Cambia el tipo visualmente y en dataset
+                let tipo = window.tipoAsientoSeleccionado;
+                seat.dataset.tipo = tipo;
+                if (tipo === 'normal') {
+                    seat.textContent = '🪑';
+                    seat.className = 'plano-asiento plano-normal';
+                } else if (tipo === 'discapacidad') {
+                    seat.textContent = '♿';
+                    seat.className = 'plano-asiento plano-discapacidad';
+                } else if (tipo === 'pasillo') {
+                    seat.textContent = '⬜';
+                    seat.className = 'plano-asiento plano-pasillo';
+                }
+            };
+            rowDiv.appendChild(seat);
+        }
+        container.appendChild(rowDiv);
+    }
+    // Actualiza la capacidad del input
+    document.getElementById('salaCapacidad').value = filas * asientosPorFila;
+};
+
+function obtenerPlanoSala() {
+    const seats = document.querySelectorAll('#planoSalaContainer .plano-asiento');
+    let plano = [];
+    seats.forEach(seat => {
+        plano.push({
+            fila: seat.dataset.fila,
+            numero: parseInt(seat.dataset.numero),
+            tipo: seat.dataset.tipo
+        });
+    });
+    return plano;
+}
+
+// Modifica guardarSala para enviar el plano de sala
 export async function guardarSala() {
     const id = document.getElementById('salaId').value;
     const datos = {
         nombre: document.getElementById('salaNombre').value.trim(),
         capacidad: parseInt(document.getElementById('salaCapacidad').value),
         tipo: document.getElementById('salaTipo').value,
-        idCine: parseInt(document.getElementById('salaIdCine').value)
+        idCine: parseInt(document.getElementById('salaIdCine').value),
+        planoSala: obtenerPlanoSala()
     };
     if (!datos.nombre || !datos.capacidad || !datos.tipo || !datos.idCine) {
         mostrarAlerta('⚠️ Completa todos los campos requeridos', 'error');
@@ -81,6 +150,7 @@ export async function guardarSala() {
             mostrarAlerta(id ? '✅ Sala actualizada' : '✅ Sala creada', 'success');
             document.getElementById('salaForm').reset();
             document.getElementById('salaId').value = '';
+            document.getElementById('planoSalaContainer').innerHTML = '';
             cargarSalas();
         } else {
             mostrarAlerta('❌ ' + (data.message || 'Error'), 'error');
@@ -92,6 +162,7 @@ export async function guardarSala() {
     }
 }
 
+// Al editar sala, pintar el plano con los tipos correctos
 export async function editarSala(id) {
     mostrarCarga(true);
     try {
@@ -104,6 +175,32 @@ export async function editarSala(id) {
             document.getElementById('salaCapacidad').value = s.capacidad || '';
             document.getElementById('salaTipo').value = s.tipo || '';
             document.getElementById('salaIdCine').value = s.idCine || '';
+            // Cargar plano de sala
+            if (Array.isArray(s.planoSala)) {
+                let filas = [...new Set(s.planoSala.map(a => a.fila))];
+                let asientosPorFila = Math.max(...s.planoSala.map(a => a.numero));
+                document.getElementById('planoFilas').value = filas.length;
+                document.getElementById('planoAsientosPorFila').value = asientosPorFila;
+                window.generarPlanoSala();
+                // Set tipos visualmente
+                const seats = document.querySelectorAll('#planoSalaContainer .plano-asiento');
+                seats.forEach(seat => {
+                    let asiento = s.planoSala.find(a => a.fila === seat.dataset.fila && a.numero == seat.dataset.numero);
+                    if (asiento) {
+                        seat.dataset.tipo = asiento.tipo;
+                        if (asiento.tipo === 'normal') {
+                            seat.textContent = '🪑';
+                            seat.className = 'plano-asiento plano-normal';
+                        } else if (asiento.tipo === 'discapacidad') {
+                            seat.textContent = '♿';
+                            seat.className = 'plano-asiento plano-discapacidad';
+                        } else if (asiento.tipo === 'pasillo') {
+                            seat.textContent = '⬜';
+                            seat.className = 'plano-asiento plano-pasillo';
+                        }
+                    }
+                });
+            }
             window.scrollTo({ top: 100, behavior: 'smooth' });
         }
     } catch (error) {
