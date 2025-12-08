@@ -122,6 +122,8 @@ export async function editarCine(id) {
         // Mostrar nombre de imagen actual si existe
         const imagenNombreDiv = document.getElementById('cineImagenNombre');
         if (imagenNombreDiv) imagenNombreDiv.textContent = cine.imagen ? `Imagen actual: ${cine.imagen}` : '';
+        // Limpiar el input file (no se puede setear value por seguridad)
+        document.getElementById('cineImagenArchivo').value = '';
         window.mostrarAlerta('✏️ Editando cine', 'success');
     } catch (err) {
         window.mostrarAlerta('❌ Error al cargar cine', 'error');

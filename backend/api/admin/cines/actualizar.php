@@ -21,11 +21,11 @@ $stmtSelect->close();
 
 $imagenNombre = $imagenActual;
 if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
-    $dirDestino = __DIR__ . '/../../../../frontend/images/portrait/cine/';
+    $dirDestino = __DIR__ . '/../../../../frontend/images/portrait/cines/';
     if (!is_dir($dirDestino)) {
         mkdir($dirDestino, 0777, true);
     }
-    $nombreArchivo = uniqid('cine_') . '_' . basename($_FILES['imagen']['name']);
+    $nombreArchivo = basename($_FILES['imagen']['name']); // <-- solo el nombre original
     $rutaCompleta = $dirDestino . $nombreArchivo;
     if (move_uploaded_file($_FILES['imagen']['tmp_name'], $rutaCompleta)) {
         $imagenNombre = $nombreArchivo;
