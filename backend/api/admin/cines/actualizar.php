@@ -3,29 +3,54 @@ header('Content-Type: application/json; charset=utf-8');
 require_once __DIR__ . '/../../../config/conexion.php';
 $conn = conexion::conectar();
 
-$input = json_decode(file_get_contents('php://input'), true);
+$id = isset($_POST['id']) ? $_POST['id'] : null;
+$nombre = $_POST['nombre'] ?? '';
+$direccion = $_POST['direccion'] ?? '';
+$telefono = $_POST['telefono'] ?? '';
+$email = $_POST['email'] ?? '';
+$idCiudad = $_POST['idCiudad'] ?? null;
 
-$id = $input['id'] ?? '';
-$nombre = $input['nombre'] ?? '';
-$direccion = $input['direccion'] ?? '';
-$telefono = $input['telefono'] ?? '';
-$email = $input['email'] ?? '';
-$idCiudad = $input['idCiudad'] ?? '';
-$imagenNombre = $input['imagen'] ?? '';
+// Obtener imagen actual
+$imagenActual = '';
+$stmtSelect = $conn->prepare("SELECT imagen FROM CINE WHERE id=?");
+$stmtSelect->bind_param('i', $id);
+$stmtSelect->execute();
+$stmtSelect->bind_result($imagenActual);
+$stmtSelect->fetch();
+$stmtSelect->close();
 
-if (!$id) {
-    echo json_encode(['success' => false, 'error' => 'ID no proporcionado']);
-    exit;
+$imagenNombre = $imagenActual;
+if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
+    $dirDestino = __DIR__ . '/../../../../frontend/images/portrait/cine/';
+    if (!is_dir($dirDestino)) {
+        mkdir($dirDestino, 0777, true);
+    }
+    $nombreArchivo = uniqid('cine_') . '_' . basename($_FILES['imagen']['name']);
+    $rutaCompleta = $dirDestino . $nombreArchivo;
+    if (move_uploaded_file($_FILES['imagen']['tmp_name'], $rutaCompleta)) {
+        $imagenNombre = $nombreArchivo;
+        // Eliminar imagen anterior si es diferente
+        if ($imagenActual && $imagenActual !== $imagenNombre) {
+            $rutaAnterior = $dirDestino . $imagenActual;
+            if (file_exists($rutaAnterior)) {
+                unlink($rutaAnterior);
+            }
+        }
+    }
 }
-if (!$nombre || !$direccion || !$telefono || !$email || !$idCiudad) {
-    echo json_encode(['success' => false, 'error' => 'Faltan campos requeridos']);
-    exit;
-}
 
-$stmt = $conn->prepare("UPDATE CINE SET nombre=?, direccion=?, telefono=?, email=?, idCiudad=?, imagen=? WHERE id=?");
-$stmt->bind_param('ssssssi', $nombre, $direccion, $telefono, $email, $idCiudad, $imagenNombre, $id);
+$stmt = $conn->prepare("UPDATE CINE SET nombre=?, direccion=?, telefono=?, email=?, imagen=?, idCiudad=? WHERE id=?");
+$stmt->bind_param(
+    'ssssssi',
+    $nombre,
+    $direccion,
+    $telefono,
+    $email,
+    $imagenNombre,
+    $idCiudad,
+    $id
+);
 $success = $stmt->execute();
-
 if ($success) {
     echo json_encode(['success' => true], JSON_UNESCAPED_UNICODE);
 } else {

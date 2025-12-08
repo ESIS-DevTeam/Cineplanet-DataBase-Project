@@ -1,6 +1,6 @@
 <div class="card form-section">
     <h2>🏢 Registrar / Editar Cine</h2>
-    <form id="formCine">
+    <form id="formCine" enctype="multipart/form-data">
         <input type="hidden" id="cineId" name="id">
         <div class="form-row">
             <div class="form-group">
@@ -29,9 +29,11 @@
                     <option value="">Seleccione ciudad...</option>
                 </select>
             </div>
-            <div class="form-group">
-                <label for="cineImagen">Imagen (nombre)</label>
-                <input type="text" id="cineImagen" name="imagen" placeholder="Ej: cine1.jpg">
+            <div class="form-group portada-upload-container">
+                <label>Imagen (archivo)</label>
+                <div class="file-input-wrapper">
+                    <input type="file" id="cineImagenArchivo" name="imagen" accept="image/*">
+                </div>
                 <div id="cineImagenNombre" style="font-size:0.9em;color:#555;margin-top:4px;"></div>
             </div>
         </div>
@@ -42,8 +44,12 @@
     </form>
 </div>
 <script>
-document.getElementById('cineImagen').addEventListener('input', function() {
+document.getElementById('cineImagenArchivo').addEventListener('change', function() {
     const nombreSpan = document.getElementById('cineImagenNombre');
-    nombreSpan.textContent = this.value ? `Imagen actual: ${this.value}` : '';
+    if (this.files && this.files[0]) {
+        nombreSpan.textContent = this.files[0].name;
+    } else {
+        nombreSpan.textContent = '';
+    }
 });
 </script>

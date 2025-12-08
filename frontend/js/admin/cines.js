@@ -67,27 +67,31 @@ export async function inicializarCines() {
         form.onsubmit = async function(e) {
             e.preventDefault();
             const id = form.cineId.value;
-            const data = {
-                nombre: form.cineNombre.value,
-                direccion: form.cineDireccion.value,
-                telefono: form.cineTelefono.value,
-                email: form.cineEmail.value,
-                imagen: form.cineImagen.value,
-                idCiudad: form.cineCiudad.value || null
-            };
-            if (id) data.id = id;
+            const formData = new FormData();
+            formData.append('nombre', form.cineNombre.value);
+            formData.append('direccion', form.cineDireccion.value);
+            formData.append('telefono', form.cineTelefono.value);
+            formData.append('email', form.cineEmail.value);
+            formData.append('idCiudad', form.cineCiudad.value || '');
+            if (id) formData.append('id', id);
+
+            // Imagen (archivo)
+            const imagenInput = document.getElementById('cineImagenArchivo');
+            if (imagenInput && imagenInput.files && imagenInput.files[0]) {
+                formData.append('imagen', imagenInput.files[0]);
+            }
 
             try {
                 const res = await fetch(API + (id ? 'actualizar.php' : 'crear.php'), {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
+                    body: formData
                 });
                 const json = await res.json();
                 if (!json.success) throw new Error(json.message);
                 window.mostrarAlerta('✅ Cine guardado correctamente', 'success');
                 form.reset();
                 form.cineId.value = '';
+                document.getElementById('cineImagenNombre').textContent = '';
                 cargarCines();
             } catch (err) {
                 window.mostrarAlerta('❌ Error al guardar cine', 'error');
@@ -96,6 +100,7 @@ export async function inicializarCines() {
 
         form.onreset = function() {
             form.cineId.value = '';
+            document.getElementById('cineImagenNombre').textContent = '';
         };
     }
 }
@@ -113,8 +118,10 @@ export async function editarCine(id) {
         form.cineDireccion.value = cine.direccion;
         form.cineTelefono.value = cine.telefono;
         form.cineEmail.value = cine.email;
-        form.cineImagen.value = cine.imagen || '';
         form.cineCiudad.value = cine.idCiudad || '';
+        // Mostrar nombre de imagen actual si existe
+        const imagenNombreDiv = document.getElementById('cineImagenNombre');
+        if (imagenNombreDiv) imagenNombreDiv.textContent = cine.imagen ? `Imagen actual: ${cine.imagen}` : '';
         window.mostrarAlerta('✏️ Editando cine', 'success');
     } catch (err) {
         window.mostrarAlerta('❌ Error al cargar cine', 'error');

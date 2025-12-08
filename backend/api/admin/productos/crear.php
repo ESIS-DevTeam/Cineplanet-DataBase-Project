@@ -20,7 +20,7 @@ try {
     // Imagen
     $imagenNombre = '';
     if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
-        $dirDestino = __DIR__ . '/../../../../frontend/images/portrait/candy/prueba/';
+        $dirDestino = __DIR__ . '/../../../../frontend/images/portrait/candy/';
         if (!is_dir($dirDestino)) {
             mkdir($dirDestino, 0777, true);
         }

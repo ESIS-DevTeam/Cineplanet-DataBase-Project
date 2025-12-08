@@ -175,6 +175,7 @@
             <button class="tab-btn" onclick="window.switchTab('funciones')">🎞️ Funciones</button>
             <button class="tab-btn" onclick="window.switchTab('productos')">🛒 Productos</button>
             <button class="tab-btn" onclick="window.switchTab('cines')">🏢 Cines</button>
+            <button class="tab-btn" onclick="window.switchTab('salas')">🏟️ Salas</button>
         </div>
         
         <!-- ======================== USUARIOS ======================== -->
@@ -346,6 +347,32 @@
                 </table>
                 <div class="empty-state" id="emptyStateCines" style="display: none;">
                     <p>📭 No hay cines registrados</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ======================== SALAS ======================== -->
+        <div id="salas" class="tab-content">
+            <div id="formularioSalaContainer"></div>
+            <div class="card">
+                <div class="table-section">
+                    <h2>📊 Listado de Salas</h2>
+                </div>
+                <table id="salasTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Capacidad</th>
+                            <th>Tipo</th>
+                            <th>Cine</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div class="empty-state" id="emptyStateSalas" style="display: none;">
+                    <p>📭 No hay salas registradas</p>
                 </div>
             </div>
         </div>

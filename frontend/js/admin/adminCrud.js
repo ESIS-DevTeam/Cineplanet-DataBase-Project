@@ -5,6 +5,7 @@ import { cargarPeliculas, guardarPelicula, editarPelicula, eliminarPelicula, ini
 import { cargarFunciones, guardarFuncion, editarFuncion, eliminarFuncion, inicializarFunciones } from './funciones.js';
 import { cargarProductos, guardarProducto, editarProducto, eliminarProducto } from './productos.js';
 import { cargarCines, editarCine, eliminarCine, inicializarCines, guardarCine } from './cines.js';
+import { cargarSalas, guardarSala, editarSala, eliminarSala, inicializarSalas } from './salas.js';
 
 const API = BASE_API_DOMAIN + 'admin/';
 
@@ -59,10 +60,15 @@ async function cargarFormularios() {
         const resCineText = await resCine.text();
         document.getElementById('formularioCineContainer').innerHTML = resCineText;
         
+        const resSala = await fetch('./formularioSala.html');
+        const resSalaText = await resSala.text();
+        document.getElementById('formularioSalaContainer').innerHTML = resSalaText;
+        
         await inicializarPeliculas();
         await inicializarSocios();
         await inicializarFunciones();
         await inicializarCines();
+        await inicializarSalas();
     } catch (error) {
         console.error('Error al cargar formularios:', error);
         mostrarAlerta('❌ Error al cargar formularios', 'error');
@@ -83,6 +89,7 @@ function switchTab(tabName) {
     if (tabName === 'funciones') { cargarFunciones(); inicializarFunciones(); }
     if (tabName === 'productos') cargarProductos();
     if (tabName === 'cines') cargarCines();
+    if (tabName === 'salas') { cargarSalas(); inicializarSalas(); }
 }
 
 // ==================== EXPORTAR AL SCOPE GLOBAL ====================
@@ -105,6 +112,9 @@ window.eliminarProducto = eliminarProducto;
 window.guardarCine = guardarCine;
 window.editarCine = editarCine;
 window.eliminarCine = eliminarCine;
+window.guardarSala = guardarSala;
+window.editarSala = editarSala;
+window.eliminarSala = eliminarSala;
 window.mostrarAlerta = mostrarAlerta;
 
 // ==================== INICIALIZAR ====================
