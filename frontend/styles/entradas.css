@@ -1,4 +1,5 @@
-body { font-family: sans-serif; margin:0; padding:0; min-height: 100vh; height: auto; }
+html, body { height: 100%; }
+body { font-family: sans-serif; margin:0; padding:0; min-height: 100vh; height: auto; display: flex; flex-direction: column; }
 /* Header estilo barra superior */
 .header-asientos {
     width: 100%;
@@ -67,15 +68,23 @@ body { font-family: sans-serif; margin:0; padding:0; min-height: 100vh; height: 
 }
 /* Espacio para el header fijo */
 .espacio-header { height: 60px; }
+
+main#main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
 /* Resto del CSS existente */
 .asientos-layout {
     display: flex;
     flex-direction: row;
     max-width: 1200px;
     margin: 0 auto;
-    min-height: 0;
+    width: 100%;
+    min-height: calc(100vh - 60px);
     height: auto;
-    /* Quita height fijo para que crezca según contenido */
+    flex: 1;
 }
 .info-funcion-col {
     width: 250px;
@@ -83,7 +92,7 @@ body { font-family: sans-serif; margin:0; padding:0; min-height: 100vh; height: 
     border-right: 1px solid #e0e4ea;
     padding: 32px 10px 24px 10px;
     box-sizing: border-box;
-    min-height: 0;
+    min-height: 100%;
     height: auto;
     display: flex;
     flex-direction: column;
@@ -239,7 +248,7 @@ body { font-family: sans-serif; margin:0; padding:0; min-height: 100vh; height: 
     .progreso-pasos .icono { width: 32px; height: 32px; font-size: 1.1em; }
     .asientos-layout { flex-direction: column; min-height: 0; height: auto; }
     .info-funcion-col { width: 100%; border-right: none; border-bottom: 1px solid #e0e4ea; height: auto; min-height: 0; }
-    .asientos-col { padding: 24px 8px; height: auto; }
+    .asientos-col { padding: 24px 8px; height: auto; min-height: 0; }
 }
 .asientos-col {
     flex: 1;
@@ -247,6 +256,7 @@ body { font-family: sans-serif; margin:0; padding:0; min-height: 100vh; height: 
     box-sizing: border-box;
     min-width: 0;
     background: #E7ECF0;
+    min-height: 100%;
     height: auto;
     display: flex;
     flex-direction: column;
