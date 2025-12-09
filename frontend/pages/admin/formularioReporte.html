@@ -1,0 +1,21 @@
+<div class="card">
+    <div class="form-section">
+        <h2>📈 Reportes</h2>
+        <form id="reporteForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="reporteTipo">Tipo de reporte</label>
+                    <select id="reporteTipo">
+                        <option value="reservas">Reservas por Sala (Hoy)</option>
+                        <option value="productos">Productos Más Vendidos (Mes)</option>
+                        <option value="promos">Promociones Más Usadas (Mes)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="button-group">
+                <button type="button" class="btn-save" onclick="window.cargarReporte()">🔍 Consultar</button>
+            </div>
+        </form>
+        <div id="tablaReporteResultados" style="margin-top:2em;"></div>
+    </div>
+</div>

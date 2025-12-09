@@ -8,6 +8,7 @@ import { cargarCines, editarCine, eliminarCine, inicializarCines, guardarCine } 
 import { cargarSalas, guardarSala, editarSala, eliminarSala, inicializarSalas } from './salas.js';
 import { cargarPromos, guardarPromo, editarPromo, eliminarPromo, inicializarPromos } from './promos.js';
 import { setCatalogo, inicializarCatalogo } from './catalogo.js';
+import './reportes.js';
 
 const API = BASE_API_DOMAIN + 'admin/';
 
@@ -69,6 +70,9 @@ async function cargarFormularios() {
         const resPromo = await fetch('./formularioPromo.html');
         const resPromoText = await resPromo.text();
         document.getElementById('formularioPromoContainer').innerHTML = resPromoText;
+        
+        const resReporte = await fetch('./formularioReporte.html');
+        document.getElementById('formularioReporteContainer').innerHTML = await resReporte.text();
         
         // Catálogo: un solo formulario reutilizable
         const resCatalogo = await fetch('./formularioCatalogo.html');
@@ -139,10 +143,111 @@ window.switchCatalogo = function(tabName, event) {
     inicializarCatalogo();
 };
 
+window.switchReporte = function(tabName, event) {
+    document.querySelectorAll('.reporte-content').forEach(tab => {
+        if (tab) {
+            tab.classList.remove('active');
+            tab.style.display = 'none';
+        }
+    });
+    document.querySelectorAll('.tab-btn-reporte').forEach(btn => {
+        if (btn) btn.classList.remove('active');
+    });
+    if (tabName === 'reservas') {
+        const reservasDiv = document.getElementById('reporteReservas');
+        if (reservasDiv) {
+            reservasDiv.classList.add('active');
+            reservasDiv.style.display = '';
+            cargarReporteReservas();
+        }
+    }
+    if (tabName === 'productos') {
+        const productosDiv = document.getElementById('reporteProductos');
+        if (productosDiv) {
+            productosDiv.classList.add('active');
+            productosDiv.style.display = '';
+            cargarReporteProductos();
+        }
+    }
+    if (event && event.target) event.target.classList.add('active');
+};
+
+// ==================== REPORTES ====================
+async function cargarReporteReservas() {
+    const container = document.getElementById('tablaReporteReservas');
+    container.innerHTML = '⏳ Cargando...';
+    try {
+        const res = await fetch('../../api/reportes/reservas_vigentes_hoy_por_sala.php');
+        const json = await res.json();
+        if (json.success && json.data.length > 0) {
+            container.innerHTML = `
+                <table class="catalogo-table">
+                    <thead>
+                        <tr>
+                            <th>Sala</th>
+                            <th>Reservas</th>
+                            <th>Ingresos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${json.data.map(r => `
+                            <tr>
+                                <td>${r.sala}</td>
+                                <td>${r.reservas}</td>
+                                <td>S/. ${parseFloat(r.ingresos).toFixed(2)}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        } else {
+            container.innerHTML = '<div class="empty-state"><p>📭 No hay reservas hoy</p></div>';
+        }
+    } catch (err) {
+        container.innerHTML = '<div class="empty-state"><p>❌ Error al cargar reporte</p></div>';
+    }
+}
+
+async function cargarReporteProductos() {
+    const container = document.getElementById('tablaReporteProductos');
+    container.innerHTML = '⏳ Cargando...';
+    try {
+        const res = await fetch('../../api/reportes/productos_mas_vendidos_mes.php');
+        const json = await res.json();
+        if (json.success && json.data.length > 0) {
+            container.innerHTML = `
+                <table class="catalogo-table">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cantidad Vendida</th>
+                            <th>Total Ingresos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${json.data.map(p => `
+                            <tr>
+                                <td>${p.producto}</td>
+                                <td>${p.cantidad_vendida}</td>
+                                <td>S/. ${parseFloat(p.total_ingresos).toFixed(2)}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        } else {
+            container.innerHTML = '<div class="empty-state"><p>📭 No hay ventas este mes</p></div>';
+        }
+    } catch (err) {
+        container.innerHTML = '<div class="empty-state"><p>❌ Error al cargar reporte</p></div>';
+    }
+}
+
 // ==================== INICIALIZAR ====================
 window.addEventListener('DOMContentLoaded', async () => {
     console.log('✅ DOM Cargado - Inicializando Admin Panel');
     await cargarFormularios();
     window.switchCatalogo('generos');
+    window.switchReporte('reservas');
     cargarUsuarios();
 });
