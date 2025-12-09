@@ -1,3 +1,117 @@
 footer.main-footer {
     background-color: #004a8c;
+    color: #ffffff;
+}
+
+footer.main-footer * {
+    color: #ffffff;
+}
+
+.footer-content {
+    text-decoration: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 40px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 150px;  /* Ajusta este valor para cambiar la distancia entre secciones */
+}
+
+.left-footer {
+    flex: 1;
+    text-align: left;
+}
+
+.center-footer {
+    flex: 1;
+    text-align: left;
+}
+
+.right-footer {
+    flex: 1;
+    text-align: left;
+}
+
+footer.main-footer a {
+    text-decoration: none;
+    color: #ffffff;
+}
+
+footer.main-footer a:hover,
+footer.main-footer a:active,
+footer.main-footer a:focus,
+footer.main-footer a:visited {
+    text-decoration: none;
+    color: #ffffff;
+}
+
+.footer-text-box {
+    font-family: 'Arial', sans-serif;
+}
+
+.footer-list {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+}
+
+.site-footer {
+    width: 100%;
+    padding: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.site-footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;  /* Centra todos los elementos */
+    align-items: center;
+    gap: 10px;  /* Ajusta este valor para cambiar la distancia entre elementos */
+}
+
+.legal-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 50px;  /* Ajusta la distancia entre items de la lista */
+    flex-wrap: wrap;
+}
+
+.complain-book {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.links-footer {
+    width: 100%;
+    padding: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.social-links {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+#carbono-img {
+    zoom: 0.05;
+}
+
+#empresa-segura-img {
+    zoom: 0.08;
+}
+
+#libro-reclamaciones-img {
+    zoom: 0.2;
 }

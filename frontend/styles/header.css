@@ -1,13 +1,13 @@
 header.main-header {
   text-align: left;
-  border: none; 
-  border-bottom: 2px solid #e0e0e0;
+  border: none;  
   background-color: rgba(0, 0, 0, 0.14);
   width: 100%;
   margin: 0;
   padding: 0;
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
   z-index: 1000;
   transition: all 0.3s ease;
 }
@@ -15,7 +15,6 @@ header.main-header {
 header.main-header.scrolled {
   background-color: rgba(255, 255, 255, 0.98);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-bottom: 2px solid #e0e0e0;
 }
 
 .header-container {
