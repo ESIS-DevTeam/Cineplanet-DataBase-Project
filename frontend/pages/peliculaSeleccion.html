@@ -3,11 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Película Seleccionada</title>
+  <title><!-- Película Seleccionada --></title>
   <link rel="shortcut icon" href="../images/items/icono-cine.ico" type="image/x-icon">
   <link rel="stylesheet" href="../styles/header2.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Puedes agregar tus estilos aquí -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles/pelicula.selecion.css">
 </head>
 <body>
   <header>
@@ -39,36 +41,49 @@
         </nav>
     </div>
   </header>
+  <div id="trailer-bg-container"></div>
   <main>
-    <h1>Película Seleccionada</h1>
-    <div id="info-pelicula">
-      <!-- Aquí se mostrará la información de la película y filtros seleccionados -->
+    <div class="pelicula-info-container">
+      <div id="info-pelicula"></div>
     </div>
-    <div style="margin-top:2em;">
-      <h2>La función perfecta para ti</h2>
+    <!-- Nuevo contenedor plano para el formulario de función perfecta -->
+    <div class="funcion-perfecta-flat-container">
+      <h2 class="funcion-perfecta-flat-title">La función perfecta para ti</h2>
       <form id="form-funcion-perfecta">
         <label>
-          Ciudad:
-          <select id="select-ciudad-funcion" name="ciudad">
-            <option value="">Selecciona ciudad</option>
+          <span class="custom-select-label">
+            Por ciudad
+            <span class="arrow"></span>
+          </span>
+          <span class="custom-select-value" id="custom-ciudad-value">Dónde estás</span>
+          <select id="select-ciudad-funcion" name="ciudad" class="custom-select-native">
+            <option value="">Dónde estás</option>
           </select>
         </label>
         <label>
-          Cine:
-          <select id="select-cine-funcion" name="cine">
-            <option value="">Selecciona cine</option>
+          <span class="custom-select-label">
+            Por cine
+            <span class="arrow"></span>
+          </span>
+          <span class="custom-select-value" id="custom-cine-value">Elige tu Cineplanet</span>
+          <select id="select-cine-funcion" name="cine" class="custom-select-native">
+            <option value="">Elige tu Cineplanet</option>
           </select>
         </label>
         <label>
-          Fecha:
-          <select id="select-fecha-funcion" name="dia">
-            <option value="">Selecciona fecha</option>
+          <span class="custom-select-label">
+            Por fecha
+            <span class="arrow"></span>
+          </span>
+          <span class="custom-select-value" id="custom-fecha-value">Hoy Martes 9</span>
+          <select id="select-fecha-funcion" name="dia" class="custom-select-native">
+            <option value="">Hoy Martes 9</option>
           </select>
         </label>
       </form>
-    </div>
-    <div id="cines-details-container" style="margin-top:2em;">
-      <!-- Aquí aparecerán los detalles de cines disponibles -->
+      <div id="cines-details-container">
+        <!-- Aquí aparecerán los detalles de cines disponibles -->
+      </div>
     </div>
   </main>
   <div id="socio-info" style="text-align:right; margin:10px;"></div>
@@ -77,7 +92,7 @@
       <div id="socio-popup-content"></div>
   </div>
   <script  type="module"  src="../js/peliculaSeleccion.js"></script>
-  <script  >
+  <script>
     let socioData = null;
 
     // Verifica si hay sesión de socio
@@ -141,6 +156,23 @@
         if (!popup.contains(e.target) && !socioBtn.contains(e.target)) {
             popup.style.display = 'none';
         }
+    });
+
+    // Sincroniza el texto mostrado con el valor seleccionado
+    function updateCustomSelectLabels() {
+      const ciudadSel = document.getElementById('select-ciudad-funcion');
+      const cineSel = document.getElementById('select-cine-funcion');
+      const fechaSel = document.getElementById('select-fecha-funcion');
+      document.getElementById('custom-ciudad-value').textContent = ciudadSel.selectedOptions[0]?.textContent || 'Dónde estás';
+      document.getElementById('custom-cine-value').textContent = cineSel.selectedOptions[0]?.textContent || 'Elige tu Cineplanet';
+      document.getElementById('custom-fecha-value').textContent = fechaSel.selectedOptions[0]?.textContent || 'Hoy Martes 9';
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+      // ...existing code...
+      updateCustomSelectLabels();
+      document.getElementById('select-ciudad-funcion').addEventListener('change', updateCustomSelectLabels);
+      document.getElementById('select-cine-funcion').addEventListener('change', updateCustomSelectLabels);
+      document.getElementById('select-fecha-funcion').addEventListener('change', updateCustomSelectLabels);
     });
   </script>
 </body>

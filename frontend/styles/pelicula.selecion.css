@@ -1,0 +1,471 @@
+#trailer-bg-container {
+  width: 100vw;
+  margin: 0 0 24px 0;
+  position: relative;
+  background: #000;
+  border-radius: 0;
+  overflow: hidden;
+  box-shadow: 0 2px 16px #0002;
+  display: none;
+  min-height: 220px;
+  left: 50%;
+  right: 50%;
+  transform: translateX(-50%);
+}
+#trailer-bg-container iframe,
+#yt-trailer-overlay {
+  width: 100vw;
+  height: 420px;
+  min-height: 220px;
+}
+@media (max-width: 900px) {
+  #trailer-bg-container,
+  #trailer-bg-container iframe,
+  #yt-trailer-overlay {
+    height: 220px;
+    min-height: 120px;
+  }
+}
+@media (max-width: 700px) {
+  #trailer-bg-container iframe,
+  #yt-trailer-overlay {
+    height: 140px;
+    min-height: 90px;
+  }
+  #trailer-bg-container {
+    min-height: 90px;
+  }
+}
+.pelicula-info-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 48px;
+  max-width: 900px;
+  margin: 0 auto 32px auto;
+  background: #fff;
+  padding: 32px 24px;
+  /* Quitar borde y sombra */
+  border-radius: 0;
+  box-shadow: none;
+}
+@media (max-width: 900px) {
+  .pelicula-info-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    padding: 18px 8px;
+  }
+}
+#info-pelicula {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 40px;
+  align-items: flex-start;
+  justify-content: center;
+}
+/* Reduce el gap entre portada y bloque gris */
+.pelicula-info-container > #info-pelicula,
+.pelicula-info-container > div#info-pelicula {
+  gap: 16px !important;
+}
+/* O si el gap está en el inline style JS, puedes forzar así: */
+.pelicula-info-container > #info-pelicula > div {
+  /* nada, solo para especificidad */
+}
+.pelicula-portada {
+  box-shadow: 0 4px 24px #0003;
+  border-radius: 12px;
+  max-width: 260px;
+  width: 100%;
+  background: #fff;
+  margin-bottom: 8px;
+}
+.pelicula-sinopsis {
+  max-width: 420px;
+  width: 100%;
+}
+.pelicula-sinopsis h2 {
+  color: #15427c;
+  font-size: 2em;
+  font-weight: bold;
+  margin-bottom: 0.5em;
+}
+.pelicula-sinopsis p {
+  font-size: 1.08em;
+  margin-bottom: 1em;
+  color: #222;
+}
+.pelicula-sinopsis .pelicula-datos {
+  margin-top: 1em;
+  font-size: 1em;
+  color: #444;
+}
+.pelicula-sinopsis .pelicula-datos strong {
+  font-weight: bold;
+  color: #15427c;
+}
+.pelicula-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  margin-bottom: 8px;
+  margin-top: 8px;
+}
+.pelicula-titulo {
+  font-size: 2.8em;
+  font-weight: bold;
+  color: #15427c;
+  line-height: 1.1;
+  font-family: 'Montserrat', Arial, sans-serif;
+  letter-spacing: -2px;
+}
+.pelicula-comprar-btn {
+  background: #d5004c;
+  color: #fff;
+  border: none;
+  border-radius: 22px;
+  padding: 10px 28px;
+  font-size: 1.1em;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 8px #d5004c22;
+  transition: background 0.2s;
+}
+.pelicula-comprar-btn:hover {
+  background: #b8003e;
+}
+.pelicula-comprar-btn i {
+  font-size: 1.2em;
+}
+.pelicula-datos-row {
+  font-size: 1.08em;
+  color: #222;
+  margin-bottom: 8px;
+  margin-top: 2px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-family: 'Montserrat', Arial, sans-serif;
+}
+.sinopsis-bloques-container {
+  position: relative;
+  width: 100%;
+}
+.bloque-azul-sinopsis {
+  position: absolute;
+  inset: 0;
+  transform: translate(50px, 50px); /* left -50px, top 50px */
+  background: #004A8C;
+  z-index: 0;
+  box-shadow: 0 2px 8px #004a8c22;
+}
+.bloque-gris-sinopsis {
+  position: relative;
+  z-index: 1;
+  background: #f3f4f6;
+  padding: 22px 20px 16px 20px;
+  margin-bottom: 1em;
+  box-shadow: 0 2px 8px #0001;
+}
+.sinopsis-titulo {
+  color: #004A8C;
+  font-size: 3em;
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-weight: 3000;
+  margin-bottom: 0.5em;
+  margin-top: 0;
+  letter-spacing: -1px;
+  line-height: 1.05;
+}
+.sinopsis-texto {
+  font-size: 1.13em;
+  color: #222;
+  margin-bottom: 1.5em;
+  margin-top: 0;
+  font-family: 'Lato', Arial, sans-serif;
+}
+.sinopsis-label {
+  font-weight: bold;
+  color: #0a2c53;
+  font-size: 1.15em;
+  font-family: 'Montserrat', Arial, sans-serif;
+  margin-bottom: 0.4em;
+}
+.sinopsis-idioma-btn {
+  border: 1px solid #222;
+  background: #fff;
+  color: #222;
+  border-radius: 6px;
+  padding: 3px 14px;
+  font-size: 1em;
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-weight: 500;
+  margin-bottom: 0.5em;
+  cursor: default;
+  outline: none;
+  pointer-events: none;
+  box-shadow: none;
+  margin-right: 0.5em;
+}
+.sinopsis-formatos {
+  font-size: 1.08em;
+  color: #222;
+  font-family: 'Montserrat', Arial, sans-serif;
+  margin-top: 0.2em;
+}
+.funcion-perfecta-container {
+  background: #fff;
+  box-shadow: 0 2px 16px #0001;
+  border-radius: 0;
+  max-width: 1100px;
+  margin: 0 auto 32px auto;
+  padding: 0 0 32px 0;
+}
+.funcion-perfecta-container h2 {
+  font-size: 2.8em;
+  color: #004A8C;
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-weight: 900;
+  margin: 0 0 18px 0;
+  padding: 32px 32px 0 32px;
+}
+#form-funcion-perfecta {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid #eee;
+  background: #fff;
+  margin: 0 0 0 0;
+  padding: 0 32px;
+  box-sizing: border-box;
+}
+#form-funcion-perfecta label {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 18px 18px 0;
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-weight: 700;
+  font-size: 1.18em;
+  color: #0a2c53;
+  position: relative;
+  min-width: 0;
+}
+.custom-select-label {
+  display: flex;
+  align-items: center;
+  /* font-size: 1.25em;
+  font-weight: 900;
+  color: #0a2c53; */
+  font: 800 18px/1.333 "Montserrat",sans-serif;
+  margin-bottom: 0.2em;
+  position: relative;
+  z-index: 1;
+}
+.custom-select-label .arrow {
+  margin-left: auto;
+  margin-right: 0;
+  width: 1.2em;
+  height: 1.2em;
+  display: inline-block;
+  pointer-events: none;
+  background: none;
+  position: relative;
+}
+.custom-select-label .arrow::after {
+  content: '';
+  display: block;
+  width: 0.7em;
+  height: 0.7em;
+  border-right: 2.5px solid #0a2c53;
+  border-bottom: 2.5px solid #0a2c53;
+  transform: rotate(45deg);
+  position: absolute;
+  right: 0.2em;
+  top: 0.25em;
+}
+.custom-select-value {
+  /* font-size: 1.13em;
+  font-weight: 400;
+  color: #0a2c53;
+  font-family: 'Montserrat', Arial, sans-serif; */
+  font: 16px/1.5 "Lato",sans-serif;
+  color: #0a2c53;
+  margin-top: 0.2em;
+  margin-bottom: 0.1em;
+  min-height: 1.5em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  background: none;
+}
+.custom-select-native {
+  position: absolute;
+  left: 0; top: 0; right: 0; bottom: 0;
+  width: 100%; height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 2;
+  border: none;
+  background: none;
+}
+/* Separador vertical entre labels */
+#form-funcion-perfecta label:not(:last-child) {
+  border-right: 1px solid #e0e3e8;
+}
+#cines-details-container {
+  background: #f6f7f9;
+  margin: 0;
+  padding: 18px 32px 0 32px;
+  border-radius: 0 0 0 0;
+  min-height: 120px;
+}
+#cines-details-container details summary {
+  font-size: 1.45em;
+  font-weight: 900;
+  color: #004A8C;
+  font-family: 'Montserrat', Arial, sans-serif;
+  cursor: pointer;
+  margin-bottom: 12px;
+  outline: none;
+  border: none;
+  background: transparent;
+  padding: 10px 0;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  position: relative;
+  justify-content: space-between;
+}
+.cine-toggle-icon {
+  display: inline-block;
+  width: 1.5em;
+  text-align: center;
+  font-size: 1.5em;
+  font-weight: 700;
+  color: #004A8C;
+  transition: color 0.2s;
+  margin-left: 0.5em;
+  user-select: none;
+  flex-shrink: 0;
+}
+#cines-details-container details {
+  margin-bottom: 10px;
+  border: none;
+  background: transparent;
+}
+.cine-funcion-grupo {
+  margin-bottom: 1.5em;
+}
+.cine-funcion-header {
+  display: flex;
+  align-items: center;
+  gap: 0.7em;
+  margin-bottom: 0.7em;
+}
+.cine-funcion-badge {
+  display: inline-block;
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-weight: 900;
+  font-size: 1.1em;
+  background: #fff;
+  color: #004A8C;
+  border: 2px solid #0a2c53;
+  border-radius: 8px;
+  padding: 2px 14px 2px 14px;
+  margin-right: 0.3em;
+  letter-spacing: 1px;
+  vertical-align: middle;
+}
+.cine-funcion-titulo {
+  color: #004A8C;
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-size: 1.13em;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  vertical-align: middle;
+}
+.cine-funcion-horarios-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px 18px;
+  margin-bottom: 0.5em;
+}
+.cine-funcion-horario-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-size: 1.18em;
+  font-weight: 700;
+  color: #004A8C;
+  background: #fff;
+  border: 2px solid #004A8C;
+  border-radius: 8px;
+  padding: 8px 18px 8px 18px;
+  min-width: 0;
+  min-height: 44px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border 0.15s;
+  box-sizing: border-box;
+  gap: 10px;
+}
+.cine-funcion-horario-btn:hover {
+  background: #eaf2fb;
+  color: #002b4c;
+  border-color: #002b4c;
+}
+.cine-funcion-horario-icon {
+  display: flex;
+  align-items: center;
+  margin-left: 12px;
+  font-size: 1.18em;
+  color: #004A8C;
+}
+.cine-funcion-horario-btn i.fa-chair {
+  font-size: 1.1em;
+  color: #004A8C;
+}
+.funcion-perfecta-flat-container {
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
+  max-width: 1100px;
+  margin: 0 auto 32px auto;
+  padding: 0;
+}
+.funcion-perfecta-flat-container #form-funcion-perfecta {
+  background: #fff; /* <-- Asegura fondo blanco */
+  border-bottom: none;
+  padding: 18px 32px 0 32px; /* <-- Añade padding para visibilidad */
+  box-sizing: border-box;
+  border-radius: 0;
+  margin-bottom: 0;
+  box-shadow: 0 2px 16px #0002; /* <-- Sombra agregada */
+}
+.funcion-perfecta-flat-container #cines-details-container {
+  background: #f6f7f9;
+  margin: 0;
+  padding: 18px 32px 0 32px;
+  border-radius: 0;
+  min-height: 120px;
+  box-shadow: none;
+}
+.funcion-perfecta-flat-title {
+  font-size: 2.2em;
+  color: #004A8C;
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-weight: 900;
+  margin: 0 0 18px 0;
+  padding: 32px 32px 0 32px;
+  background: none;
+  box-shadow: none;
+  border: none;
+}
