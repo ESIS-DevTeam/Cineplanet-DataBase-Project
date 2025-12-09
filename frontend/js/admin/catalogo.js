@@ -22,7 +22,8 @@ function mostrarAlerta(mensaje, tipo) {
 }
 
 function mostrarCarga(visible) {
-    document.getElementById('loading').classList.toggle('show', visible);
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) overlay.style.display = visible ? 'flex' : 'none';
 }
 
 async function manejarRespuesta(response, operacion = 'operación') {

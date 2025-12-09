@@ -2,7 +2,13 @@ import BASE_API_DOMAIN from '../config.js';
 
 const API = BASE_API_DOMAIN + 'admin/cines/';
 
+function mostrarCarga(visible) {
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) overlay.style.display = visible ? 'flex' : 'none';
+}
+
 export async function cargarCines() {
+    mostrarCarga(true);
     const tbody = document.querySelector('#cinesTable tbody');
     const emptyState = document.getElementById('emptyStateCines');
     tbody.innerHTML = '';
@@ -38,10 +44,13 @@ export async function cargarCines() {
         });
     } catch (err) {
         window.mostrarAlerta('❌ Error al cargar cines', 'error');
+    } finally {
+        mostrarCarga(false);
     }
 }
 
 export async function inicializarCines() {
+    mostrarCarga(true);
     // Cargar ciudades en el select
     try {
         const res = await fetch(BASE_API_DOMAIN + 'admin/ciudades/listar.php');
@@ -59,6 +68,8 @@ export async function inicializarCines() {
         }
     } catch (err) {
         // No mostrar alerta aquí, solo dejar el select vacío
+    } finally {
+        mostrarCarga(false);
     }
 
     // Form submit
@@ -106,6 +117,7 @@ export async function inicializarCines() {
 }
 
 export async function editarCine(id) {
+    mostrarCarga(true);
     try {
         const res = await fetch(API + 'obtener.php?id=' + id);
         const json = await res.json();
@@ -127,11 +139,14 @@ export async function editarCine(id) {
         window.mostrarAlerta('✏️ Editando cine', 'success');
     } catch (err) {
         window.mostrarAlerta('❌ Error al cargar cine', 'error');
+    } finally {
+        mostrarCarga(false);
     }
 }
 
 export async function eliminarCine(id) {
     if (!confirm('¿Seguro que desea eliminar este cine?')) return;
+    mostrarCarga(true);
     try {
         const res = await fetch(API + 'eliminar.php', {
             method: 'POST',
@@ -144,6 +159,8 @@ export async function eliminarCine(id) {
         cargarCines();
     } catch (err) {
         window.mostrarAlerta('❌ Error al eliminar cine', 'error');
+    } finally {
+        mostrarCarga(false);
     }
 }
 

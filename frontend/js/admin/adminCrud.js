@@ -21,7 +21,8 @@ function mostrarAlerta(mensaje, tipo) {
 }
 
 function mostrarCarga(visible) {
-    document.getElementById('loading').classList.toggle('show', visible);
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) overlay.style.display = visible ? 'flex' : 'none';
 }
 
 async function manejarRespuesta(response, operacion = 'operación') {
@@ -38,6 +39,7 @@ async function manejarRespuesta(response, operacion = 'operación') {
 
 // ==================== CARGAR FORMULARIOS ====================
 async function cargarFormularios() {
+    mostrarCarga(true);
     try {
         const resUsuario = await fetch('./formularioUsuario.html');
         const resUsuarioText = await resUsuario.text();
@@ -87,6 +89,8 @@ async function cargarFormularios() {
     } catch (error) {
         console.error('Error al cargar formularios:', error);
         mostrarAlerta('❌ Error al cargar formularios', 'error');
+    } finally {
+        mostrarCarga(false);
     }
 }
 
@@ -245,9 +249,11 @@ async function cargarReporteProductos() {
 
 // ==================== INICIALIZAR ====================
 window.addEventListener('DOMContentLoaded', async () => {
+    mostrarCarga(true);
     console.log('✅ DOM Cargado - Inicializando Admin Panel');
     await cargarFormularios();
     window.switchCatalogo('generos');
     window.switchReporte('reservas');
-    cargarUsuarios();
+    await cargarUsuarios(); // Espera a que termine de cargar usuarios antes de quitar el loading
+    mostrarCarga(false);
 });

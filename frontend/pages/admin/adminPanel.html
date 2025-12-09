@@ -11,7 +11,13 @@
         .container { max-width: 1200px; margin: 20px auto; padding: 20px; }
         h1 { color: #1a73e8; margin-bottom: 30px; text-align: center; }
         
-        .tabs { display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 2px solid #ddd; }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #ddd;
+            justify-content: center; /* <-- centra las pestañas */
+        }
         .tab-btn { padding: 12px 30px; background: #f0f0f0; border: none; cursor: pointer; border-radius: 4px 4px 0 0; font-weight: 600; transition: all 0.3s; }
         .tab-btn.active { background: #1a73e8; color: white; }
         .tab-btn:hover { background: #1557b0; color: white; }
@@ -118,8 +124,24 @@
         
         @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         
-        .loading { text-align: center; padding: 20px; color: #1a73e8; font-weight: 600; display: none; }
-        .loading.show { display: block; }
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .loading-spinner {
+            font-size: 1.5em;
+            color: #1a73e8;
+            font-weight: 600;
+        }
         
         .table-section h2 { color: #333; margin-bottom: 20px; font-size: 20px; border-bottom: 3px solid #1a73e8; padding-bottom: 10px; }
         
@@ -161,12 +183,14 @@
     </script>
 </head>
 <body>
+    <div class="loading-overlay" id="loadingOverlay" style="display:none;">
+        <div class="loading-spinner">Cargando datos...</div>
+    </div>
     <div class="container">
         <h1>🎬 Panel Administrativo - Cineplanet</h1>
         
         <div class="alert alert-success" id="successAlert"></div>
         <div class="alert alert-error" id="errorAlert"></div>
-        <div class="loading" id="loading">⏳ Cargando...</div>
         
         <div class="tabs">
             <button class="tab-btn active" onclick="window.switchTab('usuarios', event)">👥 Usuarios</button>

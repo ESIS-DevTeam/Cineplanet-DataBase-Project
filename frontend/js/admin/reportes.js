@@ -8,9 +8,15 @@ function mostrarAlerta(mensaje, tipo) {
     setTimeout(() => alert.classList.remove('show'), 4000);
 }
 
+function mostrarCarga(visible) {
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) overlay.style.display = visible ? 'flex' : 'none';
+}
+
 window.cargarReporte = async function() {
     const tipo = document.getElementById('reporteTipo').value;
     const container = document.getElementById('tablaReporteResultados');
+    mostrarCarga(true);
     container.innerHTML = '⏳ Cargando...';
 
     let endpoint = '';
@@ -22,6 +28,7 @@ window.cargarReporte = async function() {
         endpoint = BASE_API_DOMAIN + 'reportes/promociones_mas_usadas_mes.php';
     } else {
         container.innerHTML = '<div class="empty-state"><p>❌ Reporte no soportado</p></div>';
+        mostrarCarga(false);
         return;
     }
 
@@ -99,5 +106,7 @@ window.cargarReporte = async function() {
     } catch (err) {
         container.innerHTML = '<div class="empty-state"><p>❌ Error al cargar reporte</p></div>';
         mostrarAlerta('❌ Error al cargar reporte', 'error');
+    } finally {
+        mostrarCarga(false);
     }
 };
