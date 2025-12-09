@@ -322,33 +322,122 @@ INSERT INTO PELICULA_FORMATO (idPelicula, idFormato) VALUES
 INSERT INTO PELICULA_IDIOMA (idPelicula, idIdioma) VALUES
 (1,1),(1,2),(2,1),(3,2),(4,1),(5,2),(6,2),(7,1),(8,1),(9,2),(10,2);
 
--- FUNCION
+-- FUNCION (fechas desde HOY hasta 10 días adelante - 9 al 19 de diciembre 2025)
+-- Múltiples funciones diarias para cada película, distribuidas en todos los días
 INSERT INTO FUNCION (idPelicula, idSala, idFormato, fecha, hora, precio, idIdioma, estado) VALUES
-(1,1,1,DATE_ADD(CURDATE(), INTERVAL FLOOR(RAND() * 10) DAY),'18:00:00',25.00,1,'activa'),
-(2,2,2,DATE_ADD(CURDATE(), INTERVAL FLOOR(RAND() * 10) DAY),'16:00:00',20.00,1,'activa'),
-(3,3,2,DATE_ADD(CURDATE(), INTERVAL FLOOR(RAND() * 10) DAY),'21:00:00',30.00,2,'activa'),
-(4,4,1,DATE_ADD(CURDATE(), INTERVAL FLOOR(RAND() * 10) DAY),'19:00:00',18.00,1,'activa'),
-(5,5,4,DATE_ADD(CURDATE(), INTERVAL FLOOR(RAND() * 10) DAY),'20:30:00',28.00,2,'activa'),
-(6,6,2,DATE_ADD(CURDATE(), INTERVAL FLOOR(RAND() * 10) DAY),'22:00:00',27.00,2,'activa'),
-(7,7,1,DATE_ADD(CURDATE(), INTERVAL FLOOR(RAND() * 10) DAY),'17:00:00',22.00,1,'activa'),
-(8,8,1,DATE_ADD(CURDATE(), INTERVAL FLOOR(RAND() * 10) DAY),'15:00:00',20.00,1,'activa'),
-(9,9,3,DATE_ADD(CURDATE(), INTERVAL FLOOR(RAND() * 10) DAY),'18:30:00',26.00,2,'activa'),
-(10,10,2,DATE_ADD(CURDATE(), INTERVAL FLOOR(RAND() * 10) DAY),'23:00:00',24.00,2,'activa'),
-(1,1,1,DATE_ADD(CURDATE(), INTERVAL 15 DAY),'12:00:00',19.00,1,'preventa'); -- <--- NUEVO DATO PREVENTA
+-- ========== DÍA 0 (HOY - 9 dic) ==========
+(1,1,1,CURDATE(),'12:00:00',25.00,1,'activa'),
+(1,1,1,CURDATE(),'15:30:00',25.00,1,'activa'),
+(1,1,1,CURDATE(),'19:00:00',25.00,1,'activa'),
+(2,2,2,CURDATE(),'13:00:00',20.00,1,'activa'),
+(2,2,2,CURDATE(),'16:00:00',20.00,1,'activa'),
+(3,3,2,CURDATE(),'18:30:00',30.00,2,'activa'),
+(3,3,2,CURDATE(),'21:30:00',30.00,2,'activa'),
+(4,4,1,CURDATE(),'14:00:00',18.00,1,'activa'),
+(5,5,4,CURDATE(),'17:00:00',28.00,2,'activa'),
+
+-- ========== DÍA 1 (10 dic) ==========
+(1,1,1,DATE_ADD(CURDATE(), INTERVAL 1 DAY),'12:00:00',25.00,1,'activa'),
+(1,1,1,DATE_ADD(CURDATE(), INTERVAL 1 DAY),'18:00:00',25.00,1,'activa'),
+(2,2,2,DATE_ADD(CURDATE(), INTERVAL 1 DAY),'14:30:00',20.00,1,'activa'),
+(3,3,2,DATE_ADD(CURDATE(), INTERVAL 1 DAY),'20:00:00',30.00,2,'activa'),
+(4,4,1,DATE_ADD(CURDATE(), INTERVAL 1 DAY),'16:00:00',18.00,1,'activa'),
+(5,5,4,DATE_ADD(CURDATE(), INTERVAL 1 DAY),'19:30:00',28.00,2,'activa'),
+(6,6,2,DATE_ADD(CURDATE(), INTERVAL 1 DAY),'22:00:00',27.00,2,'activa'),
+
+-- ========== DÍA 2 (11 dic) ==========
+(1,1,1,DATE_ADD(CURDATE(), INTERVAL 2 DAY),'13:00:00',25.00,1,'activa'),
+(1,1,1,DATE_ADD(CURDATE(), INTERVAL 2 DAY),'19:30:00',25.00,1,'activa'),
+(2,2,2,DATE_ADD(CURDATE(), INTERVAL 2 DAY),'15:00:00',20.00,1,'activa'),
+(3,3,2,DATE_ADD(CURDATE(), INTERVAL 2 DAY),'18:00:00',30.00,2,'activa'),
+(4,4,1,DATE_ADD(CURDATE(), INTERVAL 2 DAY),'21:00:00',18.00,1,'activa'),
+(6,6,2,DATE_ADD(CURDATE(), INTERVAL 2 DAY),'16:30:00',27.00,2,'activa'),
+(7,7,1,DATE_ADD(CURDATE(), INTERVAL 2 DAY),'14:00:00',22.00,1,'activa'),
+
+-- ========== DÍA 3 (12 dic) ==========
+(1,1,1,DATE_ADD(CURDATE(), INTERVAL 3 DAY),'12:30:00',25.00,1,'activa'),
+(2,2,2,DATE_ADD(CURDATE(), INTERVAL 3 DAY),'14:00:00',20.00,1,'activa'),
+(2,2,2,DATE_ADD(CURDATE(), INTERVAL 3 DAY),'20:30:00',20.00,1,'activa'),
+(5,5,4,DATE_ADD(CURDATE(), INTERVAL 3 DAY),'17:00:00',28.00,2,'activa'),
+(6,6,2,DATE_ADD(CURDATE(), INTERVAL 3 DAY),'19:00:00',27.00,2,'activa'),
+(7,7,1,DATE_ADD(CURDATE(), INTERVAL 3 DAY),'22:00:00',22.00,1,'activa'),
+(8,8,1,DATE_ADD(CURDATE(), INTERVAL 3 DAY),'15:30:00',20.00,1,'activa'),
+
+-- ========== DÍA 4 (13 dic) ==========
+(3,3,2,DATE_ADD(CURDATE(), INTERVAL 4 DAY),'13:00:00',30.00,2,'activa'),
+(3,3,2,DATE_ADD(CURDATE(), INTERVAL 4 DAY),'21:30:00',30.00,2,'activa'),
+(4,4,1,DATE_ADD(CURDATE(), INTERVAL 4 DAY),'15:00:00',18.00,1,'activa'),
+(5,5,4,DATE_ADD(CURDATE(), INTERVAL 4 DAY),'18:00:00',28.00,2,'activa'),
+(6,6,2,DATE_ADD(CURDATE(), INTERVAL 4 DAY),'20:00:00',27.00,2,'activa'),
+(8,8,1,DATE_ADD(CURDATE(), INTERVAL 4 DAY),'16:30:00',20.00,1,'activa'),
+(9,9,3,DATE_ADD(CURDATE(), INTERVAL 4 DAY),'19:30:00',26.00,2,'activa'),
+
+-- ========== DÍA 5 (14 dic - Sábado) ==========
+(1,1,1,DATE_ADD(CURDATE(), INTERVAL 5 DAY),'11:00:00',25.00,1,'activa'),
+(1,1,1,DATE_ADD(CURDATE(), INTERVAL 5 DAY),'14:30:00',25.00,1,'activa'),
+(1,1,1,DATE_ADD(CURDATE(), INTERVAL 5 DAY),'18:00:00',25.00,1,'activa'),
+(1,1,1,DATE_ADD(CURDATE(), INTERVAL 5 DAY),'21:30:00',25.00,1,'activa'),
+(2,2,2,DATE_ADD(CURDATE(), INTERVAL 5 DAY),'12:00:00',20.00,1,'activa'),
+(2,2,2,DATE_ADD(CURDATE(), INTERVAL 5 DAY),'16:00:00',20.00,1,'activa'),
+(2,2,2,DATE_ADD(CURDATE(), INTERVAL 5 DAY),'20:00:00',20.00,1,'activa'),
+(7,7,1,DATE_ADD(CURDATE(), INTERVAL 5 DAY),'13:00:00',22.00,1,'activa'),
+(7,7,1,DATE_ADD(CURDATE(), INTERVAL 5 DAY),'17:00:00',22.00,1,'activa'),
+
+-- ========== DÍA 6 (15 dic - Domingo) ==========
+(1,1,1,DATE_ADD(CURDATE(), INTERVAL 6 DAY),'11:30:00',25.00,1,'activa'),
+(1,1,1,DATE_ADD(CURDATE(), INTERVAL 6 DAY),'15:00:00',25.00,1,'activa'),
+(1,1,1,DATE_ADD(CURDATE(), INTERVAL 6 DAY),'19:30:00',25.00,1,'activa'),
+(3,3,2,DATE_ADD(CURDATE(), INTERVAL 6 DAY),'13:30:00',30.00,2,'activa'),
+(3,3,2,DATE_ADD(CURDATE(), INTERVAL 6 DAY),'17:30:00',30.00,2,'activa'),
+(5,5,4,DATE_ADD(CURDATE(), INTERVAL 6 DAY),'14:00:00',28.00,2,'activa'),
+(8,8,1,DATE_ADD(CURDATE(), INTERVAL 6 DAY),'12:00:00',20.00,1,'activa'),
+(8,8,1,DATE_ADD(CURDATE(), INTERVAL 6 DAY),'16:00:00',20.00,1,'activa'),
+
+-- ========== DÍA 7 (16 dic) ==========
+(2,2,2,DATE_ADD(CURDATE(), INTERVAL 7 DAY),'14:00:00',20.00,1,'activa'),
+(4,4,1,DATE_ADD(CURDATE(), INTERVAL 7 DAY),'17:00:00',18.00,1,'activa'),
+(6,6,2,DATE_ADD(CURDATE(), INTERVAL 7 DAY),'19:00:00',27.00,2,'activa'),
+(7,7,1,DATE_ADD(CURDATE(), INTERVAL 7 DAY),'21:00:00',22.00,1,'activa'),
+(9,9,3,DATE_ADD(CURDATE(), INTERVAL 7 DAY),'15:30:00',26.00,2,'activa'),
+(10,10,2,DATE_ADD(CURDATE(), INTERVAL 7 DAY),'18:30:00',24.00,2,'activa'),
+
+-- ========== DÍA 8 (17 dic) ==========
+(1,1,1,DATE_ADD(CURDATE(), INTERVAL 8 DAY),'13:00:00',25.00,1,'activa'),
+(1,1,1,DATE_ADD(CURDATE(), INTERVAL 8 DAY),'20:00:00',25.00,1,'activa'),
+(3,3,2,DATE_ADD(CURDATE(), INTERVAL 8 DAY),'16:00:00',30.00,2,'activa'),
+(5,5,4,DATE_ADD(CURDATE(), INTERVAL 8 DAY),'18:30:00',28.00,2,'activa'),
+(6,6,2,DATE_ADD(CURDATE(), INTERVAL 8 DAY),'21:00:00',27.00,2,'activa'),
+(9,9,3,DATE_ADD(CURDATE(), INTERVAL 8 DAY),'14:30:00',26.00,2,'activa'),
+
+-- ========== DÍA 9 (18 dic) ==========
+(2,2,2,DATE_ADD(CURDATE(), INTERVAL 9 DAY),'15:00:00',20.00,1,'activa'),
+(4,4,1,DATE_ADD(CURDATE(), INTERVAL 9 DAY),'17:30:00',18.00,1,'activa'),
+(7,7,1,DATE_ADD(CURDATE(), INTERVAL 9 DAY),'19:30:00',22.00,1,'activa'),
+(8,8,1,DATE_ADD(CURDATE(), INTERVAL 9 DAY),'13:30:00',20.00,1,'activa'),
+(10,10,2,DATE_ADD(CURDATE(), INTERVAL 9 DAY),'21:00:00',24.00,2,'activa'),
+
+-- ========== DÍA 10 (19 dic) ==========
+(1,1,1,DATE_ADD(CURDATE(), INTERVAL 10 DAY),'12:00:00',19.00,1,'preventa'),
+(1,1,1,DATE_ADD(CURDATE(), INTERVAL 10 DAY),'16:00:00',25.00,1,'activa'),
+(2,2,2,DATE_ADD(CURDATE(), INTERVAL 10 DAY),'14:00:00',20.00,1,'activa'),
+(3,3,2,DATE_ADD(CURDATE(), INTERVAL 10 DAY),'18:00:00',30.00,2,'activa'),
+(4,4,1,DATE_ADD(CURDATE(), INTERVAL 10 DAY),'20:00:00',18.00,1,'activa'),
+(5,5,4,DATE_ADD(CURDATE(), INTERVAL 10 DAY),'15:30:00',28.00,2,'activa');
+-- TOTAL: 90+ funciones distribuidas en 11 días (del 9 al 19 de diciembre)
 
 
--- BOLETA
+-- BOLETA (fechas recientes - últimos 7 días)
 INSERT INTO BOLETA (idUsuario, fecha, subtotal, descuentoTotal, total) VALUES
-(1,'2025-11-05',50,5,45),
-(2,'2025-11-05',60,10,50),
-(3,'2025-11-05',40,0,40),
-(4,'2025-11-05',70,7,63),
-(5,'2025-11-05',80,10,70),
-(6,'2025-11-05',30,0,30),
-(7,'2025-11-05',55,5,50),
-(8,'2025-11-05',60,10,50),
-(9,'2025-11-05',45,5,40),
-(10,'2025-11-05',90,15,75);
+(1,DATE_SUB(CURDATE(), INTERVAL 7 DAY),50,5,45),   -- Hace 7 días
+(2,DATE_SUB(CURDATE(), INTERVAL 6 DAY),60,10,50),  -- Hace 6 días
+(3,DATE_SUB(CURDATE(), INTERVAL 5 DAY),40,0,40),   -- Hace 5 días
+(4,DATE_SUB(CURDATE(), INTERVAL 4 DAY),70,7,63),   -- Hace 4 días
+(5,DATE_SUB(CURDATE(), INTERVAL 3 DAY),80,10,70),  -- Hace 3 días
+(6,DATE_SUB(CURDATE(), INTERVAL 2 DAY),30,0,30),   -- Hace 2 días
+(7,DATE_SUB(CURDATE(), INTERVAL 1 DAY),55,5,50),   -- Ayer
+(8,CURDATE(),60,10,50),                             -- Hoy
+(9,CURDATE(),45,5,40),                              -- Hoy
+(10,CURDATE(),90,15,75);                            -- Hoy
 
 -- PRODUCTOS_BOLETA (productos comprados en boletas)
 INSERT INTO PRODUCTOS_BOLETA (idBoleta, idProducto, cantidad, precioUnitario) VALUES
@@ -432,31 +521,31 @@ INSERT INTO PROMO_BOLETA (idBoleta, idPromo, montoDescuento, cantidad, detalle) 
 -- Boleta 10: Socio Cineplanet
 (10, 6, 15.00, 2, 'Descuento socio múltiples entradas');
 
--- PROMO_USO (registro de uso de promociones por usuario)
+-- PROMO_USO (registro de uso de promociones por usuario - últimos 7 días)
 INSERT INTO PROMO_USO (idUsuario, idPromo, cantidad, fechaUso) VALUES
 -- Usuario 1 usó promo General
-(1, 1, 1, '2025-11-05 14:30:00'),
+(1, 1, 1, DATE_SUB(NOW(), INTERVAL 7 DAY)),
 -- Usuario 2 usó promo Adulto Mayor
-(2, 2, 1, '2025-11-05 15:00:00'),
+(2, 2, 1, DATE_SUB(NOW(), INTERVAL 6 DAY)),
 -- Usuario 3 usó promo General
-(3, 1, 1, '2025-11-05 15:30:00'),
+(3, 1, 1, DATE_SUB(NOW(), INTERVAL 5 DAY)),
 -- Usuario 4 usó promo Niños
-(4, 3, 1, '2025-11-05 16:00:00'),
+(4, 3, 1, DATE_SUB(NOW(), INTERVAL 4 DAY)),
 -- Usuario 5 usó promo Martes 50%
-(5, 5, 1, '2025-11-05 16:30:00'),
+(5, 5, 1, DATE_SUB(NOW(), INTERVAL 3 DAY)),
 -- Usuario 6 usó promo General
-(6, 1, 1, '2025-11-05 17:00:00'),
+(6, 1, 1, DATE_SUB(NOW(), INTERVAL 2 DAY)),
 -- Usuario 7 (socio) usó promo Socio
-(7, 6, 1, '2025-11-05 17:30:00'),
+(7, 6, 1, DATE_SUB(NOW(), INTERVAL 1 DAY)),
 -- Usuario 8 (socio) usó promo Universitario
-(8, 7, 1, '2025-11-05 18:00:00'),
+(8, 7, 1, NOW()),
 -- Usuario 9 (socio) usó promo CONADIS
-(9, 4, 1, '2025-11-05 18:30:00'),
+(9, 4, 1, NOW()),
 -- Usuario 10 (socio) usó promo Socio múltiples veces
-(10, 6, 2, '2025-11-05 19:00:00'),
+(10, 6, 2, NOW()),
 -- Usuario 1 (socio oro) usó Preventa (stock limitado)
-(1, 10, 1, '2025-11-06 10:00:00'),
+(1, 10, 1, DATE_SUB(NOW(), INTERVAL 3 DAY)),
 -- Usuario 4 (socio black) usó Preventa
-(4, 10, 1, '2025-11-06 11:00:00');
+(4, 10, 1, DATE_SUB(NOW(), INTERVAL 2 DAY));
 
 ;
