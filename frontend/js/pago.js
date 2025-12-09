@@ -51,25 +51,39 @@ document.addEventListener('DOMContentLoaded', async () => {
                 fechaTexto = `${diasSemana[fechaObj.getDay()]}, ${fechaObj.getDate()} de ${fechaObj.toLocaleString('es-ES', { month: 'short' })} de ${fechaObj.getFullYear()}`;
             }
         }
+        // Clasificación (R) si existe
+        let clasificacionHtml = '';
+        if (infoFuncion.clasificacion) {
+            clasificacionHtml = `<span class="clasificacion">(${infoFuncion.clasificacion})</span>`;
+        }
+        // Formato, idioma, subtitulado
+        let formatoLinea = `${clasificacionHtml}${infoFuncion.formato || ''}`;
+        if (infoFuncion.formato && infoFuncion.tipoFuncion) {
+            formatoLinea += `, ${infoFuncion.tipoFuncion}`;
+        }
+        if (infoFuncion.idioma) {
+            formatoLinea += `, ${infoFuncion.idioma}`;
+        }
+        // Portada: usa siempre la ruta ../images/portrait/movie/${infoFuncion.portada}
+        let portadaSrc = '';
+        if (infoFuncion.portada) {
+            portadaSrc = `../images/portrait/movie/${infoFuncion.portada}`;
+        }
         const infoDiv = document.createElement('div');
+        infoDiv.className = 'info-funcion-card';
         infoDiv.innerHTML = `
-            <div style="text-align:center;">
-                ${infoFuncion.portada ? `<img src="${infoFuncion.portada}" alt="Portada" style="width:140px;height:140px;border-radius:50%;object-fit:cover;">` : ''}
-            </div>
-            <h2 style="font-weight:bold; margin:0.5em 0;">${infoFuncion.nombrePelicula || ''}</h2>
-            <div style="margin-bottom:0.5em;">${infoFuncion.formato || ''}${infoFuncion.formato && infoFuncion.idioma ? ', ' : ''}${infoFuncion.idioma || ''}</div>
-            <div style="font-weight:bold; margin-bottom:0.5em;">${infoFuncion.nombreCine || ''}</div>
-            <div style="margin-bottom:0.3em;">
-                <span>📅 ${fechaTexto}</span>
-            </div>
-            <div style="margin-bottom:0.3em;">
-                <span>🕒 ${infoFuncion.hora || ''}</span>
-            </div>
-            <div>
-                <span>🏢 ${infoFuncion.nombreSala || ''}</span>
-            </div>
-            <hr style="margin:1em 0;">
+            ${portadaSrc ? `<img src="${portadaSrc}" alt="Portada" class="portada-circular">` : ''}
+            <h2 class="titulo-pelicula">${infoFuncion.nombrePelicula || ''}</h2>
+            <div class="formato-linea">${formatoLinea}</div>
+            <div class="cine-nombre">${infoFuncion.nombreCine || ''}</div>
+            <ul class="info-lista">
+                <li><span class="icono"><i class="fa-regular fa-calendar"></i></span>${fechaTexto}</li>
+                <li><span class="icono"><i class="fa-regular fa-clock"></i></span>${infoFuncion.hora || ''}</li>
+                <li><span class="icono"><i class="fa-solid fa-chair"></i></span>${infoFuncion.nombreSala || ''}</li>
+            </ul>
+            <hr>
         `;
+        infoContainer.innerHTML = '';
         infoContainer.appendChild(infoDiv);
     }
 
@@ -90,22 +104,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Mostrar resumen de compra y total
     // Crea el modal si no existe
-    let resumenModal = document.getElementById('resumen-modal');
-    if (!resumenModal) {
-        resumenModal = document.createElement('div');
-        resumenModal.id = 'resumen-modal';
-        resumenModal.style.display = 'none';
-        resumenModal.style.position = 'fixed';
-        resumenModal.style.top = '0';
-        resumenModal.style.left = '0';
-        resumenModal.style.width = '100vw';
-        resumenModal.style.height = '100vh';
-        resumenModal.style.zIndex = '9999';
-        resumenModal.style.background = 'rgba(0, 0, 0, 0.5)';
-        resumenModal.style.backdropFilter = 'blur(2px)';
-        // scroll interno invisible para el contenido
-        resumenModal.innerHTML = `<div id="resumen-compra-container" class="hide-scrollbar" style="background:#fff; max-width:500px; max-height:80vh; overflow:auto; margin:5vh auto; border-radius:10px; padding:2em; position:relative; box-shadow: 0 4px 15px rgba(0,0,0,0.2);"></div>`;
-        document.body.appendChild(resumenModal);
+    let resumenModalBg = document.getElementById('resumen-modal-bg');
+    let resumenModalContent = document.getElementById('resumen-modal-content');
+    if (!resumenModalBg) {
+        resumenModalBg = document.createElement('div');
+        resumenModalBg.id = 'resumen-modal-bg';
+        resumenModalBg.innerHTML = `<div class="resumen-modal" id="resumen-modal-content"></div>`;
+        document.body.appendChild(resumenModalBg);
+        resumenModalContent = resumenModalBg.querySelector('#resumen-modal-content');
     }
     const resumenContainer = document.getElementById('resumen-compra-container');
 
@@ -126,73 +132,110 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
         const urlDeResumen = BASE_API_DOMAIN + 'getResumenCompra.php?' + resumenParams.toString();
-        console.log("URL para obtener resumen:", urlDeResumen); // Log para ver la URL
-        
         const res = await fetch(urlDeResumen);
-
-        if (!res.ok) {
-            // Si la respuesta no es exitosa (ej. 404, 500), muestra el estado
-            throw new Error(`Error en la petición: ${res.status} ${res.statusText}`);
-        }
-
+        if (!res.ok) throw new Error(`Error en la petición: ${res.status} ${res.statusText}`);
         const resumen = await res.json();
 
         // Muestra el precio total y el botón
         infoTotalContainer.innerHTML = `
             <div>
-                <div>
-                    <strong>Total: S/${resumen.total.toFixed(2)}</strong>
+                <div class="resumen-total">
+                    Total: S/${resumen.total.toFixed(2)}
                 </div>
-                <button id="btn-ver-resumen" type="button">Ver Resumen de compra</button>
+                <button id="btn-ver-resumen" type="button" class="btn-ver-resumen">Ver Resumen de compra</button>
             </div>
         `;
 
-        // Renderiza el resumen para el modal
-        let html = `<div>
-            <div>
-                <h2>Resumen de compra</h2>
-                <button type="button" id="btn-cerrar-resumen">Cerrar</button>
-            </div>
-            <div>`;
-        if (resumen.asientos && resumen.asientos.length > 0) {
-            html += `<div><strong>Butacas Seleccionadas:</strong><br>${resumen.asientos.join(', ')} <span>Cant. ${resumen.asientos.length}</span></div>`;
-        }
-        if (resumen.entradas && resumen.entradas.length > 0) {
-            html += `<div><strong>Entradas:</strong></div>`;
-            resumen.entradas.forEach(e => {
-                html += `<div>
-                    ${e.nombre}${e.descripcion ? `<br><span>${e.descripcion}</span>` : ''}
-                    <span>Cant. ${e.cantidad}</span>
-                    <span>S/${e.precio.toFixed(2)}</span>
-                </div>`;
-            });
-            html += `<div>Sub-Total S/${resumen.totalEntradas.toFixed(2)}</div>`;
-        }
-        if (resumen.dulceria && resumen.dulceria.length > 0) {
-            html += `<div><strong>Dulcería:</strong></div>`;
-            resumen.dulceria.forEach(d => {
-                html += `<div>
-                    ${d.nombre}${d.descripcion ? `<br><span>${d.descripcion}</span>` : ''}
-                    <span>Cant. ${d.cantidad}</span>
-                    <span>S/${d.precio.toFixed(2)}</span>
-                </div>`;
-            });
-            html += `<div>Sub-Total S/${resumen.totalDulceria.toFixed(2)}</div>`;
-        }
-        html += `<hr>`;
-        html += `<div>Precio Total: S/${resumen.total.toFixed(2)}</div>`;
-        html += `</div></div>`;
+        // Renderiza el resumen para el modal con el nuevo diseño
+        function renderResumenHtml(resumen) {
+            // Butacas
+            let butacasHtml = '';
+            if (resumen.asientos && resumen.asientos.length > 0) {
+                butacasHtml = `
+                    <div style="margin-bottom:1em;">
+                        <span style="font-weight:700; color:#0d3c6e;">Butacas Seleccionadas:</span><br>
+                        ${resumen.asientos.join(', ')}
+                        <span class="cant" style="float:right;">Cant. ${resumen.asientos.length}</span>
+                    </div>
+                `;
+            }
+            // Entradas
+            let entradasHtml = '';
+            if (resumen.entradas && resumen.entradas.length > 0) {
+                entradasHtml = `
+                    <div style="margin-bottom:1em;">
+                        <span style="font-weight:700; color:#0d3c6e;">Entradas:</span>
+                        ${resumen.entradas.map(e => `
+                            <div class="detalle-entrada">
+                                <div class="detalle-info">
+                                    ${e.nombre}
+                                    ${e.descripcion ? `<br><span style="font-size:0.97em; color:#222; display:block; margin-left:1em;">${e.descripcion}</span>` : ''}
+                                </div>
+                                <div style="text-align:right;">
+                                    <span class="cant">Cant. ${e.cantidad}</span>
+                                    <span class="precio">S/${e.precio.toFixed(2)}</span>
+                                </div>
+                            </div>
+                        `).join('')}
+                        <div class="subtotal" style="margin-top:1em;">Sub-Total <span class="precio">S/${resumen.totalEntradas.toFixed(2)}</span></div>
+                    </div>
+                `;
+            }
+            // Dulcería
+            let dulceriaHtml = '';
+            if (resumen.dulceria && resumen.dulceria.length > 0) {
+                dulceriaHtml = `
+                    <div style="margin-bottom:1em;">
+                        <span style="font-weight:700; color:#0d3c6e;">Dulcería:</span>
+                        ${resumen.dulceria.map(d => `
+                            <div class="detalle-entrada">
+                                <div class="detalle-info">
+                                    ${d.nombre}
+                                    ${d.descripcion ? `<br><span style="font-size:0.97em; color:#222; display:block; margin-left:1em;">${d.descripcion}</span>` : ''}
+                                </div>
+                                <div style="text-align:right;">
+                                    <span class="cant">Cant. ${d.cantidad}</span>
+                                    <span class="precio">S/${d.precio.toFixed(2)}</span>
+                                </div>
+                            </div>
+                        `).join('')}
+                        <div class="subtotal" style="margin-top:1em;">Sub-Total <span class="precio">S/${resumen.totalDulceria ? resumen.totalDulceria.toFixed(2) : '0.00'}</span></div>
+                    </div>
+                `;
+            }
+            // Footer total
+            let footerHtml = `
+                <div class="resumen-footer">
+                    <span class="precio-total">Precio Total: S/${resumen.total.toFixed(2)}</span>
+                </div>
+            `;
 
-        resumenContainer.innerHTML = html;
+            return `
+                <div class="resumen-header">
+                    <span class="resumen-titulo">Resumen de compra</span>
+                    <button class="cerrar-resumen-btn" id="cerrar-resumen-btn">Cerrar</button>
+                </div>
+                <div class="resumen-body">
+                    ${butacasHtml}
+                    ${entradasHtml}
+                    ${dulceriaHtml}
+                </div>
+                ${footerHtml}
+            `;
+        }
 
-        // Mostrar/ocultar resumen en modal (sin modificar el scroll del body)
+        // Mostrar/ocultar resumen en modal
         document.getElementById('btn-ver-resumen').onclick = () => {
-            resumenModal.style.display = 'block';
-            // document.body.style.overflow = 'hidden'; // <-- Elimina/desactiva esta línea
-        };
-        resumenContainer.querySelector('#btn-cerrar-resumen').onclick = () => {
-            resumenModal.style.display = 'none';
-            // document.body.style.overflow = ''; // <-- Elimina/desactiva esta línea
+            resumenModalContent.innerHTML = renderResumenHtml(resumen);
+            resumenModalBg.classList.add('active');
+            // Cerrar con botón
+            resumenModalContent.querySelector('#cerrar-resumen-btn').onclick = () => {
+                resumenModalBg.classList.remove('active');
+            };
+            // Cerrar al hacer click fuera del modal
+            resumenModalBg.onclick = (e) => {
+                if (e.target === resumenModalBg) resumenModalBg.classList.remove('active');
+            };
         };
     } catch (error) {
         console.error("Error al cargar el resumen de compra:", error); // Log para ver el error exacto
@@ -709,25 +752,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
     });
-
-    // Botón cancelar compra al lado del logo de usuario
-    const socioDisplay = document.getElementById('socio-display');
-    if (socioDisplay && idPelicula) {
-        const cancelarBtn = document.createElement('button');
-        cancelarBtn.textContent = 'Cancelar compra';
-        cancelarBtn.style.marginLeft = '1em';
-        cancelarBtn.style.background = '#d32f2f';
-        cancelarBtn.style.color = '#fff';
-        cancelarBtn.style.border = 'none';
-        cancelarBtn.style.padding = '0.7em 1.5em';
-        cancelarBtn.style.borderRadius = '8px';
-        cancelarBtn.style.fontWeight = 'bold';
-        cancelarBtn.style.cursor = 'pointer';
-        cancelarBtn.onclick = () => {
-            window.location.href = `peliculaSeleccion.html?pelicula=${idPelicula}`;
-        };
-        socioDisplay.parentNode.insertBefore(cancelarBtn, socioDisplay.nextSibling);
-    }
 
     // --- NUEVO: Preparar datos para cada tabla relacionada con la boleta ---
     function parseCSV(str) {
