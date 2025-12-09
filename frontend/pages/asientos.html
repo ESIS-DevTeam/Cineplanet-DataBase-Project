@@ -4,37 +4,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seleccionar Asientos</title>
-    <style>
-        body { font-family: sans-serif; }
-        #asientos-container { margin: 2em auto; max-width: 800px; }
-        .fila-letra { font-weight: bold; margin-right: 1em; }
-        .asiento { width: 30px; height: 30px; border: 1px solid #ccc; display: inline-block; margin: 2px; text-align: center; line-height: 30px; user-select: none; }
-        .asiento.tipo-normal { background: #fff; }
-        .asiento.tipo-discapacidad { background: #4fc3f7; }
-        .asiento.ocupado { background: #e57373; cursor: not-allowed; }
-        .asiento.seleccionado { background: #81c784 !important; border: 2px solid #388e3c; }
-        .leyenda-asientos { margin: 1em 0; }
-        .leyenda-asientos span { display: inline-block; width: 24px; height: 24px; border: 1px solid #ccc; margin-right: 6px; vertical-align: middle; }
-    </style>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="../styles/asientos.css">
 </head>
 <body>
-    <header>
-        <h1>Selecciona tus asientos</h1>
-        <div id="socio-display" style="position: absolute; top: 15px; right: 15px; font-size: 1.2em; border: 1px solid #ccc; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; user-select: none;">
-            👤
+    <div class="header-asientos">
+        <button class="volver-btn" id="volver-btn">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Atrás
+        </button>
+        <div class="titulo-header">1. Selecciona tus butacas</div>
+        <div class="acciones-header">
+            <div class="socio-display" id="socio-display">👤</div>
+            <button class="cerrar-btn" id="cerrar-btn" title="Cerrar">
+                &times;
+            </button>
         </div>
-    </header>
+    </div>
+    <div class="espacio-header"></div>
     <main>
-        <div class="leyenda-asientos">
-            <strong>Leyenda:</strong>
-            <span style="background:#fff; border:1px solid #ccc;"></span> Normal
-            <span style="background:#4fc3f7; border:1px solid #ccc;"></span> Discapacidad
-            <span style="background:#e57373; border:1px solid #ccc;"></span> Ocupado
+        <div class="asientos-layout">
+            <div class="info-funcion-col">
+                <div id="info-funcion"></div>
+            </div>
+            <div class="asientos-col">
+                <!-- Barra de progreso de pasos -->
+                <div class="progreso-pasos">
+                    <div class="paso activo">
+                        <span class="icono"><i class="fa-solid fa-chair"></i></span>
+                        <span class="linea"></span>
+                    </div>
+                    <div class="paso">
+                        <span class="icono"><i class="fa-solid fa-ticket"></i></span>
+                        <span class="linea"></span>
+                    </div>
+                    <div class="paso">
+                        <span class="icono"><i class="fa-solid fa-burger"></i></span>
+                        <span class="linea"></span>
+                    </div>
+                    <div class="paso">
+                        <span class="icono"><i class="fa-regular fa-rectangle-list"></i></span>
+                    </div>
+                </div>
+                <div id="asientos-container"></div>
+            </div>
         </div>
-        <div id="asientos-container"></div>
     </main>
     <script type="module" src="../js/asientos.js"></script>
     <script>
+        // Manejo de usuario en header
         document.addEventListener('DOMContentLoaded', () => {
             fetch('../../backend/auth/checkSession.php')
                 .then(res => res.json())
@@ -49,6 +68,26 @@
                     }
                 });
         });
+        // Botón volver
+        document.getElementById('volver-btn').onclick = function() {
+            const params = new URLSearchParams(window.location.search);
+            const idPelicula = params.get('pelicula');
+            if (idPelicula) {
+                window.location.href = `peliculaSeleccion.html?pelicula=${idPelicula}`;
+            } else {
+                window.location.href = 'peliculaSeleccion.html';
+            }
+        };
+        // Botón cerrar (X) - ahora hace lo mismo que volver
+        document.getElementById('cerrar-btn').onclick = function() {
+            const params = new URLSearchParams(window.location.search);
+            const idPelicula = params.get('pelicula');
+            if (idPelicula) {
+                window.location.href = `peliculaSeleccion.html?pelicula=${idPelicula}`;
+            } else {
+                window.location.href = 'peliculaSeleccion.html';
+            }
+        };
     </script>
 </body>
 </html>

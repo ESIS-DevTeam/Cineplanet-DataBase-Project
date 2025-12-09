@@ -1,0 +1,424 @@
+body { font-family: sans-serif; margin:0; padding:0; }
+/* Header estilo barra superior */
+.header-asientos {
+    width: 100%;
+    background: #004A8C;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    padding: 0 24px;
+    box-sizing: border-box;
+}
+.header-asientos .volver-btn {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.2em;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0;
+    margin-right: 16px;
+}
+.header-asientos .volver-btn svg {
+    margin-right: 6px;
+    font-size: 1.4em;
+}
+.header-asientos .titulo-header {
+    flex: 1;
+    text-align: center;
+    font-size: 1.45em;
+    font-weight: bold;
+    letter-spacing: 0.01em;
+    font-family: "Montserrat", sans-serif;
+}
+.header-asientos .acciones-header {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+.header-asientos .socio-display {
+    font-size: 1.3em;
+    border: 1px solid #fff;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    background: rgba(255,255,255,0.08);
+}
+.header-asientos .cerrar-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.6em;
+    cursor: pointer;
+    margin-left: 10px;
+    line-height: 1;
+}
+/* Espacio para el header fijo */
+.espacio-header { height: 60px; }
+/* Resto del CSS existente */
+#asientos-container { margin: 2em auto; max-width: 800px; }
+.fila-letra { font-weight: bold; margin-right: 1em; }
+.asiento { width: 30px; height: 30px; border: 1px solid #ccc; display: inline-block; margin: 2px; text-align: center; line-height: 30px; user-select: none; }
+.asiento.tipo-normal { background: #fff; }
+.asiento.tipo-discapacidad { background: #4fc3f7; }
+.asiento.ocupado { background: #e57373; cursor: not-allowed; }
+.asiento.seleccionado { background: #81c784 !important; border: 2px solid #388e3c; }
+.asientos-layout {
+    display: flex;
+    flex-direction: row;
+    max-width: 1200px;
+    margin: 0 auto;
+    min-height: calc(100vh - 60px);
+    height: calc(100vh - 60px);
+}
+.info-funcion-col {
+    width: 250px;
+    background: #F6F6F6;
+    border-right: 1px solid #e0e4ea;
+    padding: 32px 10px 24px 10px;
+    box-sizing: border-box;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+}
+.info-funcion-card {
+    width: 100%;
+    max-width: 220px;
+    padding: 0 24px 12px 24px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.info-funcion-card .portada-circular {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 8px 0 rgba(0,0,0,0.10);
+    background: #eee;
+    align-self: center;
+}
+.info-funcion-card .titulo-pelicula,
+.info-funcion-card .formato-linea,
+.info-funcion-card .cine-nombre,
+.info-funcion-card .info-lista,
+.info-funcion-card .info-lista li {
+    text-align: left !important;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+.info-funcion-card .titulo-pelicula {
+    color: #004A8C;
+    font-family: "Montserrat", sans-serif;
+    font-size: 1.5em;
+    font-weight: 900;
+    line-height: 28px;
+    margin: 0 0 0.5em;
+    text-align: left;
+    width: 100%;
+}
+.info-funcion-card .formato-linea {
+    font-size: 1em;
+    margin-bottom: 0.7em;
+    color: #222;
+    text-align: left;
+    width: 100%;
+}
+.info-funcion-card .clasificacion {
+    color: #d32f2f;
+    font-weight: bold;
+    margin-right: 0.3em;
+}
+.info-funcion-card .cine-nombre {
+    color: #092058;
+    font-family: "Montserrat", sans-serif;
+    font-size: 1.125em;
+    font-weight: 900;
+    margin-bottom: 0.7em;
+    text-align: left;
+    width: 100%;
+}
+.info-funcion-card .info-lista {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.info-funcion-card .info-lista li {
+    display: flex;
+    align-items: center;
+    font-size: 1em;
+    margin-bottom: 0.4em;
+    color: #222;
+    text-align: left;
+    padding-left: 0;
+}
+.info-funcion-card .info-lista li .icono {
+    margin-right: 0.7em;
+    font-size: 1.1em;
+    width: 1.5em;
+    min-width: 1.5em;
+    text-align: left;
+    color: #004A8C;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+.info-funcion-card hr {
+    width: 100%;
+    border: none;
+    border-top: 1px solid #e0e4ea;
+    margin: 1.2em 0 0.5em 0;
+}
+/* Barra de progreso de pasos */
+.progreso-pasos {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2em;
+    margin-top: 0.5em;
+    gap: 0;
+    user-select: none;
+}
+.progreso-pasos .paso {
+    display: flex;
+    align-items: center;
+    opacity: 0.35;
+}
+.progreso-pasos .paso.activo {
+    opacity: 1;
+}
+.progreso-pasos .icono {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #f4f7fa;
+    border: 2px solid #004A8C;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.45em;
+    color: #004A8C;
+    box-sizing: border-box;
+    transition: border 0.2s;
+}
+.progreso-pasos .paso:not(.activo) .icono {
+    border: 2px solid #b0b8c1;
+    color: #b0b8c1;
+    background: #f4f7fa;
+}
+.progreso-pasos .linea {
+    width: 48px;
+    height: 2px;
+    background: #b0b8c1;
+    margin: 0 2px;
+    display: inline-block;
+}
+.progreso-pasos .paso.activo ~ .paso .linea {
+    background: #b0b8c1;
+}
+.progreso-pasos .paso.activo .linea {
+    background: #004A8C;
+}
+@media (max-width: 900px) {
+    .progreso-pasos { margin-bottom: 1.2em; }
+    .progreso-pasos .linea { width: 28px; }
+    .progreso-pasos .icono { width: 32px; height: 32px; font-size: 1.1em; }
+    .asientos-layout { flex-direction: column; }
+    .info-funcion-col { width: 100%; border-right: none; border-bottom: 1px solid #e0e4ea; height: auto; }
+    .asientos-col { padding: 24px 8px; height: auto; }
+}
+.asientos-col {
+    flex: 1;
+    padding: 32px 32px 24px 32px;
+    box-sizing: border-box;
+    min-width: 0;
+    background: #E7ECF0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- JS dynamic styles moved here --- */
+.pantalla-cine {
+    text-align: center;
+    margin: 0 auto 24px auto;
+    padding-top: 12px;
+    position: relative;
+}
+.pantalla-cine .pantalla-texto {
+    font-size: 2em;
+    font-family: 'Montserrat', sans-serif;
+    color: #c2c7d0;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.2em;
+    opacity: 0.7;
+}
+.pantalla-cine .pantalla-barra {
+    width: 90%;
+    max-width: 520px;
+    height: 12px;
+    background: #fff;
+    margin: 0 auto;
+    border-radius: 4px 4px 12px 12px;
+    box-shadow: 0 8px 32px 0 #e7ecf0;
+}
+.grilla-asientos {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 18px;
+}
+.fila-asientos {
+    display: flex;
+    align-items: center;
+    margin: 2px 0;
+}
+.fila-letra-grilla {
+    width: 22px;
+    text-align: center;
+    color: #7a8ba7;
+    font-weight: bold;
+    font-size: 1.1em;
+    font-family: 'Montserrat', sans-serif;
+    opacity: 0.85;
+}
+.asiento-circulo {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid #1976d2;
+    background: #fafdff;
+    margin: 0 3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: border 0.15s, background 0.15s;
+    font-size: 1.1em;
+    color: #1976d2;
+    position: relative;
+}
+.asiento-circulo.asiento-vacio {
+    border: none;
+    background: transparent;
+    cursor: default;
+}
+.asiento-circulo.ocupado {
+    border: 2px solid #e53935;
+    background: #e53935;
+    color: #fff;
+    cursor: not-allowed;
+}
+.asiento-circulo.seleccionado {
+    border: 2.5px solid #0d47a1;
+    background: #1976d2;
+    color: #fff;
+}
+.asiento-circulo.discapacidad {
+    border: 2px solid #1976d2;
+    background: #e3f2fd;
+    color: #1976d2;
+}
+.asiento-circulo.discapacidad i {
+    font-size: 1em;
+}
+.leyenda-grilla {
+    margin: 18px 0 8px 0;
+    font-size: 1em;
+    color: #4a5a6a;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+.leyenda-grilla .asiento-circulo {
+    margin-right: 6px;
+    margin-left: 0;
+}
+.leyenda-grilla .leyenda.disponible {
+    border: 2px solid #1976d2;
+    background: #fff;
+}
+.leyenda-grilla .leyenda.ocupado {
+    border: 2px solid #e53935;
+    background: #e53935;
+}
+.leyenda-grilla .leyenda.seleccionada {
+    border: 2.5px solid #0d47a1;
+    background: #1976d2;
+}
+.leyenda-grilla .leyenda.discapacidad {
+    border: 2px solid #1976d2;
+    background: #e3f2fd;
+    color: #1976d2;
+}
+.accesibilidad-msg {
+    margin: 0 0 18px 0;
+    font-size: 0.98em;
+    color: #7a8ba7;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.accesibilidad-msg i {
+    margin-right: 6px;
+}
+.butacas-seleccionadas {
+    margin: 18px 0 8px 0;
+    font-size: 1.1em;
+    color: #092058;
+    font-family: 'Montserrat', sans-serif;
+}
+.butacas-seleccionadas .butacas-lista {
+    font-weight: bold;
+    margin-left: 8px;
+}
+.btn-continuar {
+    display: block;
+    margin: 18px auto 0 auto;
+    padding: 0.7em 2.5em;
+    font-size: 1.15em;
+    font-family: 'Montserrat', sans-serif;
+    background: #c2c7d0;
+    color: #fff;
+    border: none;
+    border-radius: 32px;
+    box-shadow: 0 2px 8px 0 rgba(25, 118, 210, 0.08);
+    cursor: pointer;
+    transition: background 0.2s, opacity 0.2s;
+    opacity: 1;
+}
+.btn-continuar:not(:disabled) {
+    background: #D70242;
+}
+.btn-continuar:disabled {
+    background: #c2c7d0;
+    color: #fff;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+@media (max-width: 900px) {
+    .pantalla-cine .pantalla-barra { width: 98%; }
+    .grilla-asientos { margin-bottom: 10px; }
+    .leyenda-grilla { font-size: 0.98em; gap: 10px; }
+    .butacas-seleccionadas { font-size: 1em; }
+    .btn-continuar { font-size: 1em; padding: 0.6em 1.5em; }
+}
