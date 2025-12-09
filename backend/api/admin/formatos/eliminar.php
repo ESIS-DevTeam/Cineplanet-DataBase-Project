@@ -8,7 +8,7 @@ $id = $_GET['id'] ?? null;
 try {
     if (!$id) throw new Exception("ID requerido");
 
-    $sql = "DELETE FROM FORMATO WHERE id = ?";
+    $sql = "CALL formato_delete(?)";
     $stmt = $conexion->prepare($sql);
     $stmt->bind_param("i", $id);
     $stmt->execute();

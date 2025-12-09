@@ -5,7 +5,7 @@ require_once '../../../config/conexion.php';
 $conexion = conexion::conectar();
 
 try {
-    $sql = "SELECT id, nombre FROM IDIOMA ORDER BY nombre ASC";
+    $sql = "CALL idioma_get_all()";
     $result = $conexion->query($sql);
     
     if (!$result) {

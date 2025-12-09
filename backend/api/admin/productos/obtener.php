@@ -8,7 +8,7 @@ $id = $_GET['id'] ?? null;
 try {
     if (!$id) throw new Exception("ID no proporcionado");
 
-    $sql = "SELECT * FROM PRODUCTO WHERE id = ?";
+    $sql = "CALL producto_get_by_id(?)";
     $stmt = $conexion->prepare($sql);
     $stmt->bind_param("i", $id);
     $stmt->execute();

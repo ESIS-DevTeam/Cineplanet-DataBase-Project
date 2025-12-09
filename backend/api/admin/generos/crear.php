@@ -8,12 +8,14 @@ $data = json_decode(file_get_contents('php://input'), true);
 try {
     if (empty($data['nombre'])) throw new Exception("Nombre requerido");
 
-    $sql = "INSERT INTO GENERO (nombre) VALUES (?)";
+    $sql = "CALL genero_create(?, @id)";
     $stmt = $conexion->prepare($sql);
     $stmt->bind_param("s", $data['nombre']);
     $stmt->execute();
-    $id = $conexion->insert_id;
     $stmt->close();
+    
+    $result = $conexion->query("SELECT @id as id");
+    $id = $result->fetch_assoc()['id'];
 
     echo json_encode(['success' => true, 'id' => $id]);
 } catch (Exception $e) {

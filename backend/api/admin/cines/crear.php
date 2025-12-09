@@ -22,7 +22,7 @@ if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
     }
 }
 
-$stmt = $conn->prepare("INSERT INTO CINE (nombre, direccion, telefono, email, imagen, idCiudad) VALUES (?, ?, ?, ?, ?, ?)");
+$stmt = $conn->prepare("CALL cine_create(?, ?, ?, ?, ?, ?, @id)");
 $stmt->bind_param(
     'sssssi',
     $nombre,
@@ -33,10 +33,15 @@ $stmt->bind_param(
     $idCiudad
 );
 $success = $stmt->execute();
-if ($success) {
-    echo json_encode(['success' => true, 'id' => (int)$conn->insert_id], JSON_UNESCAPED_UNICODE);
-} else {
-    echo json_encode(['success' => false, 'error' => $stmt->error]);
-}
 $stmt->close();
+
+if ($success) {
+    // Obtener el id generado
+    $result = $conn->query("SELECT @id as id");
+    $row = $result->fetch_assoc();
+    $newId = (int)$row['id'];
+    echo json_encode(['success' => true, 'id' => $newId], JSON_UNESCAPED_UNICODE);
+} else {
+    echo json_encode(['success' => false, 'error' => $conn->error]);
+}
 ?>

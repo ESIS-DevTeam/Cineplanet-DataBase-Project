@@ -12,10 +12,11 @@ try {
         throw new Exception("Faltan campos requeridos");
     }
     
-    $sql = "UPDATE FUNCION SET idPelicula = ?, idSala = ?, idFormato = ?, idIdioma = ?, fecha = ?, hora = ?, precio = ?, estado = ? WHERE id = ?";
+    $sql = "CALL funcion_update(?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     $stmt = $conexion->prepare($sql);
-    $stmt->bind_param("iiiissdsi", 
+    $stmt->bind_param("iiiissdsi",
+        $id,
         $data['idPelicula'],
         $data['idSala'],
         $data['idFormato'],
@@ -23,8 +24,7 @@ try {
         $data['fecha'],
         $data['hora'],
         $data['precio'],
-        $data['estado'],
-        $id
+        $data['estado']
     );
     
     if ($stmt->execute()) {

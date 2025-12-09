@@ -8,7 +8,7 @@ $id = $_GET['id'] ?? null;
 try {
     if (!$id) throw new Exception("ID de promoción no proporcionado");
 
-    $sql = "DELETE FROM PROMO WHERE id = ?";
+    $sql = "CALL promo_delete(?)";
     $stmt = $conexion->prepare($sql);
     $stmt->bind_param("i", $id);
     $stmt->execute();

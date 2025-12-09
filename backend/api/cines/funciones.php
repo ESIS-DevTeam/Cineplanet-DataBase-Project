@@ -4,20 +4,10 @@ require_once('../../config/conexion.php');
 $conn = conexion::conectar();
 $id = intval($_GET['id']);
 $fecha = $_GET['fecha'];
-$sql = "SELECT f.id, f.hora, f.precio, f.estado,
-        p.id as idPelicula, p.nombre as nombrePelicula, p.portada, p.duracion,
-        g.nombre as generoNombre, r.nombre as restriccionNombre, p.restriccionComercial,
-        f.idFormato, fo.nombre as formatoNombre, f.idIdioma, i.nombre as idiomaNombre
-    FROM FUNCION f
-    JOIN SALA s ON f.idSala = s.id
-    JOIN PELICULA p ON f.idPelicula = p.id
-    JOIN GENERO g ON p.genero = g.id
-    JOIN RESTRICCION r ON p.restriccion = r.id
-    JOIN FORMATO fo ON f.idFormato = fo.id
-    LEFT JOIN IDIOMA i ON f.idIdioma = i.id
-    WHERE s.idCine = $id AND f.estado = 'activa' AND f.fecha = '$fecha'
-    ORDER BY p.nombre, f.hora";
-$res = $conn->query($sql);
+$stmt = $conn->prepare("CALL public_get_funciones_por_cine_fecha(?, ?)");
+$stmt->bind_param('is', $id, $fecha);
+$stmt->execute();
+$res = $stmt->get_result();
 $funciones = [];
 while ($row = $res->fetch_assoc()) {
     $row['pelicula'] = [
@@ -31,4 +21,5 @@ while ($row = $res->fetch_assoc()) {
     ];
     $funciones[] = $row;
 }
+$stmt->close();
 echo json_encode(['funciones' => $funciones]);

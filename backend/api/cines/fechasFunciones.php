@@ -4,14 +4,13 @@ require_once('../../config/conexion.php');
 $conn = conexion::conectar();
 $id = intval($_GET['id']);
 $hoy = date('Y-m-d');
-$sql = "SELECT DISTINCT f.fecha
-        FROM FUNCION f
-        JOIN SALA s ON f.idSala = s.id
-        WHERE s.idCine = $id AND f.estado = 'activa' AND f.fecha >= '$hoy'
-        ORDER BY f.fecha ASC";
-$res = $conn->query($sql);
+$stmt = $conn->prepare("CALL public_get_fechas_funciones_por_cine(?, ?)");
+$stmt->bind_param('is', $id, $hoy);
+$stmt->execute();
+$res = $stmt->get_result();
 $fechas = [];
 while ($row = $res->fetch_assoc()) {
     $fechas[] = $row['fecha'];
 }
+$stmt->close();
 echo json_encode(['fechas' => $fechas]);

@@ -8,8 +8,7 @@ $id = $_GET['id'] ?? null;
 try {
     if (!$id) throw new Exception("ID no proporcionado");
 
-    $sql = "SELECT * FROM CINE WHERE id = ?";
-    $stmt = $conexion->prepare($sql);
+    $stmt = $conexion->prepare("CALL cine_get_by_id(?)");
     $stmt->bind_param("i", $id);
     $stmt->execute();
     $result = $stmt->get_result();

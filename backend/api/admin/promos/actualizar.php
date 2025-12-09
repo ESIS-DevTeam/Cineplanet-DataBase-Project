@@ -16,15 +16,12 @@ try {
         throw new Exception("Faltan datos obligatorios");
     }
 
-    $sql = "UPDATE PROMO SET
-        nombre = ?, descripcion = ?, fecha_inicio = ?, fecha_fin = ?, tipo = ?, valor = ?, aplicaA = ?,
-        requiereSocio = ?, gradoMinimo = ?, requiereEmpleado = ?, combinable = ?,
-        requierePuntos = ?, puntosNecesarios = ?, tieneStock = ?, stock = ?, aplicaRestriccion = ?, estado = ?
-        WHERE id = ?";
+    $sql = "CALL promo_update(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     $stmt = $conexion->prepare($sql);
     $stmt->bind_param(
-        "sssssdsssssssssisi",
+        "isssssdssssssssisi",
+        $id,
         $data['nombre'],
         $data['descripcion'],
         $data['fecha_inicio'],
@@ -41,8 +38,7 @@ try {
         $data['tieneStock'],
         $data['stock'],
         $data['aplicaRestriccion'],
-        $data['estado'],
-        $id
+        $data['estado']
     );
     $stmt->execute();
     $stmt->close();

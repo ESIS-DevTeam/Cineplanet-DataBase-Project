@@ -5,7 +5,7 @@ class CineData {
 
     public static function listarTodas() {
         $conn = Conexion::conectar();
-        $sql = "SELECT * FROM CINE";
+        $sql = "CALL cine_get_all_with_ciudad()";
         $result = $conn->query($sql);
 
         $cines = [];

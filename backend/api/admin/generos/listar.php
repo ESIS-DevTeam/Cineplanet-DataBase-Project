@@ -2,7 +2,7 @@
 header('Content-Type: application/json; charset=utf-8');
 require_once __DIR__ . '/../../../config/conexion.php';
 $conn = conexion::conectar();
-$sql = "SELECT id, nombre FROM GENERO";
+$sql = "CALL genero_get_all()";
 $result = $conn->query($sql);
 $generos = [];
 if ($result) {

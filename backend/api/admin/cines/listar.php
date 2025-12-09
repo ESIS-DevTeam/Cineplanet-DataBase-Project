@@ -5,8 +5,9 @@ require_once '../../../config/conexion.php';
 $conexion = conexion::conectar();
 
 try {
-    $sql = "SELECT CINE.*, CIUDAD.nombre AS ciudad FROM CINE LEFT JOIN CIUDAD ON CINE.idCiudad = CIUDAD.id ORDER BY CINE.nombre ASC";
-    $result = $conexion->query($sql);
+    $stmt = $conexion->prepare("CALL cine_get_all_with_ciudad()");
+    $stmt->execute();
+    $result = $stmt->get_result();
 
     $data = [];
     while ($row = $result->fetch_assoc()) {
@@ -14,6 +15,7 @@ try {
     }
 
     echo json_encode(['success' => true, 'data' => $data]);
+    $stmt->close();
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => $e->getMessage()]);

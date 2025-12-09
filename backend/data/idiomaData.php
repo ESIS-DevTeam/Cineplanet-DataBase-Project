@@ -5,7 +5,7 @@ class IdiomaData {
 
     public static function listarTodas() {
         $conn = Conexion::conectar();
-        $sql = "SELECT * FROM IDIOMA";
+        $sql = "CALL idioma_get_all()";
         $result = $conn->query($sql);
 
         $idiomas = [];

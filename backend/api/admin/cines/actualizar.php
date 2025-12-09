@@ -12,11 +12,13 @@ $idCiudad = $_POST['idCiudad'] ?? null;
 
 // Obtener imagen actual
 $imagenActual = '';
-$stmtSelect = $conn->prepare("SELECT imagen FROM CINE WHERE id=?");
+$stmtSelect = $conn->prepare("CALL cine_get_by_id(?)");
 $stmtSelect->bind_param('i', $id);
 $stmtSelect->execute();
-$stmtSelect->bind_result($imagenActual);
-$stmtSelect->fetch();
+$result = $stmtSelect->get_result();
+if ($row = $result->fetch_assoc()) {
+    $imagenActual = $row['imagen'];
+}
 $stmtSelect->close();
 
 $imagenNombre = $imagenActual;

@@ -5,20 +5,7 @@ require_once '../../config/conexion.php';
 $conexion = conexion::conectar();
 
 try {
-    $sql = "
-        SELECT 
-            p.nombre AS producto,
-            SUM(pb.cantidad) AS cantidad_vendida,
-            SUM(pb.subtotal) AS total_ingresos
-        FROM PRODUCTOS_BOLETA pb
-        JOIN PRODUCTO p ON pb.idProducto = p.id
-        JOIN BOLETA b ON pb.idBoleta = b.id
-        WHERE MONTH(b.fecha) = MONTH(CURDATE()) AND YEAR(b.fecha) = YEAR(CURDATE())
-        GROUP BY p.id
-        ORDER BY cantidad_vendida DESC
-        LIMIT 10
-    ";
-    $result = $conexion->query($sql);
+    $result = $conexion->query("CALL reporte_productos_mas_vendidos_mes()");
     $data = [];
     while ($row = $result->fetch_assoc()) {
         $data[] = $row;

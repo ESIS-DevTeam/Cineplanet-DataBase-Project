@@ -8,7 +8,7 @@ $id = $_GET['id'] ?? null;
 try {
     if (!$id) throw new Exception("ID requerido");
 
-    $sql = "SELECT id, nombre FROM CIUDAD WHERE id = ?";
+    $sql = "CALL ciudad_get_by_id(?)";
     $stmt = $conexion->prepare($sql);
     $stmt->bind_param("i", $id);
     $stmt->execute();

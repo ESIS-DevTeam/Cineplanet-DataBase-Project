@@ -45,7 +45,7 @@ if (isset($_FILES['portada']) && $_FILES['portada']['error'] === UPLOAD_ERR_OK) 
     }
 }
 
-$stmt = $conn->prepare("UPDATE PELICULA SET nombre=?, genero=?, duracion=?, restriccion=?, restriccionComercial=?, sinopsis=?, autor=?, trailer=?, portada=?, estado=? WHERE id=?");
+    $stmt = $conn->prepare("CALL pelicula_update(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 $stmt->bind_param(
     'siisiissssi',
     $nombre,

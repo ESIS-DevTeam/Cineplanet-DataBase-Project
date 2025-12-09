@@ -8,7 +8,7 @@ $id = $_GET['id'] ?? null;
 try {
     if (!$id) throw new Exception("ID no proporcionado");
     
-    $sql = "DELETE FROM FUNCION WHERE id = ?";
+    $sql = "CALL funcion_delete(?)";
     $stmt = $conexion->prepare($sql);
     $stmt->bind_param("i", $id);
     

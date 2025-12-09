@@ -5,7 +5,7 @@ require_once '../../../config/conexion.php';
 $conexion = conexion::conectar();
 
 try {
-    $sql = "SELECT * FROM PRODUCTO ORDER BY nombre ASC";
+    $sql = "CALL producto_get_all()";
     $result = $conexion->query($sql);
 
     if (!$result) {

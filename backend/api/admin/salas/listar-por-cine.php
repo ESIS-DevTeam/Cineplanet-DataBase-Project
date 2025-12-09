@@ -8,7 +8,7 @@ $idCine = $_GET['idCine'] ?? null;
 try {
     if (!$idCine) throw new Exception("ID de cine no proporcionado");
     
-    $sql = "SELECT id, nombre, capacidad FROM SALA WHERE idCine = ? ORDER BY nombre ASC";
+    $sql = "CALL sala_get_by_cine(?)";
     $stmt = $conexion->prepare($sql);
     $stmt->bind_param("i", $idCine);
     $stmt->execute();

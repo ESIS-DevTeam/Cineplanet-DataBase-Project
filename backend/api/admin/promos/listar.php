@@ -5,7 +5,7 @@ require_once '../../../config/conexion.php';
 $conexion = conexion::conectar();
 
 try {
-    $sql = "SELECT * FROM PROMO ORDER BY id DESC";
+    $sql = "CALL promo_get_all()";
     $result = $conexion->query($sql);
 
     $data = [];

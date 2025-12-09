@@ -2,7 +2,7 @@
 require_once('../../config/conexion.php');
 header('Content-Type: application/json');
 $conn = conexion::conectar();
-$res = $conn->query("SELECT id, nombre FROM CIUDAD ORDER BY nombre");
+$res = $conn->query("CALL ciudad_get_all()");
 $ciudades = [];
 while ($row = $res->fetch_assoc()) {
     $ciudades[] = $row;

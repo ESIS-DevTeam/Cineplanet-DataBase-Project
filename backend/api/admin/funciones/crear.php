@@ -10,8 +10,7 @@ try {
         throw new Exception("Faltan campos requeridos");
     }
     
-    $sql = "INSERT INTO FUNCION (idPelicula, idSala, idFormato, idIdioma, fecha, hora, precio, estado)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    $sql = "CALL funcion_create(?, ?, ?, ?, ?, ?, ?, ?, @id)";
     
     $stmt = $conexion->prepare($sql);
     $stmt->bind_param("iiiissds", 
@@ -26,7 +25,10 @@ try {
     );
     
     if ($stmt->execute()) {
-        echo json_encode(['success' => true, 'message' => 'Función creada', 'id' => $conexion->insert_id]);
+        $stmt->close();
+        $result = $conexion->query("SELECT @id as id");
+        $id = $result->fetch_assoc()['id'];
+        echo json_encode(['success' => true, 'message' => 'Función creada', 'id' => $id]);
     } else {
         throw new Exception("Error al crear: " . $stmt->error);
     }

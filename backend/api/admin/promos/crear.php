@@ -14,11 +14,7 @@ try {
         throw new Exception("Faltan datos obligatorios");
     }
 
-    $sql = "INSERT INTO PROMO (
-        nombre, descripcion, fecha_inicio, fecha_fin, tipo, valor, aplicaA,
-        requiereSocio, gradoMinimo, requiereEmpleado, combinable,
-        requierePuntos, puntosNecesarios, tieneStock, stock, aplicaRestriccion, estado
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $sql = "CALL promo_create(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, @id)";
 
     $stmt = $conexion->prepare($sql);
     $stmt->bind_param(
@@ -42,8 +38,10 @@ try {
         $data['estado']
     );
     $stmt->execute();
-    $idPromo = $conexion->insert_id;
     $stmt->close();
+    
+    $result = $conexion->query("SELECT @id as id");
+    $idPromo = $result->fetch_assoc()['id'];
 
     echo json_encode(['success' => true, 'id' => $idPromo]);
 } catch (Exception $e) {

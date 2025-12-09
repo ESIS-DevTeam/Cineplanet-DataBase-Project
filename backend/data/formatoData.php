@@ -5,7 +5,7 @@ class FormatoData {
 
     public static function listarTodas() {
         $conn = Conexion::conectar();
-        $sql = "SELECT * FROM FORMATO";
+        $sql = "CALL formato_get_all()";
         $result = $conn->query($sql);
 
         $formatos = [];

@@ -8,8 +8,7 @@ $idCiudad = $_GET['idCiudad'] ?? null;
 try {
     if (!$idCiudad) throw new Exception("ID de ciudad no proporcionado");
     
-    $sql = "SELECT id, nombre FROM CINE WHERE idCiudad = ? ORDER BY nombre ASC";
-    $stmt = $conexion->prepare($sql);
+    $stmt = $conexion->prepare("CALL cine_get_by_ciudad(?)");
     $stmt->bind_param("i", $idCiudad);
     $stmt->execute();
     $result = $stmt->get_result();

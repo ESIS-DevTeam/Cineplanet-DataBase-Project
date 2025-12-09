@@ -10,9 +10,9 @@ try {
     if (!$id) throw new Exception("ID requerido");
     if (empty($data['nombre'])) throw new Exception("Nombre requerido");
 
-    $sql = "UPDATE CIUDAD SET nombre = ? WHERE id = ?";
+    $sql = "CALL ciudad_update(?, ?)";
     $stmt = $conexion->prepare($sql);
-    $stmt->bind_param("si", $data['nombre'], $id);
+    $stmt->bind_param("is", $id, $data['nombre']);
     $stmt->execute();
     $stmt->close();
 

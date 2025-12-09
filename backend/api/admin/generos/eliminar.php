@@ -8,7 +8,7 @@ $id = $_GET['id'] ?? null;
 try {
     if (!$id) throw new Exception("ID requerido");
 
-    $sql = "DELETE FROM GENERO WHERE id = ?";
+    $sql = "CALL genero_delete(?)";
     $stmt = $conexion->prepare($sql);
     $stmt->bind_param("i", $id);
     $stmt->execute();

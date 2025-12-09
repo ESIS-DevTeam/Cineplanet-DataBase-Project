@@ -18,7 +18,7 @@ try {
     $stmtSelect->close();
 
     // Eliminar el producto
-    $sql = "DELETE FROM PRODUCTO WHERE id = ?";
+    $sql = "CALL producto_delete(?)";
     $stmt = $conexion->prepare($sql);
     $stmt->bind_param("i", $id);
 

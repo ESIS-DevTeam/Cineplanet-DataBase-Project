@@ -5,7 +5,7 @@ require_once '../../../config/conexion.php';
 $conexion = conexion::conectar();
 
 try {
-    $sql = "SELECT id, nombre FROM CIUDAD ORDER BY nombre ASC";
+    $sql = "CALL ciudad_get_all()";
     $result = $conexion->query($sql);
     
     if (!$result) {

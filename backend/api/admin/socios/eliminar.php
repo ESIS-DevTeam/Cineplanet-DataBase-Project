@@ -6,7 +6,7 @@ $id = $_GET['id'] ?? null;
 $conexion = conexion::conectar();
 
 // Eliminar de SOCIO
-$sql = "DELETE FROM SOCIO WHERE id=?";
+$sql = "CALL socio_delete(?)";
 $stmt = $conexion->prepare($sql);
 $stmt->bind_param('i', $id);
 

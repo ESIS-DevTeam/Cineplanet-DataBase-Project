@@ -9,8 +9,7 @@ try {
     $id = $data['id'] ?? null;
     if (!$id) throw new Exception("ID no proporcionado");
 
-    $sql = "DELETE FROM CINE WHERE id = ?";
-    $stmt = $conexion->prepare($sql);
+    $stmt = $conexion->prepare("CALL cine_delete(?)");
     $stmt->bind_param("i", $id);
     $stmt->execute();
 

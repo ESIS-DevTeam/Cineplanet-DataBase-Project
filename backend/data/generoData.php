@@ -5,7 +5,7 @@ class GeneroData {
 
     public static function listarTodas() {
         $conn = Conexion::conectar();
-        $sql = "SELECT * FROM GENERO";
+        $sql = "CALL genero_get_all()";
         $result = $conn->query($sql);
 
         $generos = [];
