@@ -24,14 +24,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         params.set('redirect', window.location.pathname + '?' + params.toString());
         params.set('fromEntradas', '1');
         loginFrame.src = `login.html?${params.toString()}`;
-        loginModal.style.display = 'block';
+        loginModal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
-
-        document.getElementById('close-login-modal').onclick = function() {
-            loginModal.style.display = 'none';
-            document.body.style.overflow = '';
-            document.getElementById('main-content').classList.remove('oculto-por-modal');
-        };
         return;
     } else {
         // Asegura que el contenido principal esté visible si no hay modal

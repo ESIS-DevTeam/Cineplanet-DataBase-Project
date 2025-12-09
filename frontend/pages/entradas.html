@@ -7,6 +7,38 @@
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700,900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="../styles/entradas.css">
+    <style>
+        #login-modal {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #fff;
+            z-index: 9999;
+            display: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #login-modal iframe {
+            width: 400px;
+            height: 500px;
+            border: none;
+            border-radius: 10px;
+            background: #fff;
+            /* Quitar sombra y contorno */
+            box-shadow: none;
+            outline: none;
+            display: block;
+            margin: 0 auto;
+        }
+        #main-content.oculto-por-modal {
+            display: none !important;
+        }
+        #login-modal button#close-login-modal {
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <!-- Header igual que asientos.html -->
@@ -25,7 +57,7 @@
     </div>
     <div class="espacio-header"></div>
     <div id="login-modal">
-        <button id="close-login-modal">✖</button>
+        <!-- Elimina el botón de cerrar -->
         <iframe id="login-frame" src=""></iframe>
     </div>
     <main id="main-content">
