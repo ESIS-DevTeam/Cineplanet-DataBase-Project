@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!sessionData.loggedIn && !esInvitado) {
         // Oculta el contenido principal y muestra el modal de login
         document.getElementById('main-content').classList.add('oculto-por-modal');
-        document.getElementById('main-header').classList.add('oculto-por-modal');
         const loginModal = document.getElementById('login-modal');
         const loginFrame = document.getElementById('login-frame');
         params.set('redirect', window.location.pathname + '?' + params.toString());
@@ -32,34 +31,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             loginModal.style.display = 'none';
             document.body.style.overflow = '';
             document.getElementById('main-content').classList.remove('oculto-por-modal');
-            document.getElementById('main-header').classList.remove('oculto-por-modal');
         };
         return;
     } else {
         // Asegura que el contenido principal esté visible si no hay modal
         document.getElementById('main-content').classList.remove('oculto-por-modal');
-        document.getElementById('main-header').classList.remove('oculto-por-modal');
         document.getElementById('login-modal').style.display = 'none';
         document.body.style.overflow = '';
-    }
-
-    // Botón cancelar compra al lado del logo de usuario
-    const socioDisplay = document.getElementById('socio-display');
-    if (socioDisplay && idPelicula) {
-        const cancelarBtn = document.createElement('button');
-        cancelarBtn.textContent = 'Cancelar compra';
-        cancelarBtn.style.marginLeft = '1em';
-        cancelarBtn.style.background = '#d32f2f';
-        cancelarBtn.style.color = '#fff';
-        cancelarBtn.style.border = 'none';
-        cancelarBtn.style.padding = '0.7em 1.5em';
-        cancelarBtn.style.borderRadius = '8px';
-        cancelarBtn.style.fontWeight = 'bold';
-        cancelarBtn.style.cursor = 'pointer';
-        cancelarBtn.onclick = () => {
-            window.location.href = `peliculaSeleccion.html?pelicula=${idPelicula}`;
-        };
-        socioDisplay.parentNode.insertBefore(cancelarBtn, socioDisplay.nextSibling);
     }
 
     const socioData = sessionData.socio || null;
@@ -102,62 +80,77 @@ document.addEventListener('DOMContentLoaded', async () => {
         const hoy = new Date();
         hoy.setHours(0,0,0,0);
         if (fechaObj.getTime() === hoy.getTime()) {
-            fechaTexto = `Hoy, ${fechaObj.getDate()} de ${fechaObj.toLocaleString('es-ES', { month: 'short' })} de ${fechaObj.getFullYear()}`;
+            fechaTexto = `Hoy, ${fechaObj.getDate()} de ${fechaObj.toLocaleString('es-ES', { month: 'short' })}, ${fechaObj.getFullYear()}`;
         } else {
             const diasSemana = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
-            fechaTexto = `${diasSemana[fechaObj.getDay()]}, ${fechaObj.getDate()} de ${fechaObj.toLocaleString('es-ES', { month: 'short' })} de ${fechaObj.getFullYear()}`;
+            fechaTexto = `${diasSemana[fechaObj.getDay()]}, ${fechaObj.getDate()} de ${fechaObj.toLocaleString('es-ES', { month: 'short' })}, ${fechaObj.getFullYear()}`;
         }
     }
 
-    // Muestra la información igual que en asientos.js
+    // Clasificación (R) si existe
+    let clasificacionHtml = '';
+    if (infoFuncion && infoFuncion.clasificacion) {
+        clasificacionHtml = `<span class="clasificacion">(${infoFuncion.clasificacion})</span>`;
+    }
+
+    // Formato, idioma, subtitulado
+    let formatoLinea = '';
+    if (infoFuncion) {
+        formatoLinea = `${clasificacionHtml}${infoFuncion.formato || ''}`;
+        if (infoFuncion.formato && infoFuncion.tipoFuncion) {
+            formatoLinea += `, ${infoFuncion.tipoFuncion}`;
+        }
+        if (infoFuncion.idioma) {
+            formatoLinea += `, ${infoFuncion.idioma}`;
+        }
+    }
+
+    // Portada: usa siempre la ruta ../images/portrait/movie/${infoFuncion.portada}
+    let portadaSrc = '';
+    if (infoFuncion.portada) {
+        portadaSrc = `../images/portrait/movie/${infoFuncion.portada}`;
+    }
+
+    // Muestra la información igual que en asientos.js (diseño alineado)
     const infoDiv = document.createElement('div');
+    infoDiv.className = 'info-funcion-card';
     infoDiv.innerHTML = `
-        <div style="text-align:center;">
-            ${infoFuncion.portada ? `<img src="${infoFuncion.portada}" alt="Portada" style="width:140px;height:140px;border-radius:50%;object-fit:cover;">` : ''}
-        </div>
-        <h2 style="font-weight:bold; margin:0.5em 0;">${infoFuncion.nombrePelicula || ''}</h2>
-        <div style="margin-bottom:0.5em;">${infoFuncion.formato || ''}${infoFuncion.formato && infoFuncion.idioma ? ', ' : ''}${infoFuncion.idioma || ''}</div>
-        <div style="font-weight:bold; margin-bottom:0.5em;">${infoFuncion.nombreCine || ''}</div>
-        <div style="margin-bottom:0.3em;">
-            <span>📅 ${fechaTexto}</span>
-        </div>
-        <div style="margin-bottom:0.3em;">
-            <span>🕒 ${infoFuncion.hora || ''}</span>
-        </div>
-        <div>
-            <span>🏢 ${infoFuncion.nombreSala || ''}</span>
-        </div>
-        <hr style="margin:1em 0;">
+        ${portadaSrc ? `<img src="${portadaSrc}" alt="Portada" class="portada-circular">` : ''}
+        <h2 class="titulo-pelicula">${infoFuncion.nombrePelicula || ''}</h2>
+        <div class="formato-linea">${formatoLinea}</div>
+        <div class="cine-nombre">${infoFuncion.nombreCine || ''}</div>
+        <ul class="info-lista">
+            <li><span class="icono"><i class="fa-regular fa-calendar"></i></span>${fechaTexto}</li>
+            <li><span class="icono"><i class="fa-regular fa-clock"></i></span>${infoFuncion.hora || ''}</li>
+            <li><span class="icono"><i class="fa-solid fa-chair"></i></span>${infoFuncion.nombreSala || ''}</li>
+        </ul>
+        <hr>
     `;
+    document.getElementById('info-container').innerHTML = '';
     document.getElementById('info-container').appendChild(infoDiv);
 
-    // Botones
-    const btnContinuar = document.getElementById('btn-continuar');
-
-    // btnContinuar.disabled = false; // Habilita según tu lógica
-    btnContinuar.addEventListener('click', () => {
-        // Obtiene los asientos seleccionados de la URL
-        const asientos = params.get('asientos') || '';
-        // Obtiene las promociones y cantidades seleccionadas
-        const promosSeleccionadas = [];
-        [...panelEntradas.querySelectorAll('span[id^="cantidad-"]')].forEach(span => {
-            const cantidad = parseInt(span.textContent, 10);
-            if (cantidad > 0) {
-                const idPromo = span.id.replace('cantidad-', '');
-                promosSeleccionadas.push({ id: idPromo, cantidad });
-            }
-        });
-        // Serializa las promociones seleccionadas en la URL
-        // Ejemplo: promos=1:2,3:1 (idPromo:cantidad)
-        const promosParam = promosSeleccionadas.map(p => `${p.id}:${p.cantidad}`).join(',');
-        const urlParams = new URLSearchParams();
-        urlParams.set('pelicula', idPelicula);
-        urlParams.set('funcion', idFuncion);
-        urlParams.set('asientos', asientos);
-        if (promosParam) urlParams.set('promos', promosParam);
-        if (params.get('invitado') === '1') urlParams.set('invitado', '1');
-        window.location.href = `dulceria.html?${urlParams.toString()}`;
-    });
+    // Panel principal de selección de entradas (diseño según imagen)
+    const panelEntradasContainer = document.getElementById('panel-entradas-container');
+    panelEntradasContainer.innerHTML = `
+        <div class="panel-entradas-header">
+            <div class="panel-entradas-titulo-grande">Selecciona tus entradas</div>
+            <div class="panel-entradas-subtitulo">
+                ¡Combínalas como prefieras! Recuerda que deben coincidir con el número de butacas que seleccionaste.
+            </div>
+        </div>
+        <div class="panel-entradas-flex"></div>
+        <div class="panel-entradas-pie">
+            <div class="panel-codigos">
+                <span class="panel-codigos-label">Canjea tus códigos</span>
+                <input class="panel-codigos-input" type="text" placeholder="Ingresa tu código" disabled>
+                <button class="panel-codigos-btn" disabled>Canjear</button>
+                <div class="panel-codigos-desc">Códigos promocionales, entradas corporativas.</div>
+            </div>
+            <div class="panel-resumen">
+                Entradas seleccionadas: <span id="panel-resumen-cantidad">0</span> de ${maxEntradas}
+            </div>
+        </div>
+    `;
 
     // Mostrar las entradas usando solo promociones
     let promos = [];
@@ -192,6 +185,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         return promo.stock;
     }
 
+    // --- Mueve este bloque antes de renderizar las columnas ---
     // Separar promos en generales y beneficios
     const generales = [];
     const beneficios = [];
@@ -212,78 +206,97 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Renderiza las entradas generales
+    // Renderiza las entradas generales y beneficios en columnas tipo tarjetas
+    const panelFlex = panelEntradasContainer.querySelector('.panel-entradas-flex');
+
+    // Columna de generales
     const generalesDiv = document.createElement('div');
-    generalesDiv.innerHTML = `<h2>Entradas generales</h2>`;
+    generalesDiv.className = 'panel-entradas-col panel-entradas-generales';
+    generalesDiv.innerHTML = `<div class="panel-entradas-titulo">Entradas generales</div>`;
     generales.forEach(p => {
-        // Muestra el stock si tieneStock está activo
         let stockInfo = '';
         if (p.tieneStock && p.stock !== null) {
-            stockInfo = `<span style="color:#b00;">Stock disponible: ${p.stock}</span><br>`;
+            stockInfo = `<span class="stock-info">Stock disponible: ${p.stock}</span>`;
         }
         generalesDiv.innerHTML += `
-            <div>
-                <strong>${p.nombre}</strong><br>
-                <span>${p.descripcion || ''}</span><br>
-                ${stockInfo}
-                <span>S/${p.precioFinal.toFixed(2)}${p.precioFinal < precioBase ? ' Precio más bajo' : ''}</span>
-                <div>
-                    <button type="button" data-type="menos" data-id="${p.id}" data-grupo="general">-</button>
-                    <span id="cantidad-${p.id}">0</span>
-                    <button type="button" data-type="mas" data-id="${p.id}" data-grupo="general">+</button>
+            <div class="panel-entrada-item">
+                <div class="panel-entrada-info">
+                    <div class="panel-entrada-nombre">${p.nombre}</div>
+                    <div class="panel-entrada-desc">${p.descripcion || ''}</div>
+                    <div class="panel-entrada-precio">
+                        S/${p.precioFinal.toFixed(2)}
+                        ${p.precioFinal < precioBase ? '<span class="panel-entrada-precio-bajo">Precio más bajo</span>' : ''}
+                    </div>
+                </div>
+                <div class="panel-entrada-controles">
+                    <button type="button" class="entrada-circulo-btn" data-type="menos" data-id="${p.id}" data-grupo="general" aria-label="Restar" disabled><i class="fa-solid fa-minus"></i></button>
+                    <span id="cantidad-${p.id}" class="panel-entrada-cantidad">0</span>
+                    <button type="button" class="entrada-circulo-btn" data-type="mas" data-id="${p.id}" data-grupo="general" aria-label="Sumar"><i class="fa-solid fa-plus"></i></button>
                 </div>
             </div>
         `;
     });
 
-    // Renderiza los beneficios
+    // Columna de beneficios
     const beneficiosDiv = document.createElement('div');
-    beneficiosDiv.innerHTML = `<h2>Tus Beneficios</h2>`;
+    beneficiosDiv.className = 'panel-entradas-col panel-entradas-beneficios';
+    beneficiosDiv.innerHTML = `<div class="panel-entradas-titulo">Tus Beneficios</div>`;
     beneficios.forEach(p => {
         let stockInfo = '';
         if (p.tieneStock && p.stock !== null) {
-            stockInfo = `<span style="color:#b00;">Stock disponible: ${p.stock}</span><br>`;
+            stockInfo = `<span class="stock-info">Stock disponible: ${p.stock}</span>`;
         }
-        // NUEVO: agrega un span con id para mostrar puntos disponibles dinámicamente
         beneficiosDiv.innerHTML += `
-            <div>
-                <strong>${p.nombre}</strong><br>
-                <span>${p.descripcion || ''}</span><br>
-                ${p.requierePuntos && socioData ? `<span id="puntos-disponibles-${p.id}">Puntos disponibles: ${puntosSocio}</span><br>` : ''}
-                ${stockInfo}
-                <span>S/${p.precioFinal.toFixed(2)}</span>
-                <div>
-                    <button type="button" data-type="menos" data-id="${p.id}" data-grupo="beneficio">-</button>
-                    <span id="cantidad-${p.id}">0</span>
-                    <button type="button" data-type="mas" data-id="${p.id}" data-grupo="beneficio">+</button>
+            <div class="panel-entrada-item">
+                <div class="panel-entrada-info">
+                    <div class="panel-entrada-nombre">${p.nombre}</div>
+                    <div class="panel-entrada-desc">${p.descripcion || ''}</div>
+                    ${p.requierePuntos && socioData ? `<div class="panel-entrada-puntos" id="puntos-disponibles-${p.id}">Puntos disponibles: ${puntosSocio}</div>` : ''}
+                    <div class="panel-entrada-precio">
+                        S/${p.precioFinal.toFixed(2)}
+                    </div>
+                </div>
+                <div class="panel-entrada-controles">
+                    <button type="button" class="entrada-circulo-btn" data-type="menos" data-id="${p.id}" data-grupo="beneficio" aria-label="Restar" disabled><i class="fa-solid fa-minus"></i></button>
+                    <span id="cantidad-${p.id}" class="panel-entrada-cantidad">0</span>
+                    <button type="button" class="entrada-circulo-btn" data-type="mas" data-id="${p.id}" data-grupo="beneficio" aria-label="Sumar"><i class="fa-solid fa-plus"></i></button>
                 </div>
             </div>
         `;
     });
 
-    // Muestra ambos paneles en columnas
-    const panelEntradas = document.createElement('div');
-    panelEntradas.appendChild(generalesDiv);
-    panelEntradas.appendChild(beneficiosDiv);
-    document.getElementById('info-container').appendChild(panelEntradas);
+    panelFlex.appendChild(generalesDiv);
+    panelFlex.appendChild(beneficiosDiv);
+
+    // --- Botón continuar dinámico ---
+    const btnContinuar = document.createElement('button');
+    btnContinuar.id = 'btn-continuar';
+    btnContinuar.className = 'btn-continuar';
+    btnContinuar.textContent = 'Continuar';
+    btnContinuar.disabled = true;
+    // Inserta el botón después del panel de selección
+    panelEntradasContainer.appendChild(btnContinuar);
 
     // Función para habilitar/deshabilitar el botón continuar
     function actualizarBotonContinuarEntradas() {
         let totalSeleccionadas = 0;
-        [...panelEntradas.querySelectorAll('span[id^="cantidad-"]')].forEach(span => {
+        [...panelFlex.querySelectorAll('span[id^="cantidad-"]')].forEach(span => {
             totalSeleccionadas += parseInt(span.textContent, 10);
         });
         btnContinuar.disabled = (totalSeleccionadas !== maxEntradas);
+        // Actualiza el resumen
+        document.getElementById('panel-resumen-cantidad').textContent = totalSeleccionadas;
     }
 
     // Lógica para sumar/restar cantidad con máximo y con stock
-    panelEntradas.addEventListener('click', function(e) {
-        if (e.target.tagName === 'BUTTON') {
-            const type = e.target.getAttribute('data-type');
-            const id = e.target.getAttribute('data-id');
+    panelFlex.addEventListener('click', function(e) {
+        if (e.target.closest('button.entrada-circulo-btn')) {
+            const btn = e.target.closest('button.entrada-circulo-btn');
+            const type = btn.getAttribute('data-type');
+            const id = btn.getAttribute('data-id');
             // Suma total de entradas seleccionadas
             let totalSeleccionadas = 0;
-            [...panelEntradas.querySelectorAll('span[id^="cantidad-"]')].forEach(span => {
+            [...panelFlex.querySelectorAll('span[id^="cantidad-"]')].forEach(span => {
                 totalSeleccionadas += parseInt(span.textContent, 10);
             });
 
@@ -319,6 +332,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             span.textContent = val;
 
+            // Habilita/deshabilita los botones según el valor
+            const menosBtn = btn.parentElement.querySelector('button[data-type="menos"]');
+            const masBtn = btn.parentElement.querySelector('button[data-type="mas"]');
+            menosBtn.disabled = (parseInt(span.textContent, 10) === 0);
+            masBtn.disabled = (parseInt(span.textContent, 10) >= maxReal);
+
             // Visualización de puntos solo si requiere puntos
             if (promo && promo.requierePuntos && socioData) {
                 const puntosPorEntrada = promo.puntosNecesarios || 1;
@@ -332,6 +351,37 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             actualizarBotonContinuarEntradas();
         }
+    });
+
+    // Inicializa los botones menos como deshabilitados
+    panelFlex.querySelectorAll('.panel-entrada-controles').forEach(controles => {
+        const menosBtn = controles.querySelector('button[data-type="menos"]');
+        menosBtn.disabled = true;
+    });
+
+    // Evento click para continuar (después de renderizar todo)
+    btnContinuar.addEventListener('click', () => {
+        // Obtiene los asientos seleccionados de la URL
+        const asientos = params.get('asientos') || '';
+        // Obtiene las promociones y cantidades seleccionadas
+        const promosSeleccionadas = [];
+        [...panelFlex.querySelectorAll('span[id^="cantidad-"]')].forEach(span => {
+            const cantidad = parseInt(span.textContent, 10);
+            if (cantidad > 0) {
+                const idPromo = span.id.replace('cantidad-', '');
+                promosSeleccionadas.push({ id: idPromo, cantidad });
+            }
+        });
+        // Serializa las promociones seleccionadas en la URL
+        // Ejemplo: promos=1:2,3:1 (idPromo:cantidad)
+        const promosParam = promosSeleccionadas.map(p => `${p.id}:${p.cantidad}`).join(',');
+        const urlParams = new URLSearchParams();
+        urlParams.set('pelicula', idPelicula);
+        urlParams.set('funcion', idFuncion);
+        urlParams.set('asientos', asientos);
+        if (promosParam) urlParams.set('promos', promosParam);
+        if (params.get('invitado') === '1') urlParams.set('invitado', '1');
+        window.location.href = `dulceria.html?${urlParams.toString()}`;
     });
 
     // Inicializa el botón al cargar

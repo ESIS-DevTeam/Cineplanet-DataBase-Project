@@ -4,60 +4,104 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Entradas</title>
-    <style>
-        body { font-family: sans-serif; }
-        #info-container { margin: 2em auto; max-width: 800px; }
-        #socio-display { position: absolute; top: 15px; right: 15px; font-size: 1.2em; border: 1px solid #ccc; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; user-select: none; }
-        /* Estilos para el modal de login */
-        #login-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: #fff; /* Fondo sólido */
-            z-index: 9999;
-        }
-        #login-frame {
-            width: 400px;
-            height: 500px;
-            border: none;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: #fff;
-            border-radius: 10px;
-        }
-        #close-login-modal {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 10000;
-        }
-        .oculto-por-modal {
-            display: none !important;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="../styles/entradas.css">
 </head>
 <body>
-    <header id="main-header">
-        <h1>Entradas</h1>
-        <div id="socio-display">👤</div>
-    </header>
+    <!-- Header igual que asientos.html -->
+    <div class="header-asientos">
+        <button class="volver-btn" id="volver-btn">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Atrás
+        </button>
+        <div class="titulo-header">2. Selecciona tus entradas</div>
+        <div class="acciones-header">
+            <div class="socio-display" id="socio-display">👤</div>
+            <button class="cerrar-btn" id="cerrar-btn" title="Cerrar">
+                &times;
+            </button>
+        </div>
+    </div>
+    <div class="espacio-header"></div>
     <div id="login-modal">
         <button id="close-login-modal">✖</button>
         <iframe id="login-frame" src=""></iframe>
     </div>
     <main id="main-content">
-        <div id="info-container"></div>
-        <div id="btns-container" style="text-align:center; margin:2em 0;">
-            <button id="btn-volver" style="padding:0.7em 2em; font-size:1.1em; margin-right:1em; cursor:pointer;">Volver</button>
-            <button id="btn-continuar" style="padding:0.7em 2em; font-size:1.1em; cursor:pointer;" disabled>Continuar</button>
+        <div class="asientos-layout">
+            <div class="info-funcion-col">
+                <div id="info-container"></div>
+            </div>
+            <div class="asientos-col">
+                <!-- Barra de progreso de pasos -->
+                <div class="progreso-pasos">
+                    <div class="paso">
+                        <span class="icono"><i class="fa-solid fa-chair"></i></span>
+                        <span class="linea"></span>
+                    </div>
+                    <div class="paso activo">
+                        <span class="icono"><i class="fa-solid fa-ticket"></i></span>
+                        <span class="linea"></span>
+                    </div>
+                    <div class="paso">
+                        <span class="icono"><i class="fa-solid fa-burger"></i></span>
+                        <span class="linea"></span>
+                    </div>
+                    <div class="paso">
+                        <span class="icono"><i class="fa-regular fa-rectangle-list"></i></span>
+                    </div>
+                </div>
+                <div id="panel-entradas-container">
+                    <!-- Aquí se insertará el panel de selección de entradas desde JS -->
+                </div>
+                <!-- Elimina el contenedor de botones estático -->
+                <!-- <div id="btns-container" style="text-align:center; margin:2em 0;">
+                    <button id="btn-continuar" class="btn-continuar" disabled>Continuar</button>
+                </div> -->
+            </div>
         </div>
-        <!-- ...contenido de entradas aquí... -->
     </main>
     <script type="module" src="../js/entradas.js"></script>
+    <script>
+        // Manejo de usuario en header (igual que asientos.html)
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('../../backend/auth/checkSession.php')
+                .then(res => res.json())
+                .then(data => {
+                    const socioDisplay = document.getElementById('socio-display');
+                    if (data.loggedIn && data.socio && data.socio.nombre) {
+                        const nombre = data.socio.nombre;
+                        const iniciales = nombre.split(' ').map(word => word[0]).join('').toUpperCase();
+                        socioDisplay.textContent = iniciales;
+                    } else {
+                        socioDisplay.textContent = '👤';
+                    }
+                });
+        });
+        // Botón volver
+        document.getElementById('volver-btn').onclick = function() {
+            const params = new URLSearchParams(window.location.search);
+            const idPelicula = params.get('pelicula');
+            const idFuncion = params.get('funcion');
+            // Mantén los parámetros relevantes para volver a asientos.html
+            let url = 'asientos.html';
+            if (idPelicula && idFuncion) {
+                url += `?pelicula=${idPelicula}&funcion=${idFuncion}`;
+                if (params.get('invitado') === '1') url += '&invitado=1';
+            }
+            window.location.href = url;
+        };
+        // Elimina el handler de cerrar-btn aquí, ya lo maneja entradas.js
+        // document.getElementById('cerrar-btn').onclick = function() {
+        //     const params = new URLSearchParams(window.location.search);
+        //     const idPelicula = params.get('pelicula');
+        //     if (idPelicula) {
+        //         window.location.href = `peliculaSeleccion.html?pelicula=${idPelicula}`;
+        //     } else {
+        //         window.location.href = 'peliculaSeleccion.html';
+        //     }
+        // };
+    </script>
 </body>
 </html>
