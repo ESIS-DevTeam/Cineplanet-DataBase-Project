@@ -1,0 +1,83 @@
+/* Header styles centrado y compacto */
+header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 8px;
+    height: 56px;
+    background: #fff;
+    box-sizing: border-box;
+    box-shadow: 0 5px 12px rgba(0,0,0,0.08); /* Sombra abajo */
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+.header-group {
+    display: flex;
+    align-items: center;
+    gap: 30px; /* Espacio entre logo y menú */
+}
+.logo-cineplanet {
+    height: 50px;
+    width: auto;
+    vertical-align: middle;
+}
+nav {
+    display: flex;
+    align-items: center;
+    gap: 50px;
+}
+nav ul.menu-nav {
+    display: flex;
+    gap: 16px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+}
+nav ul.menu-nav li a {
+    font-family: sans-serif;
+    font-size: 1em;
+    color: #6b7a90;
+    font-weight: 300;
+    text-decoration: none;
+    padding: 2px 0;
+    transition: color 0.2s;
+    position: relative;
+}
+nav ul.menu-nav li a::after {
+    content: "";
+    display: block;
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+    width: 0;
+    height: 4px;
+    background: #dc1e35;
+    border-radius: 2px;
+    transition: width 0.2s;
+}
+nav ul.menu-nav li a:hover::after,
+nav ul.menu-nav li a:focus::after {
+    width: 32px;
+}
+nav ul.menu-nav li a.active::after {
+    width: 32px;
+}
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 24px; /* Más separación entre los íconos */
+    margin-left: 12px;
+}
+.nav-actions button {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    color: #2d3a4e;
+    cursor: pointer;
+    position: relative;
+    padding: 0;
+    margin: 0;
+    outline: none;
+}

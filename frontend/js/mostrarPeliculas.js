@@ -10,17 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Finalmente, añade el listener para futuros cambios.
     document.getElementById('filtros-peliculas').addEventListener('change', onFiltroChange);
 
-    // Agrega los botones/tabs
-    const contenedor = document.getElementById('contenedorPeliculas');
-    contenedor.innerHTML = `
-        <div id="peliculas-tabs" style="display:flex; justify-content:center; align-items:center; gap:32px; margin-bottom:24px;">
-            <button id="tab-cartelera" style="background:none; border:none; font-weight:bold; font-size:1.1em; cursor:pointer; border-bottom:2px solid #007bff; padding:8px 24px;">En cartelera</button>
-            <button id="tab-preventa" style="background:none; border:none; font-weight:normal; font-size:1.1em; cursor:pointer; padding:8px 24px;">Preventa</button>
-        </div>
-        <div id="peliculas-seccion"></div>
-    `;
     let modo = 'cartelera';
-    const seccion = document.getElementById('peliculas-seccion');
+    const seccion = document.getElementById('contenedorPeliculas');
 
     function cargarCartelera() {
         const filtros = obtenerFiltrosSeleccionados();
@@ -51,17 +42,21 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('tab-cartelera').onclick = () => {
         modo = 'cartelera';
         document.getElementById('tab-cartelera').style.fontWeight = 'bold';
-        document.getElementById('tab-cartelera').style.borderBottom = '2px solid #007bff';
+        document.getElementById('tab-cartelera').style.color = '#003d82';
+        document.getElementById('tab-cartelera').style.borderBottomColor = '#dc1e35';
         document.getElementById('tab-preventa').style.fontWeight = 'normal';
-        document.getElementById('tab-preventa').style.borderBottom = 'none';
+        document.getElementById('tab-preventa').style.color = '#222';
+        document.getElementById('tab-preventa').style.borderBottomColor = 'transparent';
         cargarCartelera();
     };
     document.getElementById('tab-preventa').onclick = () => {
         modo = 'preventa';
         document.getElementById('tab-preventa').style.fontWeight = 'bold';
-        document.getElementById('tab-preventa').style.borderBottom = '2px solid #007bff';
+        document.getElementById('tab-preventa').style.color = '#003d82';
+        document.getElementById('tab-preventa').style.borderBottomColor = '#dc1e35';
         document.getElementById('tab-cartelera').style.fontWeight = 'normal';
-        document.getElementById('tab-cartelera').style.borderBottom = 'none';
+        document.getElementById('tab-cartelera').style.color = '#222';
+        document.getElementById('tab-cartelera').style.borderBottomColor = 'transparent';
         cargarPreventa();
     };
 
@@ -94,20 +89,24 @@ function cargarPeliculasYFiltros(seleccionadosPrevios = null) {
 }
 
 function mostrarPeliculas(peliculas, filtros) {
-    const seccion = document.getElementById('peliculas-seccion');
+    const seccion = document.getElementById('contenedorPeliculas');
     if (!seccion) return;
     seccion.innerHTML = '';
 
-    // Animación fade-in
-    seccion.style.opacity = 0;
-    setTimeout(() => { seccion.style.opacity = 1; }, 50);
+    // Centrar el contenedor en la página
+    seccion.style.display = 'flex';
+    seccion.style.justifyContent = 'center';
+    seccion.style.alignItems = 'center';
+    seccion.style.width = '100%';
+    seccion.style.minHeight = '500px';
 
     const idsMostrados = new Set();
     const grid = document.createElement('div');
     grid.style.display = 'grid';
-    grid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(220px, 1fr))';
-    grid.style.gap = '32px';
-    grid.style.marginTop = '0px'; // Sin margen arriba, para que quede pegado debajo de los tabs
+    grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+    grid.style.gap = '40px 32px';
+    grid.style.marginTop = '0px';
+    grid.style.justifyContent = 'center'; // Centra el grid
 
     const paramsFiltro = new URLSearchParams(filtros);
 
@@ -124,50 +123,53 @@ function mostrarPeliculas(peliculas, filtros) {
 
         const card = document.createElement('div');
         card.className = 'pelicula-card';
-        card.style.background = '#fff';
-        card.style.border = '2px solid #007bff';
-        card.style.borderRadius = '10px';
-        card.style.boxShadow = '0 2px 8px #0002';
-        card.style.padding = '12px';
+        card.style.border = 'none';
+        card.style.borderRadius = '0';
+        card.style.background = 'transparent'; // Fondo transparente
+        card.style.boxShadow = 'none';        // Sin sombra
+        card.style.padding = '0';
         card.style.display = 'flex';
         card.style.flexDirection = 'column';
-        card.style.alignItems = 'center';
-        card.style.transition = 'box-shadow 0.2s';
-        card.onmouseover = () => card.style.boxShadow = '0 4px 16px #007bff44';
-        card.onmouseout = () => card.style.boxShadow = '0 2px 8px #0002';
+        card.style.alignItems = 'flex-start';
+        card.style.position = 'relative';
 
+        // Imagen
         const img = document.createElement('img');
         img.src = pelicula.portada
             ? `../images/portrait/movie/${pelicula.portada}`
             : 'img/default-pelicula.jpg';
         img.alt = pelicula.nombrePelicula || 'Sin título';
-        img.style.width = '180px';
-        img.style.height = '260px';
+        img.style.width = '100%';
+        img.style.height = '360px';
         img.style.objectFit = 'cover';
-        img.style.borderRadius = '8px';
-        img.style.marginBottom = '10px';
+        img.style.display = 'block';
+        img.style.borderRadius = '0'; // Sharp corners
+
+        card.appendChild(img);
+
+        // Info
+        const infoContainer = document.createElement('div');
+        infoContainer.style.padding = '18px 0 0 0';
 
         const titulo = document.createElement('h3');
         titulo.textContent = pelicula.nombrePelicula || 'Sin título';
-        titulo.style.margin = '8px 0 6px 0';
-        titulo.style.textAlign = 'center';
+        titulo.style.margin = '0 0 6px 0';
+        titulo.style.fontSize = '1.25em';
         titulo.style.fontWeight = 'bold';
-        titulo.style.color = '#007bff';
+        titulo.style.color = '#222';
+        titulo.style.fontFamily = "'Poppins',sans-serif";
 
-        const duracion = document.createElement('p');
-        duracion.textContent = `Duración: ${pelicula.duracion || 'N/A'} min`;
-        duracion.style.margin = '2px 0';
-        duracion.style.textAlign = 'center';
+        // Género, duración, restricción
+        const detalles = document.createElement('div');
+        detalles.style.fontSize = '1em';
+        detalles.style.color = '#222';
+        detalles.style.margin = '0 0 0 0';
+        detalles.textContent = `${pelicula.genero || ''}${pelicula.genero ? ', ' : ''}${pelicula.duracion ? pelicula.duracion + 'min' : ''}${pelicula.restriccionEdad ? ', +' + pelicula.restriccionEdad : ''}`;
 
-        const restriccion = document.createElement('p');
-        restriccion.textContent = `Restricción: ${pelicula.restriccionEdad || 'N/A'}`;
-        restriccion.style.margin = '2px 0';
-        restriccion.style.textAlign = 'center';
+        infoContainer.appendChild(titulo);
+        infoContainer.appendChild(detalles);
 
-        card.appendChild(img);
-        card.appendChild(titulo);
-        card.appendChild(duracion);
-        card.appendChild(restriccion);
+        card.appendChild(infoContainer);
 
         link.appendChild(card);
         grid.appendChild(link);
@@ -214,8 +216,21 @@ function renderCheckboxes(contenedorId, opcionesSet, filtroName, seleccionados) 
         const input = document.createElement('input');
         input.type = 'checkbox';
         input.value = opcion.id;
-        input.name = filtroName; // Asegura que el name sea correcto
-        if (seleccionadosArr.includes(String(opcion.id))) input.checked = true;
+        input.name = filtroName;
+        input.style.display = 'none';
+        const isChecked = seleccionadosArr.includes(String(opcion.id));
+        if (isChecked) input.checked = true;
+        
+        // Aplicar color rojo si está marcado
+        if (isChecked) {
+            label.style.color = '#ff0000';
+        }
+        
+        // Evento para actualizar color al cambiar
+        input.addEventListener('change', () => {
+            label.style.color = input.checked ? '#ff0000' : '#555';
+        });
+        
         label.appendChild(input);
         label.appendChild(document.createTextNode(' ' + opcion.nombre));
         contenedor.appendChild(label);
@@ -274,6 +289,16 @@ function mostrarFiltroFechas(peliculas, seleccionados) {
         checkbox.name = 'dia';
         checkbox.value = fechaStr;
         if (seleccionadosArr.includes(fechaStr)) checkbox.checked = true;
+
+        // Aplicar color rojo si está marcado
+        if (checkbox.checked) {
+            label.style.color = '#ff0000';
+        }
+
+        // Evento para actualizar color al cambiar
+        checkbox.addEventListener('change', () => {
+            label.style.color = checkbox.checked ? '#ff0000' : '#555';
+        });
 
         label.appendChild(checkbox);
         label.append(` ${textoLabel}`);
