@@ -108,6 +108,7 @@
   fetch('backend/auth/checkSession.php')
     .then(res => res.json())
     .then(data => {
+      console.log('Datos de sesión (Index):', data);
       socioData = data.socio || null;
       if (data.loggedIn && socioData) {
         document.getElementById('socio-info').innerHTML =
@@ -134,8 +135,13 @@
       return;
     }
     if (socioData) {
+      let adminButton = '';
+      if (socioData.tipo_usuario === 'admin') {
+        adminButton = `<button onclick="window.location.href='frontend/pages/admin/adminPanel.html'">Panel Admin</button><br>`;
+      }
       popupContent.innerHTML = `
         <div style="font-weight:bold; margin-bottom:8px;">${socioData.nombre}</div>
+        ${adminButton}
         <button onclick="window.location.href='frontend/pages/misBeneficos.html'">Mis beneficios</button><br>
         <button onclick="window.location.href='frontend/pages/misCompras.html'">Mis compras</button><br>
         <button onclick="window.location.href='frontend/pages/misDatos.html'">Mis datos</button><br>

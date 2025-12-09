@@ -238,11 +238,12 @@
 <body>
     <script>
     // Verifica sesión al cargar el panel admin
-    fetch('../../backend/auth/checkSession.php')
+    fetch('../../../backend/auth/checkSession.php')
         .then(res => res.json())
         .then(data => {
-            if (!data.loggedIn) {
-                window.location.href = '../../pages/login.html?redirect=' + encodeURIComponent(window.location.pathname);
+            console.log('Datos de sesión (Admin Panel):', data);
+            if (!data.loggedIn || !data.socio ) {
+                window.location.href = '../login.html?redirect=' + encodeURIComponent(window.location.pathname);
             } else {
                 // Muestra el nombre del usuario en el header
                 const header = document.querySelector('.header-container');
@@ -265,7 +266,7 @@
         <div class="header-container" style="position: relative; height: 74px; max-width: 1200px; margin: 0 auto; padding: 10px 20px;">
             <!-- Logo izquierda -->
             <div style="position: absolute; left: 0; top: 10px;">
-                <a href="../../index.html" class="logo-a" style="display: flex; align-items: center;">
+                <a href="../../../index.html" class="logo-a" style="display: flex; align-items: center;">
                     <img src="../../images/items/logo2.png" alt="Cineplanet" style="height:54px; width:auto; display:block;">
                 </a>
             </div>
@@ -558,9 +559,14 @@
     <script>
     // Logout button logic
     document.getElementById('logout-btn').onclick = function() {
-        fetch('../../backend/auth/logout.php')
-            .then(res => res.json())
-            .then(() => window.location.href = '../../index.html');
+        fetch('../../../backend/auth/logout.php')
+            .then(() => {
+                window.location.replace('../../../index.html');
+            })
+            .catch(error => {
+                console.error('Error al cerrar sesión:', error);
+                window.location.replace('../../../index.html');
+            });
     };
     // Cambia el color del SVG al pasar el mouse
     const logoutBtn = document.getElementById('logout-btn');
