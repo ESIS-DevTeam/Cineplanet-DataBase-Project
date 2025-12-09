@@ -3,232 +3,365 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pago</title>
+    <title>Pago Dulcería</title>
     <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        #socio-display { position: absolute; top: 15px; right: 15px; font-size: 1.2em; border: 1px solid #ccc; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; user-select: none; }
+        html, body { height: 100%; }
+        body { font-family: 'Montserrat', sans-serif; margin:0; padding:0; min-height: 100vh; }
+        main#main-content { min-height: calc(100vh - 60px); display: flex; flex-direction: column; }
+        .header-pago { width: 100%; background: #004A8C; color: #fff; display: flex; align-items: center; justify-content: space-between; height: 60px; position: fixed; top: 0; left: 0; z-index: 100; padding: 0 24px; box-sizing: border-box; }
+        .header-pago .volver-btn { display: flex; align-items: center; background: none; border: none; color: #fff; font-size: 1.2em; font-weight: bold; cursor: pointer; padding: 0; margin-right: 16px; }
+        .header-pago .titulo-header { flex: 1; text-align: center; font-size: 1.45em; font-weight: bold; letter-spacing: 0.01em; font-family: "Montserrat", sans-serif; }
+        .header-pago .acciones-header { display: flex; align-items: center; gap: 18px; }
+        .header-pago .socio-display { font-size: 1.3em; border: 1px solid #fff; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; user-select: none; background: rgba(255,255,255,0.08); }
+        .header-pago .cerrar-btn { background: none; border: none; color: #fff; font-size: 1.6em; cursor: pointer; margin-left: 10px; line-height: 1; }
+        .espacio-header { height: 60px; }
+        .asientos-layout { display: flex; flex-direction: row; max-width: 1200px; margin: 0 auto; min-height: calc(100vh - 60px); height: auto; flex: 1 1 auto; }
+        .info-funcion-col { width: 250px; background: #F6F6F6; border-right: 1px solid #e0e4ea; padding: 32px 10px 24px 10px; box-sizing: border-box; min-height: 100%; display: flex; flex-direction: column; align-items: center; }
+        .info-funcion-card { width: 100%; max-width: 220px; padding: 0 24px 12px 24px; box-sizing: border-box; display: flex; flex-direction: column; align-items: flex-start; min-height: 0; height: auto; }
+        .info-funcion-card .portada-circular { width: 140px; height: 140px; border-radius: 50%; object-fit: cover; margin-bottom: 18px; box-shadow: 0 2px 8px 0 rgba(0,0,0,0.10); background: #eee; align-self: center; }
+        .info-funcion-card .titulo-pelicula { color: #004A8C; font-family: "Montserrat", sans-serif; font-size: 1.5em; font-weight: 900; line-height: 28px; margin: 0 0 0.5em; text-align: left; width: 100%; }
+        .info-funcion-card .cine-nombre { color: #092058; font-family: "Montserrat", sans-serif; font-size: 1.125em; font-weight: 900; margin-bottom: 0.7em; text-align: left; width: 100%; }
+        .info-funcion-card hr { width: 100%; border: none; border-top: 1px solid #e0e4ea; margin: 1.2em 0 0.5em 0; }
+        #info-total-container { margin-top:1.5em; width:100%; max-width:220px; padding:0 24px 12px 24px; box-sizing:border-box; text-align:left; }
+        #info-total-container .resumen-total { color: #D70242; font-family: 'Montserrat', sans-serif; font-size: 1.18em; font-weight: bold; margin-bottom: 0.7em; }
+        #info-total-container .btn-ver-resumen { display: inline-block; font-family: 'Montserrat', sans-serif; font-size: 0.98em; color: #D70242; background: #fff; border: 2px solid #D70242; border-radius: 22px; padding: 0.35em 1.3em; cursor: pointer; transition: background 0.18s, color 0.18s; margin-top: 0.2em; }
+        #info-total-container .btn-ver-resumen:hover { background: #fbe6ee; }
+        .asientos-col { flex: 1; padding: 32px 32px 24px 32px; box-sizing: border-box; min-width: 0; background: #E7ECF0; min-height: 100%; display: flex; flex-direction: column; }
+        .progreso-pasos { display: flex; align-items: center; justify-content: center; margin-bottom: 2em; margin-top: 0.5em; gap: 0; user-select: none; }
+        .progreso-pasos .paso { display: flex; align-items: center; opacity: 0.35; }
+        .progreso-pasos .paso.activo { opacity: 1; }
+        .progreso-pasos .icono { width: 38px; height: 38px; border-radius: 50%; background: #f4f7fa; border: 2px solid #004A8C; display: flex; align-items: center; justify-content: center; font-size: 1.45em; color: #004A8C; box-sizing: border-box; transition: border 0.2s; }
+        .progreso-pasos .paso:not(.activo) .icono { border: 2px solid #b0b8c1; color: #b0b8c1; background: #f4f7fa; }
+        .progreso-pasos .linea { width: 48px; height: 2px; background: #b0b8c1; margin: 0 2px; display: inline-block; }
+        .progreso-pasos .paso.activo ~ .paso .linea { background: #b0b8c1; }
+        .progreso-pasos .paso.activo .linea { background: #004A8C; }
+        .input-linea { position: relative; margin-bottom: 2em; }
+        .input-linea label { position: absolute; top: 8px; left: 0; font-size: 1em; color: #7a8ba7; pointer-events: none; transition: color 0.2s, font-size 0.2s, top 0.2s; font-family: 'Montserrat', sans-serif; }
+        .input-linea input { width: 100%; border: none; border-bottom: 1.5px solid #b0b8c1; background: #e7ecf0; font-size: 1.15em; padding: 28px 0 8px 0; color: #223a5f; font-family: 'Montserrat', sans-serif; outline: none; transition: background 0.2s, border-color 0.2s; }
+        .input-linea input:focus { background: transparent; border-bottom: 2px solid #004A8C; }
+        .input-linea input:focus + label, .input-linea input:not(:placeholder-shown) + label, .input-linea input:valid + label { color: #004A8C; font-size: 1.05em; top: 2px; }
+        .metodo-pago-opciones { display: flex; flex-direction: column; gap: 0.7em; }
+        details.metodo-pago-card { border: none; background: none; margin-bottom: 0; box-shadow: none; padding: 0; }
+        details.metodo-pago-card summary { display: flex; align-items: center; gap: 1.2em; padding: 0.9em 1em; background: #fff; border: 1.5px solid #dbe3ea; border-radius: 4px; font-size: 1.13em; font-weight: 700; color: #0d3c6e; cursor: pointer; list-style: none; outline: none; margin-bottom: 0; box-shadow: none; transition: border-color 0.18s, background 0.18s; }
+        details.metodo-pago-card:not([open]) summary { background: #fff; border: 1.5px solid #dbe3ea; border-radius: 4px; box-shadow: none; }
+        details.metodo-pago-card[open] summary { border: 2.5px solid #004A8C; background: #fff; border-radius: 10px 10px 0 0; color: #004A8C; font-size: 1.18em; font-weight: 900; box-shadow: 0 4px 18px 0 rgba(0,74,140,0.08); }
+        details.metodo-pago-card summary::-webkit-details-marker { display: none; }
+        .metodo-radio { width: 22px; height: 22px; border: 2px solid #b0b8c1; border-radius: 50%; background: #fff; margin-right: 0.8em; appearance: none; outline: none; cursor: pointer; position: relative; flex-shrink: 0; transition: border-color 0.18s; }
+        details.metodo-pago-card[open] .metodo-radio { border-color: #004A8C; }
+        .metodo-radio:checked::before { content: ''; display: block; width: 12px; height: 12px; background: #004A8C; border-radius: 50%; position: absolute; top: 4px; left: 4px; }
+        .metodo-titulo { font-size: 1em; font-weight: 700; color: #0d3c6e; margin-right: 1em; white-space: nowrap; }
+        details.metodo-pago-card[open] .metodo-titulo { color: #004A8C; font-size: 1.13em; }
+        .metodo-logos { display: flex; align-items: center; gap: 0.5em; margin-left: auto; }
+        .metodo-logos img { height: 28px; border-radius: 4px; background: #fff; box-shadow: 0 1px 4px #e0e4ea; padding: 2px 6px; object-fit: contain; }
+        .metodo-pago-formulario { padding: 24px 32px 32px 32px; border-top: 1px solid #e0e4ea; margin-top: 0; background: #fff; border-radius: 0 0 10px 10px; }
+        .metodo-pago-formulario .form-group { margin-bottom: 24px; }
+        .metodo-pago-formulario label { display: block; font-size: 1em; color: #0d3c6e; margin-bottom: 8px; font-weight: 400; font-family: 'Montserrat', sans-serif; }
+        .metodo-pago-formulario input, .metodo-pago-formulario select { width: 100%; border: none; border-bottom: 1px solid #b0b8c1; padding: 8px 0; font-size: 1.1em; font-family: 'Montserrat', sans-serif; color: #223a5f; outline: none; background: transparent; transition: border-color 0.2s; border-radius: 0; }
+        .metodo-pago-formulario input:focus, .metodo-pago-formulario select:focus { border-bottom: 2px solid #004A8C; }
+        .checkbox-linea { display: flex; align-items: flex-start; margin-bottom: 0.8em; font-size: 0.95em; color: #092058; font-family: 'Montserrat', sans-serif; }
+        .checkbox-linea input[type="checkbox"] { width: 20px; height: 20px; margin-right: 10px; margin-top: 0; cursor: pointer; border: 1px solid #092058; border-radius: 2px; flex-shrink: 0; }
+        .checkbox-linea label { cursor: pointer; line-height: 1.4; font-weight: 500; }
+        .checkbox-linea a { color: #0000EE; text-decoration: underline; font-weight: bold; }
+        .footer-legal { margin-top: 2em; font-size: 0.8em; color: #092058; line-height: 1.6; font-weight: 600; font-family: 'Montserrat', sans-serif; }
+        .metodo-pago-formulario button[type="submit"] { width: 100%; background: #004A8C; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 1.18em; font-weight: 700; border: none; border-radius: 8px; padding: 0.85em 0; margin-top: 1.2em; cursor: pointer; box-shadow: 0 2px 8px 0 rgba(0,74,140,0.10); transition: background 0.18s, color 0.18s, box-shadow 0.18s; letter-spacing: 0.01em; }
+        .metodo-pago-formulario button[type="submit"]:hover, .metodo-pago-formulario button[type="submit"]:focus { background: #D70242; color: #fff; box-shadow: 0 4px 16px 0 rgba(215,2,66,0.13); }
+        .resumen-modal { background: #fff; border-radius: 10px; box-shadow: 0 2px 16px 0 rgba(0,0,0,0.07); max-width: 650px; margin: 40px auto; padding: 36px 38px 0 38px; position: relative; border: 1.5px solid #e0e4ea; font-family: 'Montserrat', sans-serif; }
+        .resumen-modal .resumen-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
+        .resumen-modal .resumen-titulo { font-size: 2em; font-weight: 900; color: #0d3c6e; font-family: 'Montserrat', sans-serif; margin: 0; }
+        .resumen-modal .cerrar-resumen-btn { background: #D70242; color: #fff; border: none; border-radius: 22px; font-size: 1em; font-family: 'Montserrat', sans-serif; font-weight: 600; padding: 0.5em 1.5em 0.5em 2.2em; cursor: pointer; position: relative; transition: background 0.18s; display: flex; align-items: center; gap: 8px; }
+        .resumen-modal .cerrar-resumen-btn::before { content: "✕"; font-size: 1.3em; margin-right: 8px; position: absolute; left: 16px; top: 50%; transform: translateY(-50%); }
+        .resumen-modal .resumen-body { font-size: 1.13em; color: #092058; font-family: 'Montserrat', sans-serif; }
+        .resumen-modal .resumen-body strong { font-weight: 700; }
+        .resumen-modal .resumen-body .cant { font-style: italic; color: #222; margin-left: 16px; white-space: nowrap; }
+        .resumen-modal .resumen-body .precio { font-weight: 700; color: #222; margin-left: 18px; white-space: nowrap; }
+        .resumen-modal .resumen-body .precio-total { color: #D70242; font-size: 1.45em; font-weight: 700; text-align: right; margin-top: 18px; margin-bottom: 0; }
+        .resumen-modal .resumen-body .subtotal { font-weight: 700; text-align: right; margin-top: 10px; margin-bottom: 0; }
+        .resumen-modal .resumen-body .detalle-entrada { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 0.5em; }
+        .resumen-modal .resumen-body .detalle-entrada .detalle-info { flex: 1; }
+        .resumen-modal .resumen-footer { border-top: 1px dashed #e0e4ea; margin-top: 32px; padding: 18px 0 24px 0; text-align: right; }
+        .resumen-modal .resumen-footer .precio-total { color: #D70242; font-size: 1.45em; font-weight: 700; font-family: 'Montserrat', sans-serif; }
+        @media (max-width: 900px), (max-width: 700px) { .asientos-layout { flex-direction: column; min-height: 0; height: auto; } .info-funcion-col { width: 100%; border-right: none; border-bottom: 1px solid #e0e4ea; height: auto; min-height: 0; } .asientos-col { padding: 24px 8px; height: auto; } }
+        @media (max-width: 700px) { .resumen-modal { max-width: 98vw; padding: 18px 6vw 0 6vw; } }
+        #resumen-modal-bg { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.12); align-items: flex-start; justify-content: center; overflow-y: auto; }
+        #resumen-modal-bg.active { display: flex; }
     </style>
 </head>
 <body>
-    <header id="main-header">
-        <h1>Resumen de Compra y Pago</h1>
-        <div id="socio-display"></div>
-    </header>
-
+    <div class="header-pago">
+        <button class="volver-btn" id="volver-btn">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Atrás
+        </button>
+        <div class="titulo-header">Pago Dulcería</div>
+        <div class="acciones-header">
+            <div class="socio-display" id="socio-display">👤</div>
+            <button class="cerrar-btn" id="cerrar-btn" title="Cerrar">&times;</button>
+        </div>
+    </div>
+    <div class="espacio-header"></div>
     <main id="main-content">
-        <div id="info-container">
-            <!-- La información de la película y función se cargará aquí -->
-        </div>
-        <div id="info-total-container">
-            <!-- Aquí se mostrará el precio total y el botón para ver el resumen -->
-        </div>
-        <div id="pago-container">
-            <h2>Elige una forma de Pago</h2>
-            <form id="form-pago">
-                <div>
-                    <label for="nombre">Nombre completo</label>
-                    <input type="text" id="nombre" name="nombre" required oninvalid="this.setCustomValidity('Debes ingresar tu nombre completo.')" oninput="this.setCustomValidity('')">
-                </div>
-                <div>
-                    <label for="correo">Correo electrónico</label>
-                    <input type="email" id="correo" name="correo" required oninvalid="this.setCustomValidity('Debes ingresar tu correo electrónico.')" oninput="this.setCustomValidity('')">
-                </div>
-                <!-- Opción 1: Tarjeta de Crédito o Débito -->
-                <details>
-                    <summary>
-                        Tarjeta de Crédito o Débito
-                    </summary>
-                    <div id="detalle-tarjeta">
-                        <div>
-                            <label for="numero-tarjeta">Número de la tarjeta</label>
-                            <input type="text" id="numero-tarjeta" name="numero-tarjeta" required>
-                        </div>
-                        <div>
-                            <label for="tipo-tarjeta">Tipo de Tarjeta</label>
-                            <select id="tipo-tarjeta" name="tipo-tarjeta" required>
-                                <option value="">Selecciona</option>
-                                <option value="credito">Crédito</option>
-                                <option value="debito">Débito</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="mes">Mes</label>
-                            <select id="mes" name="mes" required>
-                                <option value="">Mes</option>
-                                <!-- Opciones de mes -->
-                            </select>
-                            <label for="anio">Año</label>
-                            <select id="anio" name="anio" required>
-                                <option value="">Año</option>
-                                <!-- Opciones de año -->
-                            </select>
-                            <label for="cvv">CVV</label>
-                            <input type="text" id="cvv" name="cvv" required>
-                        </div>
-                        <div>
-                            <label for="tipo-doc-tarjeta">Tipo de documento</label>
-                            <select id="tipo-doc-tarjeta" name="tipo-doc-tarjeta" required>
-                                <option value="">Selecciona</option>
-                                <option value="dni">DNI</option>
-                                <option value="ce">CE</option>
-                            </select>
-                            <label for="num-doc-tarjeta">Número de documento</label>
-                            <input type="text" id="num-doc-tarjeta" name="num-doc-tarjeta" required>
-                        </div>
-                        <div>
-                            <button type="submit" data-metodo="tarjeta">Pagar</button>
-                        </div>
+        <div class="asientos-layout">
+            <div class="info-funcion-col">
+                <div id="info-container" class="info-funcion-card"></div>
+                <div id="info-total-container"></div>
+            </div>
+            <div class="asientos-col">
+                <div class="progreso-pasos">
+                    <div class="paso">
+                        <span class="icono"><i class="fa-solid fa-burger"></i></span>
+                        <span class="linea"></span>
                     </div>
-                </details>
-                <!-- Opción 2: App agora -->
-                <details>
-                    <summary>
-                        App agora
-                    </summary>
-                    <div id="detalle-agora">
-                        <div>
-                            <label for="celular-agora">Número de Celular</label>
-                            <input type="text" id="celular-agora" name="celular-agora" required>
-                        </div>
-                        <div>
-                            <label for="tipo-doc-agora">Tipo de documento</label>
-                            <select id="tipo-doc-agora" name="tipo-doc-agora" required>
-                                <option value="">Selecciona</option>
-                                <option value="dni">DNI</option>
-                                <option value="ce">CE</option>
-                            </select>
-                            <label for="num-doc-agora">Número de documento</label>
-                            <input type="text" id="num-doc-agora" name="num-doc-agora" required>
-                        </div>
-                        <div>
-                            <button type="submit" data-metodo="agora">Pagar</button>
-                        </div>
+                    <div class="paso activo">
+                        <span class="icono"><i class="fa-regular fa-rectangle-list"></i></span>
                     </div>
-                </details>
-                <!-- Opción 3: Billeteras Electrónicas -->
-                <details>
-                    <summary>
-                        Billeteras Electrónicas
-                    </summary>
-                    <div id="detalle-billetera">
-                        <div>
-                            <label for="tipo-doc-billetera">Tipo de documento</label>
-                            <select id="tipo-doc-billetera" name="tipo-doc-billetera" required>
-                                <option value="">Selecciona</option>
-                                <option value="dni">DNI</option>
-                                <option value="ce">CE</option>
-                            </select>
-                            <label for="num-doc-billetera">Número de documento</label>
-                            <input type="text" id="num-doc-billetera" name="num-doc-billetera" required>
-                        </div>
-                        <div>
-                            <label for="celular-billetera">Número de Celular</label>
-                            <input type="text" id="celular-billetera" name="celular-billetera" required>
-                        </div>
-                        <div>
-                            <label>Selecciona billetera:</label>
-                            <input type="radio" id="billetera-yape" name="billetera-tipo" value="yape" checked required>
-                            <label for="billetera-yape">Yape</label>
-                            <input type="radio" id="billetera-plin" name="billetera-tipo" value="plin" required>
-                            <label for="billetera-plin">Plin</label>
-                            <input type="radio" id="billetera-tunki" name="billetera-tipo" value="tunki" required>
-                            <label for="billetera-tunki">Tunki</label>
-                        </div>
-                        <div>
-                            <button type="submit" data-metodo="billetera">Pagar</button>
-                        </div>
-                    </div>
-                </details>
-                <div style="margin-top:1em;">
-                    <input type="checkbox" id="acepto-terminos" name="acepto-terminos" required>
-                    <label for="acepto-terminos">
-                        Acepto los <a href="#">Términos y Condiciones</a>, <a href="#">Política de Privacidad</a>.
-                    </label>
                 </div>
-                <div>
-                    <input type="checkbox" id="acepto-tratamiento" name="acepto-tratamiento" required>
-                    <label for="acepto-tratamiento">
-                        Acepto el <a href="#">Tratamiento Opcional de datos</a>.
-                    </label>
+                <div id="pago-container">
+                    <h2 style="text-align:center;font-size:2em;font-weight:900;color:#0d3c6e;margin-bottom:1.5em;">Elige una forma de Pago</h2>
+                    <form id="form-pago" autocomplete="off" style="width:100%;">
+                        <div class="input-linea" style="width:100%; margin-bottom:2.5em;">
+                            <input type="text" id="nombre" name="nombre" required placeholder=" " />
+                            <label for="nombre">Nombre completo</label>
+                        </div>
+                        <div class="input-linea" style="width:100%; margin-bottom:2.5em;">
+                            <input type="email" id="correo" name="correo" required placeholder=" " />
+                            <label for="correo">Correo electrónico</label>
+                        </div>
+                        <div class="metodo-pago-opciones" style="width:100%; margin-bottom:2em;">
+                            <details class="metodo-pago-card" id="card-tarjeta">
+                                <summary>
+                                    <input type="radio" class="metodo-radio" name="metodo-pago" id="radio-tarjeta" value="tarjeta" />
+                                    <span class="metodo-titulo">Tarjeta de Crédito o Débito</span>
+                                    <span class="metodo-logos">
+                                        <img src="../images/items/Visa.png" alt="Visa">
+                                        <img src="../images/items/Amex.png" alt="Amex">
+                                        <img src="../images/items/Mastercard.png" alt="Mastercard">
+                                        <img src="../images/items/Interbank.png" alt="Interbank">
+                                    </span>
+                                </summary>
+                                <div class="metodo-pago-formulario">
+                                    <div class="form-group">
+                                        <label for="numero-tarjeta">Número de la tarjeta</label>
+                                        <input type="text" id="numero-tarjeta" name="numero-tarjeta" required>
+                                    </div>
+                                    <div class="row-flex form-group">
+                                        <div class="col-flex">
+                                            <label for="tipo-tarjeta">Tipo de Tarjeta</label>
+                                            <select id="tipo-tarjeta" name="tipo-tarjeta" required>
+                                                <option value="">Selecciona</option>
+                                                <option value="credito">Crédito</option>
+                                                <option value="debito">Débito</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-flex">
+                                            <label>Fecha de Vencimiento</label>
+                                            <div style="display:flex; gap:10px;">
+                                                <select id="mes" name="mes" required style="flex:1;">
+                                                    <option value="">Mes</option>
+                                                </select>
+                                                <select id="anio" name="anio" required style="flex:1;">
+                                                    <option value="">Año</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row-flex form-group">
+                                        <div class="col-flex">
+                                            <label for="cvv">CVV</label>
+                                            <input type="text" id="cvv" name="cvv" required style="width:100%;">
+                                        </div>
+                                        <div class="col-flex"></div>
+                                    </div>
+                                    <div class="row-flex form-group">
+                                        <div class="col-flex">
+                                            <label for="tipo-doc-tarjeta">Tipo de documento</label>
+                                            <select id="tipo-doc-tarjeta" name="tipo-doc-tarjeta" required>
+                                                <option value="">Selecciona</option>
+                                                <option value="dni">DNI</option>
+                                                <option value="ce">CE</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-flex">
+                                            <label for="num-doc-tarjeta">Número de documento</label>
+                                            <input type="text" id="num-doc-tarjeta" name="num-doc-tarjeta" required>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <button type="submit" data-metodo="tarjeta">Pagar</button>
+                                    </div>
+                                </div>
+                            </details>
+                            <details class="metodo-pago-card" id="card-agora">
+                                <summary>
+                                    <input type="radio" class="metodo-radio" name="metodo-pago" id="radio-agora" value="agora" />
+                                    <span class="metodo-titulo">App agora</span>
+                                    <span class="metodo-logos">
+                                        <img src="../images/items/agora.png" alt="Agora">
+                                    </span>
+                                </summary>
+                                <div class="metodo-pago-formulario">
+                                    <div class="form-group">
+                                        <label for="celular-agora">Número de Celular</label>
+                                        <input type="text" id="celular-agora" name="celular-agora" required>
+                                    </div>
+                                    <div class="row-flex form-group">
+                                        <div class="col-flex">
+                                            <label for="tipo-doc-agora">Tipo de documento</label>
+                                            <select id="tipo-doc-agora" name="tipo-doc-agora" required>
+                                                <option value="">Selecciona</option>
+                                                <option value="dni">DNI</option>
+                                                <option value="ce">CE</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-flex">
+                                            <label for="num-doc-agora">Número de documento</label>
+                                            <input type="text" id="num-doc-agora" name="num-doc-agora" required>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <button type="submit" data-metodo="agora">Pagar</button>
+                                    </div>
+                                </div>
+                            </details>
+                            <details class="metodo-pago-card" id="card-billetera">
+                                <summary>
+                                    <input type="radio" class="metodo-radio" name="metodo-pago" id="radio-billetera" value="billetera" />
+                                    <span class="metodo-titulo">Billeteras Electrónicas</span>
+                                    <span class="metodo-logos">
+                                        <img src="../images/items/Yape.png" alt="Yape">
+                                        <img src="../images/items/Plin.png" alt="Plin">
+                                        <img src="../images/items/Funki.png" alt="Tunki">
+                                    </span>
+                                </summary>
+                                <div class="metodo-pago-formulario">
+                                    <div class="row-flex form-group">
+                                        <div class="col-flex">
+                                            <label for="tipo-doc-billetera">Tipo de documento</label>
+                                            <select id="tipo-doc-billetera" name="tipo-doc-billetera" required>
+                                                <option value="">Selecciona</option>
+                                                <option value="dni">DNI</option>
+                                                <option value="ce">CE</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-flex">
+                                            <label for="num-doc-billetera">Número de documento</label>
+                                            <input type="text" id="num-doc-billetera" name="num-doc-billetera" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="celular-billetera">Número de Celular</label>
+                                        <input type="text" id="celular-billetera" name="celular-billetera" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label style="margin-bottom:12px;">Selecciona billetera:</label>
+                                        <div style="display:flex; gap:20px; align-items:center;">
+                                            <div style="display:flex;align-items:center;">
+                                                <input type="radio" id="billetera-yape" name="billetera-tipo" value="yape" checked required style="width:auto; margin-right:8px;">
+                                                <label for="billetera-yape" style="margin:0;">Yape</label>
+                                            </div>
+                                            <div style="display:flex;align-items:center;">
+                                                <input type="radio" id="billetera-plin" name="billetera-tipo" value="plin" required style="width:auto; margin-right:8px;">
+                                                <label for="billetera-plin" style="margin:0;">Plin</label>
+                                            </div>
+                                            <div style="display:flex;align-items:center;">
+                                                <input type="radio" id="billetera-tunki" name="billetera-tipo" value="tunki" required style="width:auto; margin-right:8px;">
+                                                <label for="billetera-tunki" style="margin:0;">Tunki</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <button type="submit" data-metodo="billetera">Pagar</button>
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+                        <div class="checkbox-linea">
+                            <input type="checkbox" id="acepto-terminos" name="acepto-terminos" required>
+                            <label for="acepto-terminos">Acepto los <a href="#">Términos y Condiciones</a>, <a href="#">Política de Privacidad</a>.</label>
+                        </div>
+                        <div class="checkbox-linea">
+                            <input type="checkbox" id="acepto-tratamiento" name="acepto-tratamiento" required>
+                            <label for="acepto-tratamiento">Acepto el <a href="#">Tratamiento Opcional de datos</a>.</label>
+                        </div>
+                        <div class="footer-legal">
+                            * No se hacen cambios ni devoluciones<br>
+                            * Toda la información de pago es segura<br>
+                            * Algunas de las tarjetas de débito con CVV podrían ser rechazadas por la plataforma de pago que utilizamos debido a las políticas de seguridad del banco
+                        </div>
+                    </form>
                 </div>
-                <div style="margin-top:1em;">
-                    <p style="font-size:0.95em;">
-                        * No se hacen cambios ni devoluciones<br>
-                        * Toda la información de pago es segura<br>
-                        * Algunas de las tarjetas de débito con CVV podrían ser rechazadas por la plataforma de pago que utilizamos debido a las políticas de seguridad del banco
-                    </p>
-                </div>
-            </form>
+            </div>
         </div>
     </main>
+    <div id="resumen-modal-bg">
+        <div class="resumen-modal" id="resumen-modal-content"></div>
+    </div>
     <script type="module" src="../js/pagoDulceria.js"></script>
     <script>
-        // Solo permite abrir un details a la vez
         document.addEventListener('DOMContentLoaded', () => {
-            const detailsList = Array.from(document.querySelectorAll('#pago-container details'));
+            fetch('../../backend/auth/checkSession.php')
+                .then(res => res.json())
+                .then(data => {
+                    const socioDisplay = document.getElementById('socio-display');
+                    if (data.loggedIn && data.socio && data.socio.nombre) {
+                        const nombre = data.socio.nombre;
+                        const iniciales = nombre.split(' ').map(word => word[0]).join('').toUpperCase();
+                        socioDisplay.textContent = iniciales;
+                    } else {
+                        socioDisplay.textContent = '👤';
+                    }
+                });
+        });
+        document.getElementById('volver-btn').onclick = function() {
+            window.history.back();
+        };
+        document.getElementById('cerrar-btn').onclick = function() {
+            const params = new URLSearchParams(window.location.search);
+            const idCiudad = params.get('ciudad');
+            const idCine = params.get('cine');
+            if (idCiudad && idCine) {
+                window.location.href = `dulceriaLading.html?ciudad=${idCiudad}&cine=${idCine}`;
+            } else {
+                window.location.href = 'dulceriaLading.html';
+            }
+        };
+        document.addEventListener('DOMContentLoaded', () => {
+            const detailsList = Array.from(document.querySelectorAll('.metodo-pago-card'));
             detailsList.forEach(details => {
+                const radio = details.querySelector('.metodo-radio');
                 details.addEventListener('toggle', function() {
                     if (details.open) {
-                        detailsList.forEach(d => {
-                            if (d !== details) d.open = false;
-                        });
+                        detailsList.forEach(d => { if (d !== details) d.open = false; });
+                        if (radio) radio.checked = true;
+                    } else {
+                        if (radio) radio.checked = false;
                     }
                 });
+                if (radio) {
+                    radio.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        if (!details.open) details.open = true;
+                    });
+                }
             });
-
-            // Validación personalizada para cada método de pago
-            document.querySelectorAll('#pago-container details button[type="submit"]').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    const form = document.getElementById('form-pago');
-                    // Elimina validación manual de nombre y correo
-                    if (!form.checkValidity()) {
-                        // Deja que el navegador muestre el mensaje en el input correspondiente
-                        return;
-                    }
-                    if (!form.acepto_terminos.checked) {
-                        alert('Debes aceptar los Términos y Condiciones.');
-                        e.preventDefault();
-                        return;
-                    }
-                    if (!form.acepto_tratamiento.checked) {
-                        alert('Debes aceptar el Tratamiento Opcional de datos.');
-                        e.preventDefault();
-                        return;
-                    }
-                    const metodo = btn.getAttribute('data-metodo');
-                    if (metodo === 'tarjeta') {
-                        if (!form['numero-tarjeta'].value.trim() ||
-                            !form['tipo-tarjeta'].value ||
-                            !form['mes'].value ||
-                            !form['anio'].value ||
-                            !form['cvv'].value.trim() ||
-                            !form['tipo-doc-tarjeta'].value ||
-                            !form['num-doc-tarjeta'].value.trim()) {
-                            alert('Completa todos los campos de tarjeta.');
-                            e.preventDefault();
-                            return;
-                        }
-                    }
-                    if (metodo === 'agora') {
-                        if (!form['celular-agora'].value.trim() ||
-                            !form['tipo-doc-agora'].value ||
-                            !form['num-doc-agora'].value.trim()) {
-                            alert('Completa todos los campos de App agora.');
-                            e.preventDefault();
-                            return;
-                        }
-                    }
-                    if (metodo === 'billetera') {
-                        if (!form['tipo-doc-billetera'].value ||
-                            !form['num-doc-billetera'].value.trim() ||
-                            !form['celular-billetera'].value.trim() ||
-                            !form['billetera-tipo'].value) {
-                            alert('Completa todos los campos de billetera electrónica.');
-                            e.preventDefault();
-                            return;
-                        }
-                    }
-                });
+        });
+        document.querySelectorAll('#pago-container details button[type="submit"]').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const form = document.getElementById('form-pago');
+                if (!form.checkValidity()) return;
+                if (!form.acepto_terminos.checked) { alert('Debes aceptar los Términos y Condiciones.'); e.preventDefault(); return; }
+                if (!form.acepto_tratamiento.checked) { alert('Debes aceptar el Tratamiento Opcional de datos.'); e.preventDefault(); return; }
+                const metodo = btn.getAttribute('data-metodo');
+                if (metodo === 'tarjeta') {
+                    if (!form['numero-tarjeta'].value.trim() || !form['tipo-tarjeta'].value || !form['mes'].value || !form['anio'].value || !form['cvv'].value.trim() || !form['tipo-doc-tarjeta'].value || !form['num-doc-tarjeta'].value.trim()) { alert('Completa todos los campos de tarjeta.'); e.preventDefault(); return; }
+                }
+                if (metodo === 'agora') {
+                    if (!form['celular-agora'].value.trim() || !form['tipo-doc-agora'].value || !form['num-doc-agora'].value.trim()) { alert('Completa todos los campos de App agora.'); e.preventDefault(); return; }
+                }
+                if (metodo === 'billetera') {
+                    if (!form['tipo-doc-billetera'].value || !form['num-doc-billetera'].value.trim() || !form['celular-billetera'].value.trim() || !form['billetera-tipo'].value) { alert('Completa todos los campos de billetera electrónica.'); e.preventDefault(); return; }
+                }
             });
         });
     </script>

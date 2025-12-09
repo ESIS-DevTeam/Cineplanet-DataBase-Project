@@ -20,32 +20,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else {
             socioDisplay.textContent = '👤';
         }
-
-        // Botón cancelar compra al lado del logo de usuario
-        if (socioDisplay) {
-            const cancelarBtn = document.createElement('button');
-            cancelarBtn.textContent = 'Cancelar compra';
-            cancelarBtn.style.marginLeft = '1em';
-            cancelarBtn.style.background = '#d32f2f';
-            cancelarBtn.style.color = '#fff';
-            cancelarBtn.style.border = 'none';
-            cancelarBtn.style.padding = '0.7em 1.5em';
-            cancelarBtn.style.borderRadius = '8px';
-            cancelarBtn.style.fontWeight = 'bold';
-            cancelarBtn.style.cursor = 'pointer';
-
-            cancelarBtn.onclick = () => {
-                if (idCiudad && idCine) {
-                    window.location.href = `dulceriaLading.html?ciudad=${idCiudad}&cine=${idCine}`;
-                } else if (idPelicula) {
-                    window.location.href = `peliculaSeleccion.html?pelicula=${idPelicula}`;
-                } else {
-                    window.location.href = 'peliculas.html';
-                }
-            };
-
-            socioDisplay.parentNode.insertBefore(cancelarBtn, socioDisplay.nextSibling);
-        }
     } catch (error) {
         document.getElementById('socio-display').textContent = '👤';
     }
@@ -57,12 +31,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             const res = await fetch(BASE_API_DOMAIN + `getInfoCine.php?idCine=${idCine}`);
             const cine = await res.json();
             infoContainer.innerHTML = `
-                <div style="text-align:center;">
-                    ${cine.imagen ? `<img src="${cine.imagen}" alt="Foto cine" style="width:140px;height:140px;border-radius:12px;object-fit:cover;">` : ''}
-                </div>
-                <h2 style="text-align:center; margin:0.5em 0;">${cine.nombre || ''}</h2>
-                <div style="text-align:center;">${cine.direccion || ''}</div>
-                <hr style="margin:1em 0;">
+                ${cine.imagen ? `<img src="${cine.imagen}" alt="Foto cine" class="portada-circular">` : ''}
+                <h2 class="titulo-pelicula">${cine.nombre || ''}</h2>
+                <div class="cine-nombre">${cine.direccion || ''}</div>
+                <hr>
             `;
         } catch {
             infoContainer.textContent = 'No se pudo cargar la información del cine.';
@@ -74,9 +46,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             const res = await fetch(`${BASE_API_DOMAIN}getProductoNombre.php?idProducto=${idProducto}`);
             const data = await res.json();
-            return data.nombre; // <-- Usar solo el nombre que devuelve el endpoint
+            return data.nombre;
         } catch {
-            return ""; // <-- Si hay error, retorna string vacío
+            return "";
         }
     }
 
@@ -95,7 +67,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         for (const p of arr) {
             const nombreProducto = await getNombreProducto(p.idProducto);
             p.nombre = nombreProducto;
-            console.log(`Producto ${p.idProducto}: nombre = "${p.nombre}"`); // <-- Imprime el nombre en consola
         }
         return arr;
     }
@@ -109,11 +80,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const data = await res.json();
                 prod.precioUnitario = data.precioUnitario ?? null;
                 prod.subtotal = prod.precioUnitario !== null ? prod.precioUnitario * prod.cantidad : null;
-                // prod.nombre = data.nombre ?? prod.idProducto; // <-- Elimina esta línea
             } catch {
                 prod.precioUnitario = null;
                 prod.subtotal = null;
-                // prod.nombre = prod.idProducto; // <-- Elimina esta línea
             }
         }
     }
@@ -140,24 +109,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Renderiza resumen
-    let resumenModal = document.getElementById('resumen-modal');
-    if (!resumenModal) {
-        resumenModal = document.createElement('div');
-        resumenModal.id = 'resumen-modal';
-        resumenModal.style.display = 'none';
-        resumenModal.style.position = 'fixed';
-        resumenModal.style.top = '0';
-        resumenModal.style.left = '0';
-        resumenModal.style.width = '100vw';
-        resumenModal.style.height = '100vh';
-        resumenModal.style.zIndex = '9999';
-        resumenModal.style.background = 'rgba(0, 0, 0, 0.5)';
-        resumenModal.style.backdropFilter = 'blur(2px)';
-        // scroll interno invisible para el contenido
-        resumenModal.innerHTML = `<div id="resumen-compra-container" class="hide-scrollbar" style="background:#fff; max-width:500px; max-height:80vh; overflow:auto; margin:5vh auto; border-radius:10px; padding:2em; position:relative; box-shadow: 0 4px 15px rgba(0,0,0,0.2);"></div>`;
-        document.body.appendChild(resumenModal);
+    let resumenModalBg = document.getElementById('resumen-modal-bg');
+    let resumenModalContent = document.getElementById('resumen-modal-content');
+    if (!resumenModalBg) {
+        resumenModalBg = document.createElement('div');
+        resumenModalBg.id = 'resumen-modal-bg';
+        resumenModalBg.innerHTML = `<div class="resumen-modal" id="resumen-modal-content"></div>`;
+        document.body.appendChild(resumenModalBg);
+        resumenModalContent = resumenModalBg.querySelector('#resumen-modal-content');
     }
-    const resumenContainer = document.getElementById('resumen-compra-container');
 
     // Crea el contenedor para el total y el botón
     let infoTotalContainer = document.getElementById('info-total-container');
@@ -169,39 +129,61 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     infoTotalContainer.innerHTML = `
         <div>
-            <div>
-                <strong>Total: S/${total.toFixed(2)}</strong>
+            <div class="resumen-total">
+                Total: S/${total.toFixed(2)}
             </div>
-            <button id="btn-ver-resumen" type="button">Ver Resumen de compra</button>
+            <button id="btn-ver-resumen" type="button" class="btn-ver-resumen">Ver Resumen de compra</button>
         </div>
     `;
 
-    // Renderiza el resumen para el modal
-    let html = `<div>
-        <div>
-            <h2>Resumen de compra</h2>
-            <button type="button" id="btn-cerrar-resumen">Cerrar</button>
-        </div>
-        <div>
-            <div><strong>Dulcería:</strong></div>
-            <ul>
-                ${productosArr.map(p => `<li>${p.nombre} - S/${p.precioUnitario} = S/${p.subtotal?.toFixed(2) ?? '0.00'}</li>`).join('')}
-            </ul>
-            <div>Sub-Total S/${total.toFixed(2)}</div>
-            <hr>
-            <div>Precio Total: S/${total.toFixed(2)}</div>
-        </div>
-    </div>`;
-    resumenContainer.innerHTML = html;
+    function renderResumenHtml() {
+        let dulceriaHtml = '';
+        if (productosArr.length > 0) {
+            dulceriaHtml = `
+                <div style="margin-bottom:1em;">
+                    <span style="font-weight:700; color:#0d3c6e;">Dulcería:</span>
+                    ${productosArr.map(d => `
+                        <div class="detalle-entrada">
+                            <div class="detalle-info">
+                                ${d.nombre}
+                            </div>
+                            <div style="text-align:right;">
+                                <span class="cant">Cant. ${d.cantidad}</span>
+                                <span class="precio">S/${d.subtotal?.toFixed(2) ?? '0.00'}</span>
+                            </div>
+                        </div>
+                    `).join('')}
+                    <div class="subtotal" style="margin-top:1em;">Sub-Total <span class="precio">S/${total.toFixed(2)}</span></div>
+                </div>
+            `;
+        }
+        let footerHtml = `
+            <div class="resumen-footer">
+                <span class="precio-total">Precio Total: S/${total.toFixed(2)}</span>
+            </div>
+        `;
+        return `
+            <div class="resumen-header">
+                <span class="resumen-titulo">Resumen de compra</span>
+                <button class="cerrar-resumen-btn" id="cerrar-resumen-btn">Cerrar</button>
+            </div>
+            <div class="resumen-body">
+                ${dulceriaHtml}
+            </div>
+            ${footerHtml}
+        `;
+    }
 
-    // Mostrar/ocultar resumen en modal (sin modificar el scroll del body)
+    // Mostrar/ocultar resumen en modal
     document.getElementById('btn-ver-resumen').onclick = () => {
-        resumenModal.style.display = 'block';
-        // document.body.style.overflow = 'hidden'; // <-- Elimina/desactiva esta línea
-    };
-    resumenContainer.querySelector('#btn-cerrar-resumen').onclick = () => {
-        resumenModal.style.display = 'none';
-        // document.body.style.overflow = ''; // <-- Elimina/desactiva esta línea
+        resumenModalContent.innerHTML = renderResumenHtml();
+        resumenModalBg.classList.add('active');
+        resumenModalContent.querySelector('#cerrar-resumen-btn').onclick = () => {
+            resumenModalBg.classList.remove('active');
+        };
+        resumenModalBg.onclick = (e) => {
+            if (e.target === resumenModalBg) resumenModalBg.classList.remove('active');
+        };
     };
 
     // Formulario de pago
@@ -210,56 +192,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Rellenar y deshabilitar campos si el usuario está logueado
     if (sessionData.socio) {
         const form = document.getElementById('form-pago');
-        // Nombre
-        if (form.nombre) {
-            form.nombre.value = sessionData.socio.nombre || '';
-            form.nombre.readOnly = true;
-        }
-        // Email
-        if (form.correo) {
-            form.correo.value = sessionData.socio.email || '';
-            form.correo.readOnly = true;
-        }
-        // DNI
+        if (form.nombre) { form.nombre.value = sessionData.socio.nombre || ''; form.nombre.readOnly = true; }
+        if (form.correo) { form.correo.value = sessionData.socio.email || ''; form.correo.readOnly = true; }
         const tipoDocumento = (sessionData.socio.tipoDocumento || '').toUpperCase();
         const numeroDocumento = sessionData.socio.numeroDocumento || '';
-        // Tarjeta
-        if (form['num-doc-tarjeta']) {
-            form['num-doc-tarjeta'].value = numeroDocumento;
-            form['num-doc-tarjeta'].readOnly = true;
-        }
-        if (form['tipo-doc-tarjeta']) {
-            form['tipo-doc-tarjeta'].value = tipoDocumento === 'DNI' ? 'dni' : '';
-            form['tipo-doc-tarjeta'].disabled = true;
-        }
-        // Agora
-        if (form['num-doc-agora']) {
-            form['num-doc-agora'].value = numeroDocumento;
-            form['num-doc-agora'].readOnly = true;
-        }
-        if (form['tipo-doc-agora']) {
-            form['tipo-doc-agora'].value = tipoDocumento === 'DNI' ? 'dni' : '';
-            form['tipo-doc-agora'].disabled = true;
-        }
-        // Billetera
-        if (form['num-doc-billetera']) {
-            form['num-doc-billetera'].value = numeroDocumento;
-            form['num-doc-billetera'].readOnly = true;
-        }
-        if (form['tipo-doc-billetera']) {
-            form['tipo-doc-billetera'].value = tipoDocumento === 'DNI' ? 'dni' : '';
-            form['tipo-doc-billetera'].disabled = true;
-        }
-        // Celular
+        if (form['num-doc-tarjeta']) { form['num-doc-tarjeta'].value = numeroDocumento; form['num-doc-tarjeta'].readOnly = true; }
+        if (form['tipo-doc-tarjeta']) { form['tipo-doc-tarjeta'].value = tipoDocumento === 'DNI' ? 'dni' : ''; form['tipo-doc-tarjeta'].disabled = true; }
+        if (form['num-doc-agora']) { form['num-doc-agora'].value = numeroDocumento; form['num-doc-agora'].readOnly = true; }
+        if (form['tipo-doc-agora']) { form['tipo-doc-agora'].value = tipoDocumento === 'DNI' ? 'dni' : ''; form['tipo-doc-agora'].disabled = true; }
+        if (form['num-doc-billetera']) { form['num-doc-billetera'].value = numeroDocumento; form['num-doc-billetera'].readOnly = true; }
+        if (form['tipo-doc-billetera']) { form['tipo-doc-billetera'].value = tipoDocumento === 'DNI' ? 'dni' : ''; form['tipo-doc-billetera'].disabled = true; }
         const celular = sessionData.socio.celular || '';
-        if (form['celular-agora']) {
-            form['celular-agora'].value = celular;
-            form['celular-agora'].readOnly = true;
-        }
-        if (form['celular-billetera']) {
-            form['celular-billetera'].value = celular;
-            form['celular-billetera'].readOnly = true;
-        }
+        if (form['celular-agora']) { form['celular-agora'].value = celular; form['celular-agora'].readOnly = true; }
+        if (form['celular-billetera']) { form['celular-billetera'].value = celular; form['celular-billetera'].readOnly = true; }
     }
 
     // Modal de error y éxito
@@ -344,14 +289,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             modal.style.display = 'flex';
             modal.style.alignItems = 'center';
             modal.style.justifyContent = 'center';
-            // scroll interno invisible para el contenido
             modal.innerHTML = `<div id="modal-exito-content" class="hide-scrollbar" style="background:#fff; max-width:700px; max-height:80vh; overflow:auto; margin:5vh auto; border-radius:16px; padding:40px 40px 28px 40px; position:relative; box-shadow:0 4px 20px #0002;"></div>`;
             document.body.appendChild(modal);
         }
 
-        // Datos para el resumen
         const nombreCliente = sessionData.socio?.nombre || '';
-        // Fecha Perú
         function getFechaPeru() {
             const now = new Date();
             const peruOffset = -5 * 60;
@@ -362,7 +304,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         const fechaCompra = getFechaPeru();
 
-        // Usa getCiudades.php para obtener el nombre de la ciudad
         let ciudadNombre = '';
         if (idCiudad) {
             try {
@@ -376,7 +317,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         const cineNombre = infoContainer.querySelector('h2')?.textContent || 'Cineplanet';
 
-        // QR con id de compra
         const qrUrl = `ID:${idBoleta}`;
         let qrDatosHtml = `
         <div style="display:flex;align-items:center;justify-content:center;gap:2.5em;">
@@ -451,7 +391,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         <div style="background:#fff;max-width:700px;margin:0 auto;display:flex;flex-direction:column;align-items:center;">
             <div style="font-family: 'Segoe UI', Arial, sans-serif; color:#222; width:100%;">
                 <div style="display:flex;align-items:center;justify-content:space-between;">
-                    <img src="https://cineplanet.com.pe/static/media/logo.8e3b8b7c.svg" alt="cineplanet" style="height:40px;">
+                    <img src="../images/items/logo3.png" alt="cineplanet" style="height:40px;">
                     <div style="background:#223a5f;color:#fff;padding:0.5em 1.2em;border-radius:8px;font-weight:bold;font-size:1.1em;">
                         Nro. de Compra: ${idBoleta}
                     </div>
@@ -468,9 +408,36 @@ document.addEventListener('DOMContentLoaded', async () => {
         `;
 
         let botonesHtml = `
-            <div style="text-align:center;margin-top:1em;">
-                <button id="btn-descargar-pdf">Descargar PDF</button>
-                <button id="modal-exito-aceptar" style="margin-left:1em;">Aceptar</button>
+            <div style="text-align:center; margin-top:1.5em; display:flex; justify-content:center; gap:1em;">
+                <button id="btn-descargar-pdf" style="
+                    background: #fff; 
+                    color: #004A8C; 
+                    border: 2px solid #004A8C; 
+                    padding: 0.8em 1.5em; 
+                    border-radius: 25px; 
+                    font-family: 'Montserrat', sans-serif; 
+                    font-weight: 700; 
+                    font-size: 1em; 
+                    cursor: pointer; 
+                    transition: all 0.2s;
+                " onmouseover="this.style.background='#f0f4f8'" onmouseout="this.style.background='#fff'">
+                    <i class="fa-solid fa-download" style="margin-right:8px;"></i>Descargar PDF
+                </button>
+                <button id="modal-exito-aceptar" style="
+                    background: #D70242; 
+                    color: #fff; 
+                    border: none; 
+                    padding: 0.8em 2.5em; 
+                    border-radius: 25px; 
+                    font-family: 'Montserrat', sans-serif; 
+                    font-weight: 700; 
+                    font-size: 1em; 
+                    cursor: pointer; 
+                    box-shadow: 0 4px 12px rgba(215, 2, 66, 0.2); 
+                    transition: all 0.2s;
+                " onmouseover="this.style.background='#b00236'" onmouseout="this.style.background='#D70242'">
+                    Aceptar
+                </button>
             </div>
         `;
 
@@ -487,46 +454,84 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Mostrar en modal
         modal.querySelector('#modal-exito-content').innerHTML = resumenHtml + botonesHtml;
         modal.style.display = 'flex';
-        // document.body.style.overflow = 'hidden'; // <-- Elimina/desactiva esta línea
 
-        // Descargar PDF solo del resumen (sin botones)
         document.getElementById('btn-descargar-pdf').onclick = () => {
-            pdfContainer.style.display = 'block';
-            const qrImg = pdfContainer.querySelector('#qr-img');
-            if (qrImg && !qrImg.complete) {
-                qrImg.onload = () => {
-                    generarPDF();
-                };
-                qrImg.onerror = () => {
-                    generarPDF();
-                };
-            } else {
-                generarPDF();
+            // Crear un contenedor temporal visible EXCLUSIVO para la generación
+            const tempContainer = document.createElement('div');
+            tempContainer.innerHTML = resumenHtml;
+            
+            // Estilos críticos: visible pero detrás del modal
+            tempContainer.style.position = 'absolute';
+            tempContainer.style.top = '0';
+            tempContainer.style.left = '0';
+            tempContainer.style.width = '794px'; // Ancho A4 (210mm) a 96dpi aprox
+            tempContainer.style.background = '#fff';
+            tempContainer.style.zIndex = '-9999'; 
+            tempContainer.style.padding = '40px';
+            document.body.appendChild(tempContainer);
+
+            const qrImg = tempContainer.querySelector('#qr-img');
+
+            async function generarPDF() {
+                try {
+                    // Cargar librerías si no existen
+                    if (!window.jspdf) {
+                        await new Promise((resolve) => {
+                            const script = document.createElement('script');
+                            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+                            script.onload = resolve;
+                            document.head.appendChild(script);
+                        });
+                    }
+                    if (!window.html2canvas) {
+                        await new Promise((resolve) => {
+                            const script = document.createElement('script');
+                            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+                            script.onload = resolve;
+                            document.head.appendChild(script);
+                        });
+                    }
+
+                    // Esperar un poco para asegurar renderizado de fuentes e imágenes
+                    await new Promise(resolve => setTimeout(resolve, 500));
+
+                    const canvas = await window.html2canvas(tempContainer, {
+                        scale: 2,
+                        useCORS: true,
+                        logging: false,
+                        windowWidth: 1024
+                    });
+
+                    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF('p', 'mm', 'a4');
+                    
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = pdf.internal.pageSize.getHeight();
+                    const imgWidth = pdfWidth;
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                    pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
+                    pdf.save(`dulceria_${idBoleta}.pdf`);
+
+                } catch (error) {
+                    console.error(error);
+                    alert('Error al generar el PDF.');
+                } finally {
+                    if (tempContainer.parentNode) document.body.removeChild(tempContainer);
+                }
             }
 
-            function generarPDF() {
-                import('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js')
-                .then(() => {
-                    html2pdf().from(pdfContainer).set({
-                        margin: 24,
-                        filename: `dulceria_${idBoleta}.pdf`,
-                        image: { type: 'jpeg', quality: 0.98 },
-                        html2canvas: { scale: 2, useCORS: true },
-                        jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' }
-                    }).save().then(() => {
-                        pdfContainer.style.display = 'none';
-                    });
-                })
-                .catch(() => {
-                    pdfContainer.style.display = 'none';
-                    alert('No se pudo cargar el generador de PDF. Verifica tu conexión a internet.');
-                });
+            if (qrImg && !qrImg.complete) {
+                qrImg.onload = generarPDF;
+                qrImg.onerror = generarPDF;
+            } else {
+                generarPDF();
             }
         };
 
         document.getElementById('modal-exito-aceptar').onclick = () => {
             modal.style.display = 'none';
-            // document.body.style.overflow = ''; // <-- Elimina/desactiva esta línea
             window.location.href = '../../index.html';
         };
     }
@@ -536,7 +541,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             mostrarModalError('Error: No se pudo obtener un ID de usuario para la boleta.');
             return;
         }
-        // Obtener la fecha de Perú (UTC-5)
         function getFechaPeru() {
             const now = new Date();
             const peruOffset = -5 * 60;
@@ -549,7 +553,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const datosBoleta = {
             idUsuario: idUsuario,
-            fecha: fechaPeru, // Usar la fecha de Perú
+            fecha: fechaPeru,
             subtotal: total,
             descuentoTotal: 0,
             total: total
@@ -586,7 +590,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     form.querySelectorAll('button[type="submit"]').forEach(btn => {
         btn.addEventListener('click', async function(e) {
             e.preventDefault();
-            // Verifica aceptación de términos y tratamiento de datos
             const terminosCheckbox = document.getElementById('acepto-terminos');
             const tratamientoCheckbox = document.getElementById('acepto-tratamiento');
             if (!terminosCheckbox || !terminosCheckbox.checked) {
@@ -598,13 +601,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return;
             }
 
-            // Si está logueado, usar el id del socio y omitir verificación de documento
             if (sessionData.socio && sessionData.socio.id) {
                 await procesarPago(sessionData.socio.id);
                 return;
             }
 
-            // Validar campos mínimos
             const nombreCompleto = form.nombre.value.trim();
             const correoElectronico = form.correo.value.trim();
             let tipoDocumento = '', numeroDocumento = '';
@@ -623,7 +624,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 alert('Completa todos los campos requeridos.');
                 return;
             }
-            // Consultar al backend para verificar/registrar usuario
             try {
                 const res = await fetch(`${BASE_API_DOMAIN}verificarDocumento.php`, {
                     method: 'POST',

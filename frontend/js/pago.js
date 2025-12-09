@@ -532,7 +532,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         <div style="background:#fff;max-width:700px;margin:0 auto;display:flex;flex-direction:column;align-items:center;">
             <div style="font-family: 'Segoe UI', Arial, sans-serif; color:#222; width:100%;">
                 <div style="display:flex;align-items:center;justify-content:space-between;">
-                    <img src="https://cineplanet.com.pe/static/media/logo.8e3b8b7c.svg" alt="cineplanet" style="height:40px;">
+                    <img src="../images/items/logo3.png" alt="cineplanet" style="height:40px;">
                     <div style="background:#223a5f;color:#fff;padding:0.5em 1.2em;border-radius:8px;font-weight:bold;font-size:1.1em;">
                         Nro. de Compra: ${idBoleta}
                     </div>
@@ -551,13 +551,40 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Botones fuera del contenedor PDF
         let botonesHtml = `
-            <div style="text-align:center;margin-top:1em;">
-                <button id="btn-descargar-pdf">Descargar PDF</button>
-                <button id="modal-exito-aceptar" style="margin-left:1em;">Aceptar</button>
+            <div style="text-align:center; margin-top:1.5em; display:flex; justify-content:center; gap:1em;">
+                <button id="btn-descargar-pdf" style="
+                    background: #fff; 
+                    color: #004A8C; 
+                    border: 2px solid #004A8C; 
+                    padding: 0.8em 1.5em; 
+                    border-radius: 25px; 
+                    font-family: 'Montserrat', sans-serif; 
+                    font-weight: 700; 
+                    font-size: 1em; 
+                    cursor: pointer; 
+                    transition: all 0.2s;
+                " onmouseover="this.style.background='#f0f4f8'" onmouseout="this.style.background='#fff'">
+                    <i class="fa-solid fa-download" style="margin-right:8px;"></i>Descargar PDF
+                </button>
+                <button id="modal-exito-aceptar" style="
+                    background: #D70242; 
+                    color: #fff; 
+                    border: none; 
+                    padding: 0.8em 2.5em; 
+                    border-radius: 25px; 
+                    font-family: 'Montserrat', sans-serif; 
+                    font-weight: 700; 
+                    font-size: 1em; 
+                    cursor: pointer; 
+                    box-shadow: 0 4px 12px rgba(215, 2, 66, 0.2); 
+                    transition: all 0.2s;
+                " onmouseover="this.style.background='#b00236'" onmouseout="this.style.background='#D70242'">
+                    Aceptar
+                </button>
             </div>
         `;
 
-        // Contenedor para PDF
+        // Contenedor para PDF (oculto, solo para referencia si se necesita)
         let pdfContainer = document.getElementById('modal-exito-pdf');
         if (!pdfContainer) {
             pdfContainer = document.createElement('div');
@@ -570,42 +597,81 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Mostrar en modal
         modal.querySelector('#modal-exito-content').innerHTML = resumenHtml + botonesHtml;
         modal.style.display = 'flex';
-        // document.body.style.overflow = 'hidden'; // <-- Elimina/desactiva esta línea
 
-        // Descargar PDF solo del resumen (sin botones)
+        // Descargar PDF usando jsPDF y html2canvas manualmente
         document.getElementById('btn-descargar-pdf').onclick = () => {
-            pdfContainer.style.display = 'block';
-            const qrImg = pdfContainer.querySelector('#qr-img');
-            // Espera a que la imagen QR esté cargada antes de generar el PDF
-            if (qrImg && !qrImg.complete) {
-                qrImg.onload = () => {
-                    generarPDF();
-                };
-                // Si la imagen falla al cargar, igual intenta generar el PDF
-                qrImg.onerror = () => {
-                    generarPDF();
-                };
-            } else {
-                generarPDF();
+            // Crear un contenedor temporal visible EXCLUSIVO para la generación
+            const tempContainer = document.createElement('div');
+            tempContainer.innerHTML = resumenHtml;
+            
+            // Estilos críticos: visible pero detrás del modal (z-index negativo)
+            // NO usar display:none ni left:-9999px porque html2canvas puede fallar
+            tempContainer.style.position = 'absolute';
+            tempContainer.style.top = '0';
+            tempContainer.style.left = '0';
+            tempContainer.style.width = '794px'; // Ancho A4 (210mm) a 96dpi aprox
+            tempContainer.style.background = '#fff';
+            tempContainer.style.zIndex = '-9999'; 
+            tempContainer.style.padding = '40px';
+            document.body.appendChild(tempContainer);
+
+            const qrImg = tempContainer.querySelector('#qr-img');
+
+            async function generarPDF() {
+                try {
+                    // Cargar librerías si no existen
+                    if (!window.jspdf) {
+                        await new Promise((resolve) => {
+                            const script = document.createElement('script');
+                            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+                            script.onload = resolve;
+                            document.head.appendChild(script);
+                        });
+                    }
+                    if (!window.html2canvas) {
+                        await new Promise((resolve) => {
+                            const script = document.createElement('script');
+                            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+                            script.onload = resolve;
+                            document.head.appendChild(script);
+                        });
+                    }
+
+                    // Esperar un poco para asegurar renderizado de fuentes e imágenes
+                    await new Promise(resolve => setTimeout(resolve, 500));
+
+                    const canvas = await window.html2canvas(tempContainer, {
+                        scale: 2,
+                        useCORS: true,
+                        logging: false,
+                        windowWidth: 1024
+                    });
+
+                    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF('p', 'mm', 'a4');
+                    
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = pdf.internal.pageSize.getHeight();
+                    const imgWidth = pdfWidth;
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                    pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
+                    pdf.save(`boleta_${idBoleta}.pdf`);
+
+                } catch (error) {
+                    console.error(error);
+                    alert('Error al generar el PDF.');
+                } finally {
+                    if (tempContainer.parentNode) document.body.removeChild(tempContainer);
+                }
             }
 
-            function generarPDF() {
-                import('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js')
-                .then(() => {
-                    html2pdf().from(pdfContainer).set({
-                        margin: 24,
-                        filename: `boleta_${idBoleta}.pdf`,
-                        image: { type: 'jpeg', quality: 0.98 },
-                        html2canvas: { scale: 2, useCORS: true },
-                        jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' }
-                    }).save().then(() => {
-                        pdfContainer.style.display = 'none';
-                    });
-                })
-                .catch(() => {
-                    pdfContainer.style.display = 'none';
-                    alert('No se pudo cargar el generador de PDF. Verifica tu conexión a internet.');
-                });
+            if (qrImg && !qrImg.complete) {
+                qrImg.onload = generarPDF;
+                qrImg.onerror = generarPDF;
+            } else {
+                generarPDF();
             }
         };
 
