@@ -12,66 +12,64 @@ document.addEventListener('DOMContentLoaded', async () => {
     const main = document.getElementById('info-container');
     main.innerHTML = '';
 
-    // Si viene de dulceriaLading (tiene ciudad y cine), muestra solo la foto y nombre del cine
-    if (idCiudad && idCine) {
-        try {
-            const res = await fetch(BASE_API_DOMAIN + `getInfoCine.php?idCine=${idCine}`);
-            const cine = await res.json();
-            main.innerHTML = `
-                <div style="text-align:center;">
-                    ${cine.imagen ? `<img src="${cine.imagen}" alt="Foto cine" style="width:140px;height:140px;border-radius:12px;object-fit:cover;">` : ''}
-                </div>
-                <h2 style="text-align:center; margin:0.5em 0;">${cine.nombre || ''}</h2>
-                <div style="text-align:center;">${cine.direccion || ''}</div>
-                <hr style="margin:1em 0;">
-            `;
-        } catch {
-            main.textContent = 'No se pudo cargar la información del cine.';
-        }
-    } else {
-        // Obtener datos de función y película
-        let infoFuncion = null;
-        if (idFuncion) {
+    // NUEVO: Renderiza la info en el panel izquierdo
+    const infoFuncionDulceria = document.getElementById('info-funcion-dulceria');
+    if (infoFuncionDulceria) {
+        infoFuncionDulceria.innerHTML = '';
+        if (idCiudad && idCine) {
             try {
-                const resInfo = await fetch(BASE_API_DOMAIN + `getInfoFuncionCompleta.php?idFuncion=${idFuncion}`);
-                infoFuncion = await resInfo.json();
+                const res = await fetch(BASE_API_DOMAIN + `getInfoCine.php?idCine=${idCine}`);
+                const cine = await res.json();
+                infoFuncionDulceria.innerHTML = `
+                    <div class="info-funcion-dulceria-card info-funcion-card">
+                        ${cine.imagen ? `<img src="../images/portrait/cines/${cine.imagen}" alt="Foto cine" class="portada-circular">` : ''}
+                        <h2 class="titulo-pelicula">${cine.nombre || ''}</h2>
+                        <div class="cine-nombre">${cine.direccion || ''}</div>
+                        <hr>
+                    </div> 
+                `;
             } catch {
-                // Si falla, muestra error pero sigue con productos
+                infoFuncionDulceria.textContent = 'No se pudo cargar la información del cine.';
             }
-        }
-
-        // Renderiza la info de función y película
-        if (infoFuncion) {
-            let fechaTexto = '';
-            if (infoFuncion.fecha) {
-                const fechaObj = new Date(infoFuncion.fecha + 'T00:00:00');
-                const hoy = new Date();
-                hoy.setHours(0,0,0,0);
-                if (fechaObj.getTime() === hoy.getTime()) {
-                    fechaTexto = `Hoy, ${fechaObj.getDate()} de ${fechaObj.toLocaleString('es-ES', { month: 'short' })} de ${fechaObj.getFullYear()}`;
-                } else {
-                    const diasSemana = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
-                    fechaTexto = `${diasSemana[fechaObj.getDay()]}, ${fechaObj.getDate()} de ${fechaObj.toLocaleString('es-ES', { month: 'short' })} de ${fechaObj.getFullYear()}`;
+        } else {
+            // Obtener datos de función y película
+            let infoFuncion = null;
+            if (idFuncion) {
+                try {
+                    const resInfo = await fetch(BASE_API_DOMAIN + `getInfoFuncionCompleta.php?idFuncion=${idFuncion}`);
+                    infoFuncion = await resInfo.json();
+                } catch {
+                    // Si falla, muestra error pero sigue con productos
                 }
             }
-            main.innerHTML += `
-                <div style="text-align:center;">
-                    ${infoFuncion.portada ? `<img src="${infoFuncion.portada}" alt="Portada" style="width:140px;height:140px;border-radius:50%;object-fit:cover;">` : ''}
-                </div>
-                <h2 style="font-weight:bold; margin:0.5em 0;">${infoFuncion.nombrePelicula || ''}</h2>
-                <div style="margin-bottom:0.5em;">${infoFuncion.formato || ''}${infoFuncion.formato && infoFuncion.idioma ? ', ' : ''}${infoFuncion.idioma || ''}</div>
-                <div style="font-weight:bold; margin-bottom:0.5em;">${infoFuncion.nombreCine || ''}</div>
-                <div style="margin-bottom:0.3em;">
-                    <span>📅 ${fechaTexto}</span>
-                </div>
-                <div style="margin-bottom:0.3em;">
-                    <span>🕒 ${infoFuncion.hora || ''}</span>
-                </div>
-                <div>
-                    <span>🏢 ${infoFuncion.nombreSala || ''}</span>
-                </div>
-                <hr style="margin:1em 0;">
-            `;
+            if (infoFuncion) {
+                let fechaTexto = '';
+                if (infoFuncion.fecha) {
+                    const fechaObj = new Date(infoFuncion.fecha + 'T00:00:00');
+                    const hoy = new Date();
+                    hoy.setHours(0,0,0,0);
+                    if (fechaObj.getTime() === hoy.getTime()) {
+                        fechaTexto = `Hoy, ${fechaObj.getDate()} de ${fechaObj.toLocaleString('es-ES', { month: 'short' })} de ${fechaObj.getFullYear()}`;
+                    } else {
+                        const diasSemana = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+                        fechaTexto = `${diasSemana[fechaObj.getDay()]}, ${fechaObj.getDate()} de ${fechaObj.toLocaleString('es-ES', { month: 'short' })} de ${fechaObj.getFullYear()}`;
+                    }
+                }
+                infoFuncionDulceria.innerHTML = `
+                    <div class="info-funcion-dulceria-card info-funcion-card">
+                        ${infoFuncion.portada ? `<img src="../images/portrait/movie/${infoFuncion.portada}" alt="Portada" class="portada-circular">` : ''}
+                        <h2 class="titulo-pelicula">${infoFuncion.nombrePelicula || ''}</h2>
+                        <div class="formato-linea">${infoFuncion.formato || ''}${infoFuncion.formato && infoFuncion.idioma ? ', ' : ''}${infoFuncion.idioma || ''}</div>
+                        <div class="cine-nombre">${infoFuncion.nombreCine || ''}</div>
+                        <ul class="info-lista">
+                            <li><span class="icono"><i class="fa-regular fa-calendar"></i></span>${fechaTexto}</li>
+                            <li><span class="icono"><i class="fa-regular fa-clock"></i></span>${infoFuncion.hora || ''}</li>
+                            <li><span class="icono"><i class="fa-solid fa-chair"></i></span>${infoFuncion.nombreSala || ''}</li>
+                        </ul>
+                        <hr>
+                    </div>
+                `;
+            }
         }
     }
 
@@ -103,17 +101,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Renderiza los botones de sección
-    const seccionesDiv = document.createElement('div');
-    seccionesDiv.style.marginBottom = '2em';
-
-    tipos.forEach(tipo => {
-        const btn = document.createElement('button');
-        btn.textContent = tipo.charAt(0).toUpperCase() + tipo.slice(1);
-        btn.style.marginRight = '1em';
-        btn.onclick = () => mostrarSeccion(tipo);
-        seccionesDiv.appendChild(btn);
-    });
+    // Elimina los botones de sección antiguos
+    // const seccionesDiv = document.createElement('div');
+    // seccionesDiv.style.marginBottom = '2em';
+    // tipos.forEach(tipo => {
+    //     const btn = document.createElement('button');
+    //     btn.textContent = tipo.charAt(0).toUpperCase() + tipo.slice(1);
+    //     btn.style.marginRight = '1em';
+    //     btn.onclick = () => mostrarSeccion(tipo);
+    //     seccionesDiv.appendChild(btn);
+    // });
 
     // Botón para productos de socio (solo si hay productos y el usuario está logueado)
     let socioData = null;
@@ -149,16 +146,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     } catch {}
     if (productosSocio.length > 0 && (socioData || empleadoData)) {
-        const btnSocio = document.createElement('button');
-        btnSocio.textContent = 'Solo Socios';
-        btnSocio.style.marginRight = '1em';
-        btnSocio.onclick = () => mostrarSeccion('socio');
-        seccionesDiv.appendChild(btnSocio);
+        // const btnSocio = document.createElement('button');
+        // btnSocio.textContent = 'Solo Socios';
+        // btnSocio.style.marginRight = '1em';
+        // btnSocio.onclick = () => mostrarSeccion('socio');
+        // seccionesDiv.appendChild(btnSocio);
     }
-    main.appendChild(seccionesDiv);
+    // main.appendChild(seccionesDiv);
 
     // Carrito de productos: [{prod, cantidad}]
     let carrito = [];
+    let seccionActiva = ''; // Variable para rastrear la sección actual
 
     // Contenedor para productos
     const productosDiv = document.createElement('div');
@@ -171,33 +169,53 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Renderiza el carrito como una sección debajo de los productos
     function renderCarrito() {
+        const total = carrito.reduce((sum, item) => sum + item.prod.precio * item.cantidad, 0);
+        const esStandalone = idCiudad && idCine; // Determina si es flujo solo dulcería
+
         ordenDiv.innerHTML = `
-            <h2>Tu Orden de Dulcería</h2>
-            <div>
-                ${carrito.length === 0 
-                    ? '<div>Aún no tienes productos agregados a tu orden.</div>' 
-                    : `<ul>
-                        ${carrito.map((item, idx) => `
-                            <li>
-                                ${item.prod.nombre} - S/${item.prod.precio} x ${item.cantidad} = S/${(item.prod.precio * item.cantidad).toFixed(2)}
-                                <button onclick="window.__removeCarritoItem(${idx})">Quitar</button>
-                            </li>
-                        `).join('')}
-                    </ul>`
-                }
+            <div class="orden-titulo">
+                Tu Orden de Dulcería <i class="fa-solid fa-ticket"></i>
             </div>
-            <div>
-                <strong>Total: S/${carrito.reduce((sum, item) => sum + item.prod.precio * item.cantidad, 0).toFixed(2)}</strong>
+            <div class="orden-layout">
+                <div class="orden-items-container">
+                    ${carrito.length === 0 
+                        ? '<div style="color:#666; padding:10px;">No has seleccionado productos.</div>' 
+                        : carrito.map((item, idx) => `
+                            <div class="orden-item">
+                                <span class="orden-item-nombre">${item.cantidad} x ${item.prod.nombre}</span>
+                                <span class="orden-item-precio">S/${(item.prod.precio * item.cantidad).toFixed(2)}</span>
+                                <button class="orden-item-delete" onclick="window.__removeCarritoItem(${idx})">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+                        `).join('')
+                    }
+                    ${carrito.length > 0 ? `
+                        <div class="orden-item" style="border-top: 1px solid #ccc; margin-top:10px; padding-top:10px; font-weight:900;">
+                            <span class="orden-item-nombre">Total</span>
+                            <span class="orden-item-precio">S/${total.toFixed(2)}</span>
+                            <span style="width:20px;"></span>
+                        </div>
+                    ` : ''}
+                </div>
+                <div class="orden-botones-container">
+                    <button id="continuar-btn" class="btn-orden-completada">
+                        ${esStandalone ? 'Orden Completada' : 'Continuar'}
+                    </button>
+                    ${esStandalone ? '<button id="cancelar-orden-btn" class="btn-cancelar-orden">Cancelar orden</button>' : ''}
+                </div>
             </div>
-            <button id="continuar-btn">Continuar</button>
         `;
+        
         const continuarBtn = ordenDiv.querySelector('#continuar-btn');
+        const cancelarOrdenBtn = ordenDiv.querySelector('#cancelar-orden-btn');
+
         // Si vino de dulceriaLading, requiere al menos un producto
-        if (idCiudad && idCine) {
+        if (esStandalone) {
             continuarBtn.disabled = carrito.length === 0;
         }
         continuarBtn.onclick = () => {
-            if (idCiudad && idCine && carrito.length === 0) {
+            if (esStandalone && carrito.length === 0) {
                 alert('Debes elegir al menos un producto para continuar.');
                 return;
             }
@@ -213,12 +231,22 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (idCiudad) urlParams.set('ciudad', idCiudad);
             if (idCine) urlParams.set('cine', idCine);
             console.log('Redirigiendo a pago con:', urlParams.toString());
-            if (idCiudad && idCine) {
+            if (esStandalone) {
                 window.location.href = `pagoDulceria.html?${urlParams.toString()}`;
             } else {
                 window.location.href = `pago.html?${urlParams.toString()}`;
             }
         };
+
+        // Lógica para cancelar orden (vaciar carrito) - Solo si existe el botón
+        if (cancelarOrdenBtn) {
+            cancelarOrdenBtn.onclick = () => {
+                if(confirm('¿Estás seguro de que deseas cancelar la compra?')) {
+                    // Redirige a la landing de dulcería
+                    window.location.href = `dulceriaLading.html?ciudad=${idCiudad}&cine=${idCine}`;
+                }
+            };
+        }
     }
 
     // Función global para quitar producto del carrito
@@ -239,14 +267,105 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderCarrito();
     };
 
-    // Función para mostrar productos de una sección
-    function mostrarSeccion(seccion) {
-        productosDiv.innerHTML = '';
-        if (seccion === 'socio') {
-            // No mostrar info de socio/empleado
+    // Define las categorías y sus íconos (FontAwesome)
+    const categorias = [
+        { key: 'dulce', label: 'Dulces', icon: 'fa-solid fa-candy-cane' },
+        { key: 'snack', label: 'Snacks', icon: 'fa-solid fa-cookie-bite' }, // Fallback si fa-popcorn no carga
+        { key: 'combo', label: 'Combos', icon: 'fa-solid fa-box' },
+        { key: 'bebida', label: 'Bebidas', icon: 'fa-solid fa-bottle-water' },
+        { key: 'merch', label: 'Merch', icon: 'fa-solid fa-gift' },
+        { key: 'complementario', label: 'Complementos', icon: 'fa-solid fa-plus' },
+        { key: 'otro', label: 'Otros', icon: 'fa-solid fa-ellipsis' }
+    ];
 
+    // Renderiza la barra de categorías con íconos y botón de socio si corresponde
+    function renderCategoriasBarra(activaKey) {
+        const barra = document.createElement('div');
+        barra.className = 'dulceria-categorias-barra';
+        barra.style.display = 'flex';
+        barra.style.alignItems = 'flex-end';
+        barra.style.justifyContent = 'center'; // Centra los íconos del menú
+        barra.style.gap = '32px';
+        barra.style.marginBottom = '24px';
+        barra.style.flexWrap = 'wrap';
+
+        categorias.forEach(cat => {
+            const btn = document.createElement('button');
+            btn.className = 'dulceria-categoria-btn' + (activaKey === cat.key ? ' activa' : '');
+            btn.style.display = 'flex';
+            btn.style.flexDirection = 'column';
+            btn.style.alignItems = 'center';
+            btn.style.justifyContent = 'center';
+            btn.style.background = 'none';
+            btn.style.border = 'none';
+            btn.style.cursor = 'pointer';
+            btn.style.fontFamily = 'Montserrat, sans-serif';
+            btn.style.fontWeight = activaKey === cat.key ? 'bold' : 'normal';
+            btn.style.color = activaKey === cat.key ? '#004A8C' : '#222';
+            btn.style.fontSize = '1em';
+            btn.style.padding = '0';
+            btn.style.position = 'relative';
+
+            btn.innerHTML = `
+                <span style="font-size:2.2em; margin-bottom:4px;">
+                    <i class="${cat.icon}"></i>
+                </span>
+                <span style="font-size:0.98em; text-align:center; line-height:1.1;">
+                    ${cat.label}
+                </span>
+                ${activaKey === cat.key ? '<span style="height:3px;width:0px;background:#004A8C;display:block;margin-top:4px;border-radius:2px;"></span>' : ''}
+            `;
+            btn.onclick = () => mostrarSeccion(cat.key);
+            barra.appendChild(btn);
+        });
+
+        // Botón "Solo Socios" con ícono, si corresponde
+        if (productosSocio.length > 0 && (socioData || empleadoData)) {
+            const btnSocio = document.createElement('button');
+            btnSocio.className = 'dulceria-categoria-btn' + (activaKey === 'socio' ? ' activa' : '');
+            btnSocio.style.display = 'flex';
+            btnSocio.style.flexDirection = 'column';
+            btnSocio.style.alignItems = 'center';
+            btnSocio.style.justifyContent = 'center';
+            btnSocio.style.background = 'none';
+            btnSocio.style.border = 'none';
+            btnSocio.style.cursor = 'pointer';
+            btnSocio.style.fontFamily = 'Montserrat, sans-serif';
+            btnSocio.style.fontWeight = activaKey === 'socio' ? 'bold' : 'normal';
+            btnSocio.style.color = activaKey === 'socio' ? '#004A8C' : '#222';
+            btnSocio.style.fontSize = '1em';
+            btnSocio.style.padding = '0';
+            btnSocio.style.position = 'relative';
+
+            btnSocio.innerHTML = `
+                <span style="font-size:2.2em; margin-bottom:4px;">
+                    <i class="fa-solid fa-user"></i>
+                </span>
+                <span style="font-size:0.98em; text-align:center; line-height:1.1;">
+                    Solo Socios
+                </span>
+                ${activaKey === 'socio' ? '<span style="height:3px;width:32px;background:#004A8C;display:block;margin-top:4px;border-radius:2px;"></span>' : ''}
+            `;
+            btnSocio.onclick = () => mostrarSeccion('socio');
+            barra.appendChild(btnSocio);
+        }
+
+        return barra;
+    }
+
+    // Modifica mostrarSeccion para usar la barra de categorías
+    function mostrarSeccion(seccion) {
+        seccionActiva = seccion; // Guardar sección activa
+        productosDiv.innerHTML = '';
+        productosDiv.appendChild(renderCategoriasBarra(seccion));
+
+        // Crea el grid de productos (3 columnas por fila)
+        const gridDiv = document.createElement('div');
+        gridDiv.className = 'productos-grid'; // Usamos la clase CSS definida en HTML
+
+        let productosFiltrados = [];
+        if (seccion === 'socio') {
             // Filtrar productos según tipo de usuario y grado/rango
-            let productosFiltrados = [];
             // Si es socio y NO es empleado
             if (socioData && (!socioData.empleado || socioData.empleado == 0)) {
                 productosFiltrados = productosSocio.filter(prod => {
@@ -262,7 +381,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             // Si es empleado (ya sea socio o empleadoData)
             if ((empleadoData && empleadoData.empleado == 1)) {
-                // Solo productos que requieren empleado
                 const productosEmpleado = productosSocio.filter(prod => prod.requiereEmpleado == 1);
                 // Evita duplicados si el usuario es socio y empleado
                 productosEmpleado.forEach(prod => {
@@ -271,35 +389,40 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                 });
             }
-
-            productosFiltrados.forEach(prod => {
-                productosDiv.appendChild(renderProducto(prod, true));
-            });
         } else if (productosPorTipo[seccion]) {
-            productosPorTipo[seccion].forEach(prod => {
-                productosDiv.appendChild(renderProducto(prod, false));
-            });
+            productosFiltrados = productosPorTipo[seccion];
         }
+
+        productosFiltrados.forEach(prod => {
+            gridDiv.appendChild(renderProducto(prod, seccion === 'socio'));
+        });
+
+        productosDiv.appendChild(gridDiv);
     }
 
     // Modifica renderProducto para agregar al carrito with quantity
     function renderProducto(prod, esSocio) {
         const divProd = document.createElement('div');
-        divProd.style.border = '1px solid #ccc';
-        divProd.style.margin = '8px 0';
-        divProd.style.padding = '8px';
+        divProd.className = 'producto-card'; // Usamos la clase CSS definida en HTML
 
         function renderNormal() {
             divProd.innerHTML = `
-                ${prod.imagen ? `<img src="../images/portrait/candy/${prod.imagen}" alt="${prod.nombre}" width="80" height="80">` : ''}
-                <strong>${prod.nombre}</strong><br>
-                <span>${prod.descripcion || ''}</span><br>
-                <span>Precio: S/${prod.precio}</span>
-                ${esSocio ? `<div>Solo para socios</div>` : ''}
-                ${prod.canjeaPuntos && esSocio && socioData ? `<div id="puntos-disponibles-${prod.id}">Puntos disponibles: ${puntosSocio} | Necesarios: ${prod.puntosNecesarios}</div>` : ''}
-                <button class="agregar-btn">Agregar</button>
+                <img src="../images/portrait/candy/${prod.imagen || 'default.png'}" alt="${prod.nombre}" class="producto-img">
+                <div class="producto-info">
+                    <div class="producto-titulo">${prod.nombre}</div>
+                    <div class="producto-desc">${prod.descripcion || ''}</div>
+                </div>
+                <div class="producto-precio-row">
+                    <span class="producto-precio-label">Precio desde:</span>
+                    <span class="producto-precio-valor">S/${parseFloat(prod.precio).toFixed(2)}</span>
+                </div>
+                ${esSocio ? `<div class="etiqueta-socio">Solo para socios</div>` : ''}
+                ${prod.canjeaPuntos && esSocio && socioData ? `<div id="puntos-disponibles-${prod.id}" class="puntos-info">Puntos disponibles: ${puntosSocio} | Necesarios: ${prod.puntosNecesarios}</div>` : ''}
+                <button class="btn-agregar-producto">
+                    <i class="fa-solid fa-cart-plus"></i> Agregar
+                </button>
             `;
-            divProd.querySelector('.agregar-btn').onclick = () => renderCantidad();
+            divProd.querySelector('.btn-agregar-producto').onclick = () => renderCantidad();
         }
 
         function renderCantidad() {
@@ -322,23 +445,28 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return;
             }
             let cantidad = 1;
+            
             divProd.innerHTML = `
-                ${prod.imagen ? `<img src="../images/portrait/candy/${prod.imagen}" alt="${prod.nombre}" width="80" height="80">` : ''}
-                <strong>${prod.nombre}</strong><br>
-                <span>${prod.descripcion || ''}</span><br>
-                <span>Precio: S/${prod.precio}</span>
-                ${prod.canjeaPuntos && esSocio && socioData ? `<div id="puntos-restantes-${prod.id}">Puntos disponibles: ${puntosSocio} | Necesarios: ${prod.puntosNecesarios}</div>` : ''}
-                <div>
-                    <button class="menos-btn">-</button>
-                    <span class="cantidad-span">${cantidad}</span>
-                    <button class="mas-btn">+</button>
-                    <span> (máx ${maxAgregar})</span>
+                <img src="../images/portrait/candy/${prod.imagen || 'default.png'}" alt="${prod.nombre}" class="producto-img">
+                <div class="producto-titulo">${prod.nombre}</div>
+                
+                <div class="producto-contador-container">
+                    ${prod.canjeaPuntos && esSocio && socioData ? `<div id="puntos-restantes-${prod.id}" class="puntos-info">Puntos disponibles: ${puntosSocio} | Necesarios: ${prod.puntosNecesarios}</div>` : ''}
+                    
+                    <div class="producto-contador">
+                        <button class="btn-count menos-btn">-</button>
+                        <span class="count-display cantidad-span">${cantidad}</span>
+                        <button class="btn-count mas-btn">+</button>
+                    </div>
+                    <div class="max-msg">(máx ${maxAgregar})</div>
                 </div>
-                <div style="margin-top:8px;">
-                    <button class="aceptar-btn">Aceptar</button>
-                    <button class="cancelar-btn">Cancelar</button>
+
+                <div class="acciones-botones">
+                    <button class="btn-aceptar aceptar-btn">Aceptar</button>
+                    <button class="btn-cancelar cancelar-btn">Cancelar</button>
                 </div>
             `;
+            
             const cantidadSpan = divProd.querySelector('.cantidad-span');
             const puntosRestantesDiv = divProd.querySelector(`#puntos-restantes-${prod.id}`);
             
@@ -391,8 +519,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         return divProd;
     }
 
-    // Muestra por defecto la primera sección (dulce)
-    mostrarSeccion('dulce');
+    // Muestra por defecto la primera categoría (o socio si solo hay productos socio)
+    if (productosSocio.length > 0 && (socioData || empleadoData)) {
+        mostrarSeccion('dulce');
+    } else {
+        mostrarSeccion(categorias[0].key);
+    }
 
     // Renderiza el carrito inicialmente
     renderCarrito();

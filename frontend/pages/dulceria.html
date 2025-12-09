@@ -4,38 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dulcería</title>
-    <style>
-        body { font-family: sans-serif; }
-        #info-container { margin: 2em auto; max-width: 800px; }
-        #socio-display { position: absolute; top: 15px; right: 15px; font-size: 1.2em; border: 1px solid #ccc; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; user-select: none; }
-        .oculto-por-modal { display: none !important; }
-        #login-modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.3);
-            z-index: 2000;
-        }
-        #login-frame {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 350px; height: 340px;
-            border: none;
-            background: #fff;
-            box-shadow: 0 2px 12px #0003;
-            border-radius: 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="../styles/dulceria.css">
 </head>
 <body>
-    <header id="main-header">
-        <h1>Dulcería</h1>
-        <div id="socio-display">👤</div>
-    </header>
+    <div class="header-dulceria">
+        <button class="volver-btn" id="volver-btn-dulceria">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Atrás
+        </button>
+        <div class="titulo-header">3. Dulcería</div>
+        <div class="acciones-header">
+            <div class="socio-display" id="socio-display-dulceria">👤</div>
+            <button class="cerrar-btn" id="cerrar-btn-dulceria" title="Cerrar">
+                &times;
+            </button>
+        </div>
+    </div>
+    <div class="espacio-header-dulceria"></div>
     <main id="main-content">
-        <div id="info-container"></div>
-        <!-- Aquí irá el contenido de dulcería -->
+        <div class="dulceria-layout">
+            <div class="info-funcion-dulceria-col">
+                <div id="info-funcion-dulceria"></div>
+            </div>
+            <div class="dulceria-col">
+                <!-- Barra de progreso de pasos (igual que asientos.html) -->
+                <div class="progreso-pasos">
+                    <div class="paso">
+                        <span class="icono"><i class="fa-solid fa-chair"></i></span>
+                        <span class="linea"></span>
+                    </div>
+                    <div class="paso">
+                        <span class="icono"><i class="fa-solid fa-ticket"></i></span>
+                        <span class="linea"></span>
+                    </div>
+                    <div class="paso activo">
+                        <span class="icono"><i class="fa-solid fa-burger"></i></span>
+                        <span class="linea"></span>
+                    </div>
+                    <div class="paso">
+                        <span class="icono"><i class="fa-regular fa-rectangle-list"></i></span>
+                    </div>
+                </div>
+                <div id="info-container"></div>
+                <!-- Aquí irá el contenido de dulcería -->
+            </div>
+        </div>
     </main>
     <!-- Modal login solo con iframe -->
     <div id="login-modal">
@@ -50,10 +64,12 @@
     // Chequea sesión
     fetch('../../backend/auth/checkSession.php')
         .then(res => res.json())
-        .then(data => {
+        .then (data => {
             if (!data.loggedIn && fromLanding && !esInvitado) {
                 document.getElementById('main-content').classList.add('oculto-por-modal');
-                document.getElementById('main-header').classList.add('oculto-por-modal');
+                // Solo agrega la clase si existe el elemento
+                const mainHeader = document.getElementById('main-header');
+                if (mainHeader) mainHeader.classList.add('oculto-por-modal');
                 const loginModal = document.getElementById('login-modal');
                 const loginFrame = document.getElementById('login-frame');
                 params.set('redirect', window.location.pathname + '?' + params.toString());
@@ -64,11 +80,52 @@
             } else {
                 // Si está logueado o es invitado, asegura que el contenido esté visible
                 document.getElementById('main-content').classList.remove('oculto-por-modal');
-                document.getElementById('main-header').classList.remove('oculto-por-modal');
+                const mainHeader = document.getElementById('main-header');
+                if (mainHeader) mainHeader.classList.remove('oculto-por-modal');
                 document.getElementById('login-modal').style.display = 'none';
                 document.body.style.overflow = '';
             }
         });
+
+    // Header Dulcería: usuario y botones
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('../../backend/auth/checkSession.php')
+            .then(res => res.json())
+            .then(data => {
+                const socioDisplay = document.getElementById('socio-display-dulceria');
+                if (data.loggedIn && data.socio && data.socio.nombre) {
+                    const nombre = data.socio.nombre;
+                    const iniciales = nombre.split(' ').map(word => word[0]).join('').toUpperCase();
+                    socioDisplay.textContent = iniciales;
+                } else {
+                    socioDisplay.textContent = '👤';
+                }
+            });
+        // Botón volver
+        document.getElementById('volver-btn-dulceria').onclick = function() {
+            const params = new URLSearchParams(window.location.search);
+            const idPelicula = params.get('pelicula');
+            const idFuncion = params.get('funcion');
+            const asientos = params.get('asientos');
+            let url = 'entradas.html';
+            if (idPelicula && idFuncion) {
+                url += `?pelicula=${idPelicula}&funcion=${idFuncion}`;
+                if (asientos) url += `&asientos=${asientos}`;
+                if (params.get('invitado') === '1') url += '&invitado=1';
+            }
+            window.location.href = url;
+        };
+        // Botón cerrar (X)
+        document.getElementById('cerrar-btn-dulceria').onclick = function() {
+            const params = new URLSearchParams(window.location.search);
+            const idPelicula = params.get('pelicula');
+            if (idPelicula) {
+                window.location.href = `peliculaSeleccion.html?pelicula=${idPelicula}`;
+            } else {
+                window.location.href = 'peliculaSeleccion.html';
+            }
+        };
+    });
     </script>
     <script type="module" src="../js/dulceria.js"></script>
 </body>
