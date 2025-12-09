@@ -45,8 +45,8 @@ async function cargarProductos() {
                     <td>${p.canjeaPuntos == 1 ? '✅' : '❌'}</td>
                     <td>${p.puntosNecesarios || '-'}</td>
                     <td class="action-buttons">
-                        <button class="btn-edit" onclick="window.editarProducto(${p.id})">✏️ Editar</button>
-                        <button class="btn-delete" onclick="window.eliminarProducto(${p.id})">🗑️ Eliminar</button>
+                        <button class="btn-edit" onclick="window.editarProducto(${p.id})">Editar</button>
+                        <button class="btn-delete" onclick="window.eliminarProducto(${p.id})">Eliminar</button>
                     </td>
                 </tr>
             `).join('');

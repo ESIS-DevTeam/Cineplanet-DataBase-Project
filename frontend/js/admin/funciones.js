@@ -327,11 +327,11 @@ async function cargarFunciones() {
                     <td>S/ ${parseFloat(f.precio).toFixed(2)}</td>
                     <td><span class="badge ${estadoBadge[f.estado] || 'badge-activa'}">${f.estado.toUpperCase()}</span></td>
                     <td class="action-buttons">
-                        <button class="btn-edit" onclick="window.editarFuncion(${f.id})">✏️ Editar</button>
-                        <button class="btn-delete" onclick="window.eliminarFuncion(${f.id})">🗑️ Eliminar</button>
+                        <button class="btn-edit" onclick="window.editarFuncion(${f.id})">Editar</button>
+                        <button class="btn-delete" onclick="window.eliminarFuncion(${f.id})">Eliminar</button>
                     </td>
                 </tr>
-            `}).join('');
+`}).join('');
             const emptyStateFunciones = document.getElementById('emptyStateFunciones');
             if (emptyStateFunciones) emptyStateFunciones.style.display = 'none';
         } else {

@@ -39,8 +39,8 @@ export async function cargarPromos() {
                     <td>${p.valor}</td>
                     <td>${p.estado}</td>
                     <td class="action-buttons">
-                        <button class="btn-edit" onclick="window.editarPromo(${p.id})">✏️ Editar</button>
-                        <button class="btn-delete" onclick="window.eliminarPromo(${p.id})">🗑️ Eliminar</button>
+                        <button class="btn-edit" onclick="window.editarPromo(${p.id})">Editar</button>
+                        <button class="btn-delete" onclick="window.eliminarPromo(${p.id})">Eliminar</button>
                     </td>
                 </tr>
             `).join('');

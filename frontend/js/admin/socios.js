@@ -72,8 +72,8 @@ async function cargarSocios() {
                     <td>${s.celular || '-'}</td>
                     <td>${s.empleado === 1 || s.empleado === '1' ? '✅' : '❌'}</td>
                     <td class="action-buttons">
-                        <button class="btn-edit" onclick="window.editarSocio(${s.id})">✏️ Editar</button>
-                        <button class="btn-delete" onclick="window.eliminarSocio(${s.id})">🗑️ Eliminar</button>
+                        <button class="btn-edit" onclick="window.editarSocio(${s.id})">Editar</button>
+                        <button class="btn-delete" onclick="window.eliminarSocio(${s.id})">Eliminar</button>
                     </td>
                 </tr>
             `}).join('');

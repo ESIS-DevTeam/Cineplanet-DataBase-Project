@@ -45,8 +45,8 @@ async function cargarUsuarios() {
                     <td><span style="background: ${u.tipo === 'admin' ? '#ea4335' : '#1a73e8'}; color: white; padding: 4px 8px; border-radius: 3px; font-size: 12px; font-weight: 600;">${u.tipo.toUpperCase()}</span></td>
                     <td>${u.estado_cliente}</td>
                     <td class="action-buttons">
-                        <button class="btn-edit" onclick="window.editarUsuario(${u.id})">✏️ Editar</button>
-                        <button class="btn-delete" onclick="window.eliminarUsuario(${u.id})">🗑️ Eliminar</button>
+                        <button class="btn-edit" onclick="window.editarUsuario(${u.id})">🖉 Editar</button>
+                        <button class="btn-delete" onclick="window.eliminarUsuario(${u.id})">🗑 Eliminar</button>
                     </td>
                 </tr>
             `).join('');

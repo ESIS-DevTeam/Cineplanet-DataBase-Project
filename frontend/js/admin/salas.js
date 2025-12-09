@@ -31,7 +31,7 @@ export async function cargarSalas() {
         const data = await manejarRespuesta(response, 'cargar salas');
         const tbody = document.querySelector('#salasTable tbody');
         if (data.success && data.data.length > 0) {
-            tbody.innerHTML = data.data.map(s => `
+            tbody.innerHTML = data.success && data.data.length > 0 ? data.data.map(s => `
                 <tr>
                     <td><strong>${s.id}</strong></td>
                     <td>${s.nombre}</td>
@@ -39,11 +39,11 @@ export async function cargarSalas() {
                     <td>${s.tipo}</td>
                     <td>${s.cine_nombre || '-'}</td>
                     <td class="action-buttons">
-                        <button class="btn-edit" onclick="window.editarSala(${s.id})">✏️ Editar</button>
-                        <button class="btn-delete" onclick="window.eliminarSala(${s.id})">🗑️ Eliminar</button>
+                        <button class="btn-edit" onclick="window.editarSala(${s.id})">Editar</button>
+                        <button class="btn-delete" onclick="window.eliminarSala(${s.id})">Eliminar</button>
                     </td>
                 </tr>
-            `).join('');
+            `).join('') : '';
             document.getElementById('emptyStateSalas').style.display = 'none';
         } else {
             tbody.innerHTML = '';

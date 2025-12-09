@@ -63,20 +63,22 @@ async function cargarPeliculas() {
         const data = await manejarRespuesta(response, 'cargar películas');
         const tbody = document.querySelector('#peliculasTable tbody');
         if (data.success && data.data.length > 0) {
-            tbody.innerHTML = data.data.map(p => `
-                <tr>
-                    <td><strong>${p.id}</strong></td>
-                    <td>${p.nombre}</td>
-                    <td>${p.genero_nombre || '-'}</td>
-                    <td>${p.duracion} min</td>
-                    <td>${p.restriccion_nombre || '-'}</td>
-                    <td>${p.estado}</td>
-                    <td class="action-buttons">
-                        <button class="btn-edit" onclick="window.editarPelicula(${p.id})">✏️ Editar</button>
-                        <button class="btn-delete" onclick="window.eliminarPelicula(${p.id})">🗑️ Eliminar</button>
-                    </td>
-                </tr>
-            `).join('');
+            tbody.innerHTML = data.success && data.data.length > 0
+                ? data.data.map(p => `
+                    <tr>
+                        <td><strong>${p.id}</strong></td>
+                        <td>${p.nombre}</td>
+                        <td>${p.genero_nombre || '-'}</td>
+                        <td>${p.duracion} min</td>
+                        <td>${p.restriccion_nombre || '-'}</td>
+                        <td>${p.estado}</td>
+                        <td class="action-buttons">
+                            <button class="btn-edit" onclick="window.editarPelicula(${p.id})">Editar</button>
+                            <button class="btn-delete" onclick="window.eliminarPelicula(${p.id})">Eliminar</button>
+                        </td>
+                    </tr>
+                `).join('')
+                : '';
             document.getElementById('emptyStatePeliculas').style.display = 'none';
         } else {
             tbody.innerHTML = '';

@@ -75,8 +75,8 @@ export async function cargarCatalogo() {
                                 <td>${e.id}</td>
                                 <td>${e.nombre}</td>
                                 <td>
-                                    <button class="btn-edit" onclick="window.editarCatalogo(${e.id})">✏️</button>
-                                    <button class="btn-delete" onclick="window.eliminarCatalogo(${e.id})">🗑️</button>
+                                    <button class="btn-edit" onclick="window.editarCatalogo(${e.id})">🖉 Editar</button>
+                                    <button class="btn-delete" onclick="window.eliminarCatalogo(${e.id})">🗑 Eliminar</button>
                                 </td>
                             </tr>
                         `).join('')}
