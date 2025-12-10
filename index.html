@@ -111,7 +111,6 @@
       </section>
     </main>
   </div>
-  <div id="socio-info" style="text-align:right; margin:10px;"></div>
   <!-- Ventana flotante socio -->
   <div id="socio-popup" style="display:none; position:fixed; top:70px; right:30px; background:#fff; border:1px solid #ccc; box-shadow:0 2px 8px #0002; z-index:1000; min-width:220px; padding:16px; border-radius:8px;">
     <div id="socio-popup-content"></div>
@@ -125,16 +124,8 @@
     .then(res => res.json())
     .then(data => {
       socioData = data.socio || null;
-      if (data.loggedIn && socioData) {
-        document.getElementById('socio-info').innerHTML =
-          '👤 Socio: ' + socioData.nombre +
-          ' <button onclick="logout()">Cerrar sesión</button>';
-      } else {
-        // Enlace de login con redirect dinámico
-        document.getElementById('socio-info').innerHTML =
-          `<a href="frontend/pages/login.html?redirect=${encodeURIComponent(window.location.pathname)}">Iniciar sesión</a>`;
-      }
     });
+    
     function logout() {
         fetch('backend/auth/logout.php')
             .then(() => window.location.reload());
