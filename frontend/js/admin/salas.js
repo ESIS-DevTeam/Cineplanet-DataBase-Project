@@ -79,6 +79,8 @@ window.generarPlanoSala = function() {
         rowDiv.className = 'plano-fila';
         let label = document.createElement('span');
         label.textContent = filaLetra + ': ';
+        label.style.width = '30px'; // Alineación
+        label.style.display = 'inline-block';
         rowDiv.appendChild(label);
         for (let n = 1; n <= asientosPorFila; n++) {
             let seat = document.createElement('span');
@@ -86,21 +88,12 @@ window.generarPlanoSala = function() {
             seat.dataset.fila = filaLetra;
             seat.dataset.numero = n;
             seat.dataset.tipo = 'normal';
-            seat.textContent = '🪑';
+            // seat.textContent = '🪑'; // Removed
             seat.onclick = function() {
                 // Cambia el tipo visualmente y en dataset
                 let tipo = window.tipoAsientoSeleccionado;
                 seat.dataset.tipo = tipo;
-                if (tipo === 'normal') {
-                    seat.textContent = '🪑';
-                    seat.className = 'plano-asiento plano-normal';
-                } else if (tipo === 'discapacidad') {
-                    seat.textContent = '♿';
-                    seat.className = 'plano-asiento plano-discapacidad';
-                } else if (tipo === 'pasillo') {
-                    seat.textContent = '⬜';
-                    seat.className = 'plano-asiento plano-pasillo';
-                }
+                seat.className = 'plano-asiento plano-' + tipo;
             };
             rowDiv.appendChild(seat);
         }
@@ -189,16 +182,7 @@ export async function editarSala(id) {
                     let asiento = s.planoSala.find(a => a.fila === seat.dataset.fila && a.numero == seat.dataset.numero);
                     if (asiento) {
                         seat.dataset.tipo = asiento.tipo;
-                        if (asiento.tipo === 'normal') {
-                            seat.textContent = '🪑';
-                            seat.className = 'plano-asiento plano-normal';
-                        } else if (asiento.tipo === 'discapacidad') {
-                            seat.textContent = '♿';
-                            seat.className = 'plano-asiento plano-discapacidad';
-                        } else if (asiento.tipo === 'pasillo') {
-                            seat.textContent = '⬜';
-                            seat.className = 'plano-asiento plano-pasillo';
-                        }
+                        seat.className = 'plano-asiento plano-' + asiento.tipo;
                     }
                 });
             }

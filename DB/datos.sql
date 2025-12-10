@@ -302,17 +302,17 @@ INSERT INTO PLANO_SALA (idSala, fila, numero, tipo) VALUES
 (10, 'J', 1, 'normal'), (10, 'J', 2, 'normal'), (10, 'J', 3, 'discapacidad'), (10, 'J', 4, 'normal');
 
 -- PELICULA
-INSERT INTO PELICULA (nombre, genero, duracion, restriccion, restriccionComercial, sinopsis, autor, trailer, portada, estado) VALUES
-('Avengers: Endgame', 1, 180, 1, 1, 'Los héroes enfrentan a Thanos.', 'Marvel Studios', 'https://www.youtube.com/watch?v=xvFZjo5PgG0', 'avengers_endgame.jpg', 'activa'),
-('Toy Story 4', 6, 100, 1, 1, 'Woody y Buzz viven una nueva aventura.', 'Pixar', 'https://www.youtube.com/watch?v=wmiIUN-7qhE', 'toy_story_4.jpg', 'activa'),
-('It: Capítulo 2', 4, 170, 3, 1, 'Regresa Pennywise.', 'Warner Bros', 'https://www.youtube.com/watch?v=xhJ5P7Up3jA', 'it_capitulo_2.jpg', 'activa'),
-('Titanic', 7, 195, 1, 1, 'Una historia de amor en el Titanic.', 'James Cameron', 'https://www.youtube.com/watch?v=kVrqfYjkTdQ', 'titanic.jpg', 'activa'),
-('Avatar', 5, 160, 1, 1, 'Una aventura en Pandora.', 'James Cameron', 'https://www.youtube.com/watch?v=5PSNL1qE6VY', 'avatar.jpg', 'activa'),
-('John Wick 4', 1, 150, 2, 1, 'John Wick continúa su venganza.', 'Lionsgate', 'https://www.youtube.com/watch?v=qEVUtrk8_B4', 'john_wick_4.jpg', 'activa'),
-('Spider-Man: No Way Home', 8, 150, 2, 1, 'El multiverso se abre.', 'Marvel Studios', 'https://www.youtube.com/watch?v=JfVOs4VSpmA', 'spider_man_no_way_home.jpg', 'activa'),
-('Coco', 6, 110, 1, 1, 'Un niño viaja al mundo de los muertos.', 'Pixar', 'https://www.youtube.com/watch?v=Ga6RYejo6Hk', 'coco.jpg', 'activa'),
-('Jurassic World', 5, 125, 2, 1, 'Dinosaurios vuelven a la vida.', 'Universal', 'https://www.youtube.com/watch?v=RFinNxS5KN4', 'jurassic_world.jpg', 'activa'),
-('El Conjuro', 4, 112, 3, 1, 'Basado en hechos reales.', 'James Wan', 'https://www.youtube.com/watch?v=k10ETZ41q5o', 'el_conjuro.jpg', 'activa');
+INSERT INTO PELICULA (nombre, genero, duracion, restriccion, restriccionComercial, sinopsis, autor, trailer, portada, frame, estado) VALUES
+('Avengers: Endgame', 1, 180, 1, 1, 'Los héroes enfrentan a Thanos.', 'Marvel Studios', 'https://www.youtube.com/watch?v=xvFZjo5PgG0', 'avengers_endgame.jpg', 'avengers_endgame_frame.jpg', 'activa'),
+('Toy Story 4', 6, 100, 1, 1, 'Woody y Buzz viven una nueva aventura.', 'Pixar', 'https://www.youtube.com/watch?v=wmiIUN-7qhE', 'toy_story_4.jpg', 'toy_story_4_frame.jpg', 'activa'),
+('It: Capítulo 2', 4, 170, 3, 1, 'Regresa Pennywise.', 'Warner Bros', 'https://www.youtube.com/watch?v=xhJ5P7Up3jA', 'it_capitulo_2.jpg', 'it_capitulo_2_frame.jpg', 'activa'),
+('Titanic', 7, 195, 1, 1, 'Una historia de amor en el Titanic.', 'James Cameron', 'https://www.youtube.com/watch?v=kVrqfYjkTdQ', 'titanic.jpg', 'titanic_frame.jpg', 'activa'),
+('Avatar', 5, 160, 1, 1, 'Una aventura en Pandora.', 'James Cameron', 'https://www.youtube.com/watch?v=5PSNL1qE6VY', 'avatar.jpg', 'avatar_frame.jpg', 'activa'),
+('John Wick 4', 1, 150, 2, 1, 'John Wick continúa su venganza.', 'Lionsgate', 'https://www.youtube.com/watch?v=qEVUtrk8_B4', 'john_wick_4.jpg', 'john_wick_4_frame.jpg', 'activa'),
+('Spider-Man: No Way Home', 8, 150, 2, 1, 'El multiverso se abre.', 'Marvel Studios', 'https://www.youtube.com/watch?v=JfVOs4VSpmA', 'spider_man_no_way_home.jpg', 'spider_man_no_way_home_frame.jpg', 'activa'),
+('Coco', 6, 110, 1, 1, 'Un niño viaja al mundo de los muertos.', 'Pixar', 'https://www.youtube.com/watch?v=Ga6RYejo6Hk', 'coco.jpg', 'coco_frame.jpg', 'activa'),
+('Jurassic World', 5, 125, 2, 1, 'Dinosaurios vuelven a la vida.', 'Universal', 'https://www.youtube.com/watch?v=RFinNxS5KN4', 'jurassic_world.jpg', 'jurassic_world_frame.jpg', 'activa'),
+('El Conjuro', 4, 112, 3, 1, 'Basado en hechos reales.', 'James Wan', 'https://www.youtube.com/watch?v=k10ETZ41q5o', 'el_conjuro.jpg', 'el_conjuro_frame.jpg', 'activa');
 
 -- PELICULA_FORMATO
 INSERT INTO PELICULA_FORMATO (idPelicula, idFormato) VALUES

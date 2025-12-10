@@ -1,4 +1,68 @@
 <div class="card">
+    <style>
+        .plano-fila {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            justify-content: center;
+        }
+        .plano-asiento {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin: 0 4px;
+            cursor: pointer;
+            display: inline-block;
+            border: 1px solid #ccc;
+            transition: transform 0.1s;
+        }
+        .plano-asiento:hover {
+            transform: scale(1.2);
+        }
+        .plano-normal {
+            background-color: #004A8C; /* Azul Cineplanet */
+            border-color: #003366;
+        }
+        .plano-discapacidad {
+            background-color: #2196F3; /* Azul claro */
+            border-color: #1976D2;
+            position: relative;
+        }
+        /* Icono opcional para discapacidad */
+        .plano-discapacidad::after {
+            content: '♿';
+            font-size: 14px;
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+        }
+        .plano-pasillo {
+            background-color: transparent;
+            border: 1px dashed #ccc;
+        }
+        
+        .btn-tipo-asiento {
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            background: #f0f0f0;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-right: 5px;
+        }
+        .btn-tipo-asiento.selected {
+            background: #333;
+            color: #fff;
+            border-color: #333;
+        }
+        #planoSalaContainer {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+            overflow-x: auto;
+        }
+    </style>
     <div class="form-section">
         <h2>Formulario de Sala</h2>
         <form id="salaForm">
