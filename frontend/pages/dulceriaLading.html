@@ -10,8 +10,10 @@
     <link href="../styles/estilos.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="../styles/header2.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles/dulceriaLading.css">
 </head>
 <body>
+    <div class="dulceria-bg"></div>
     <header>
         <div class="header-group">
             <a href="../../index.html" target="_self">
@@ -42,30 +44,34 @@
         </div>
     </header>
     <div class="app-container">
-        <div id="socio-info" style="text-align:right; margin:10px;"></div>
+        <div id="socio-info" style="text-align:right; margin:10px; visibility:hidden;"></div>
         <div id="socio-popup" style="display:none; position:fixed; top:70px; left:30px; background:#fff; border:1px solid #ccc; box-shadow:0 2px 8px #0002; z-index:1000; width:auto; min-width:0; max-width:260px; padding:16px; border-radius:8px;">
             <div id="socio-popup-content"></div>
         </div>
-        <!-- NUEVO: Formulario ciudad/cine -->
         <main>
-            <h2 style="text-align:center;">Selecciona Ciudad y Cine</h2>
-            <form id="form-ciudad-cine" style="max-width:400px;margin:2em auto;">
-                <div>
-                    <label for="select-ciudad">Ciudad:</label>
-                    <select id="select-ciudad" name="ciudad" required>
-                        <option value="">Selecciona una ciudad</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="select-cine">Cine:</label>
-                    <select id="select-cine" name="cine" required disabled>
-                        <option value="">Selecciona un cine</option>
-                    </select>
-                </div>
-                <div style="margin-top:1em;">
-                    <button type="submit">Continuar</button>
-                </div>
-            </form>
+            <div class="dulceria-titulo">
+                Escoge un Cineplanet para comprar productos de nuestra dulcería
+            </div>
+            <div class="dulceria-form-container">
+                <form id="form-ciudad-cine">
+                    <div class="dulceria-form-row">
+                        <div class="dulceria-form-group">
+                            <!-- Select primero, Label después para CSS sibling selector -->
+                            <select id="select-ciudad" name="ciudad" required>
+                                <!-- JS insertará <option value="" disabled selected hidden></option> -->
+                            </select>
+                            <label for="select-ciudad">Selecciona una ciudad</label>
+                        </div>
+                        <div class="dulceria-form-group">
+                            <select id="select-cine" name="cine" required disabled>
+                                <!-- JS insertará <option value="" disabled selected hidden></option> -->
+                            </select>
+                            <label for="select-cine">Selecciona un cine</label>
+                        </div>
+                    </div>
+                    <button type="submit" disabled>Continuar</button>
+                </form>
+            </div>
         </main>
     </div>
     <script>

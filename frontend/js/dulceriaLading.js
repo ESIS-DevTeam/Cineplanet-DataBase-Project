@@ -3,12 +3,22 @@ import BASE_API_DOMAIN from "./config.js";
 const selectCiudad = document.getElementById('select-ciudad');
 const selectCine = document.getElementById('select-cine');
 const form = document.getElementById('form-ciudad-cine');
+const btnContinuar = form.querySelector('button[type="submit"]');
+
+function actualizarEstadoBoton() {
+    if (selectCiudad.value && selectCine.value) {
+        btnContinuar.disabled = false;
+    } else {
+        btnContinuar.disabled = true;
+    }
+}
 
 async function cargarCiudades() {
     try {
         const res = await fetch(BASE_API_DOMAIN + 'getCiudades.php');
         const ciudades = await res.json();
-        selectCiudad.innerHTML = '<option value="">Selecciona una ciudad</option>';
+        // Opción vacía para permitir el efecto de floating label
+        selectCiudad.innerHTML = '<option value="" disabled selected hidden></option>';
         ciudades.forEach(ciudad => {
             const opt = document.createElement('option');
             opt.value = ciudad.id;
@@ -18,11 +28,15 @@ async function cargarCiudades() {
     } catch {
         selectCiudad.innerHTML = '<option value="">Error al cargar ciudades</option>';
     }
+    actualizarEstadoBoton();
 }
 
 async function cargarCines(idCiudad) {
-    selectCine.innerHTML = '<option value="">Selecciona un cine</option>';
+    // Opción vacía para permitir el efecto de floating label
+    selectCine.innerHTML = '<option value="" disabled selected hidden></option>';
     selectCine.disabled = true;
+    actualizarEstadoBoton(); // Deshabilitar botón al cambiar ciudad
+    
     if (!idCiudad) return;
     try {
         const res = await fetch(BASE_API_DOMAIN + `getCinesPorCiudad.php?idCiudad=${idCiudad}`);
@@ -43,6 +57,8 @@ async function cargarCines(idCiudad) {
 selectCiudad.addEventListener('change', e => {
     cargarCines(e.target.value);
 });
+
+selectCine.addEventListener('change', actualizarEstadoBoton);
 
 form.addEventListener('submit', e => {
     e.preventDefault();
