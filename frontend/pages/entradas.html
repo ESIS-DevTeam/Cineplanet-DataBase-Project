@@ -124,16 +124,16 @@
             }
             window.location.href = url;
         };
-        // Elimina el handler de cerrar-btn aquí, ya lo maneja entradas.js
-        // document.getElementById('cerrar-btn').onclick = function() {
-        //     const params = new URLSearchParams(window.location.search);
-        //     const idPelicula = params.get('pelicula');
-        //     if (idPelicula) {
-        //         window.location.href = `peliculaSeleccion.html?pelicula=${idPelicula}`;
-        //     } else {
-        //         window.location.href = 'peliculaSeleccion.html';
-        //     }
-        // };
+        // Botón cerrar (X)
+        document.getElementById('cerrar-btn').onclick = function() {
+            const params = new URLSearchParams(window.location.search);
+            const idPelicula = params.get('pelicula');
+            if (idPelicula) {
+                window.location.href = `peliculaSeleccion.html?pelicula=${idPelicula}`;
+            } else {
+                window.location.href = 'peliculaSeleccion.html';
+            }
+        };
     </script>
 </body>
 </html>
