@@ -495,7 +495,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             </div>
             <div style="border-top:1px dashed #1565c0;margin:0.7em 0;"></div>
             <div style="text-align:right;font-weight:700;font-size:1.2em;color:#1565c0;padding-right:0.5em;">
-                Sub Total: S/${datosBoleta.subtotal.toFixed(2)}
+                Sub Total: S/${resumen.totalEntradas ? resumen.totalEntradas.toFixed(2) : '0.00'}
             </div>
         </div>
         `;
@@ -530,7 +530,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         let costoTotalHtml = `
         <div style="background:#192040;border-radius:8px;padding:1.2em 2em;display:flex;justify-content:space-between;align-items:center;margin-top:1.2em;">
             <span style="color:#fff;font-weight:600;font-size:1.15em;">Costo Total</span>
-            <span style="color:#fff;font-weight:600;font-size:1.15em;">S/${datosBoleta.total.toFixed(2)}</span>
+            <span style="color:#fff;font-weight:600;font-size:1.15em;">S/${resumen.total.toFixed(2)}</span>
         </div>
         `;
 
