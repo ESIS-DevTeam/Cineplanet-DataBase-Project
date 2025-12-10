@@ -7,8 +7,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cineplanet</title>
   <link rel="shortcut icon" href="frontend/images/items/icono-cine.ico" type="image/x-icon">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+  <!-- Stylesheets -->
   <link href="frontend/styles/header.css" rel="stylesheet" type="text/css" />
   <link href="frontend/styles/index.css" rel="stylesheet" type="text/css" />
+  <link href="frontend/styles/bannerSlider.css" rel="stylesheet" type="text/css" />
   <link href="frontend/styles/footer.css" rel="stylesheet" type="text/css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
@@ -48,13 +54,30 @@
       </div>
     </header>
     <main class="main-content">
+      <section class="bannerSlider">
+        <div class="slider-container">
+          <!-- Los slides se cargarán dinámicamente desde la base de datos -->
+        </div>
+        <div class="slider-controls">
+          <!-- Botón anterior -->
+          <button class="slider-prev" aria-label="Película anterior">
+            ‹
+          </button>
+          <div class="slide-indicators">
+            <!-- Los indicadores se generarán dinámicamente -->
+          </div>
+          <!-- Botón siguiente -->
+          <button class="slider-next" aria-label="Siguiente película">
+            ›
+          </button>
+        </div>
+      </section>
       <section class="filtro">
         <div class="filtro-cuadrado">
           <form action="peliculas.html" method="get" class="filtro-form">
             <!--select pelicula-->
             <div class="filtro-cuadro-caja">
               <h3 class="filtro-titulo">Por pelicula</h3>
-              <div class="filtro-description">Qué quieres ver</div>
               <select class="filtro-selector" id="select-pelicula" name="pelicula">
                 <option class="filtro-select-option" value="">Qué quieres ver</option>
               </select>
@@ -62,29 +85,22 @@
             <!--select ciudad-->
             <div class="filtro-cuadro-caja">
               <h3 class="filtro-titulo">Por ciudad</h3>
-              <div class="filtro-description">Dónde estás</div>
               <select class="filtro-selector" id="select-ciudad" name="ciudad">
-                <option class="filtro-select-option" value="">Elige tu Ciudad</option>
+                <option class="filtro-select-option" value="">Dónde estás</option>
               </select>
             </div>
             <!--select cp-->
             <div class="filtro-cuadro-caja">
               <h3 class="filtro-titulo">Por cine</h3>
-              <div class="filtro-description">Elige tu cineplanet</div>
               <select class="filtro-selector" id="select-cine" name="cine">
-                <option class="filtro-select-option" value="">Elige tu Cineplanet</option>
+                <option class="filtro-select-option" value="">Elige tu cineplanet</option>
               </select>
             </div>
             <!--select fechas-->
             <div class="filtro-cuadro-caja">
               <h3 class="filtro-titulo">Por fecha</h3>
-              <div class="filtro-description">Elige un día</div>
               <select class="filtro-selector" id="select-fecha" name="dia">
                 <option class="filtro-select-option" value="">Elige un día</option>
-                <option class="filtro-select-option" value="miercoles 15">Hoy Miercoles 15</option>
-                <option class="filtro-select-option" value="jueves 16">Mañana Jueves 16</option>
-                <option class="filtro-select-option" value="viernes 17">Viernes 17</option>
-                <option class="filtro-select-option" value="sabado 18">Sábado 18</option>
               </select>
             </div>
             <div class="filtro-button-container">
@@ -95,7 +111,6 @@
       </section>
     </main>
   </div>
-  <div id="socio-info" style="text-align:right; margin:10px;"></div>
   <!-- Ventana flotante socio -->
   <div id="socio-popup" style="display:none; position:fixed; top:70px; right:30px; background:#fff; border:1px solid #ccc; box-shadow:0 2px 8px #0002; z-index:1000; min-width:220px; padding:16px; border-radius:8px;">
     <div id="socio-popup-content"></div>
@@ -110,16 +125,8 @@
     .then(data => {
       console.log('Datos de sesión (Index):', data);
       socioData = data.socio || null;
-      if (data.loggedIn && socioData) {
-        document.getElementById('socio-info').innerHTML =
-          '👤 Socio: ' + socioData.nombre +
-          ' <button onclick="logout()">Cerrar sesión</button>';
-      } else {
-        // Enlace de login con redirect dinámico
-        document.getElementById('socio-info').innerHTML =
-          `<a href="frontend/pages/login.html?redirect=${encodeURIComponent(window.location.pathname)}">Iniciar sesión</a>`;
-      }
     });
+    
     function logout() {
         fetch('backend/auth/logout.php')
             .then(() => window.location.reload());
@@ -164,6 +171,7 @@
       }
     });
   </script>
+  <script src="frontend/js/bannerSlider.js"></script>
   <footer class="main-footer">
     <section class="footer-content">
       <div class="left-footer">
@@ -176,8 +184,8 @@
               <li class="nav-footer"><a href="nosotros.html" target="_self">Nosotros</a></li>
               <li class="nav-footer"><a href="trabaja.html" target="_blank">Trabaja en Cineplanet</a></li>
               <li class="nav-footer"><a href="corporativo.html" target="_self">Ventas Corporativas</a></li>
-              <li class="nav-footer"><a href="documents/Política SST.pdf" target="_blank">PolÍtica de SST</a></li>
-              <li class="nav-footer"><a href="documents/Politica_Diversidad_Inclusion.pdf" target="_blank">Política de Diversidad e Inclusión</a></li>
+              <li class="nav-footer"><a href="frontend/documents/Política SST.pdf" target="_blank">PolÍtica de SST</a></li>
+              <li class="nav-footer"><a href="frontend/documents/Politica_Diversidad_Inclusion.pdf" target="_blank">Política de Diversidad e Inclusión</a></li>
             </ul>
           </div>
         </div>
@@ -193,13 +201,13 @@
             </div>
             <div class="footer-list-box">   
               <ul class="footer-list">
-                <li class="nav-footer"><a href="documents/SOS-GES-PT-01_Política_de_Sostenibilidad.png" target="_blank">Política de Sostenibilidad</a></li>
-                <li class="nav-footer"><a href="documents/2024 REPORTE SOSTENIBILIDAD CINEPLANET FINAL.pdf" target="_blank">Memoria de gestión de Sostenibilidad 2024</a></li>
+                <li class="nav-footer"><a href="frontend/documents/SOS-GES-PT-01_Política_de_Sostenibilidad.png" target="_blank">Política de Sostenibilidad</a></li>
+                <li class="nav-footer"><a href="frontend/documents/2024 REPORTE SOSTENIBILIDAD CINEPLANET FINAL.pdf" target="_blank">Memoria de gestión de Sostenibilidad 2024</a></li>
               </ul>
+              <div class="footer-img-box">
+                <img src="../frontend/images/items/carbonoN3.png" alt="carbono" id="carbono-img">
+              </div>
             </div>
-          </div>
-          <div class="footer-img-box">
-            <img src="../frontend/images/items/carbonoN3.png" alt="carbono" id="carbono-img">
           </div>
         </div>
         <div class="center-footer-down">
@@ -226,7 +234,7 @@
               <li class="nav-footer"><a href="centroayuda.html" target="_self">Centro de ayuda</a></li>
               <li class="nav-footer"><a href="contactanos.html" target="_self">Contáctanos</a></li>
               <li class="nav-footer"><a href="boleta.html" target="_blank">Boleta electrónica</a></li>
-              <li class="nav-footer"><a href="documents/comunicadoCineplanet.pdf" target="_blank">Lista de productos permitidos</a></li>
+              <li class="nav-footer"><a href="frontend/documents/comunicadoCineplanet.pdf" target="_blank">Lista de productos permitidos</a></li>
             </ul>
           </div>
         </div>
@@ -236,10 +244,10 @@
       <div class="site-footer-container">
         <div class="legal-links">
           <ul class="legal-list">
-            <li class="nav-footer"><a href="documents/Politica de Privacidad 20.08.2025.pdf" target="_blank">Política de Privacidad</a></li>
-            <li class="nav-footer"><a href="documents/Condiciones_de_Uso_y_Seguridad.pdf" target="_blank">Condiciones de uso y seguridad</a></li>
-            <li class="nav-footer"><a href="documents/TyCCompraOnline 18.07.2025.pdf" target="_blank">Términos y condiciones</a></li>
-            <li class="nav-footer"><a href="documents/Reglamento en cartilla web.pdf" target="_blank">Reglas y condiciones</a></li>
+            <li class="nav-footer"><a href="frontend/documents/Politica de Privacidad 20.08.2025.pdf" target="_blank">Política de Privacidad</a></li>
+            <li class="nav-footer"><a href="frontend/documents/Condiciones_de_Uso_y_Seguridad.pdf" target="_blank">Condiciones de uso y seguridad</a></li>
+            <li class="nav-footer"><a href="frontend/documents/TyCCompraOnline 18.07.2025.pdf" target="_blank">Términos y condiciones</a></li>
+            <li class="nav-footer"><a href="frontend/documents/Reglamento en cartilla web.pdf" target="_blank">Reglas y condiciones</a></li>
           </ul>
         </div>
         <div class="complain-book">
@@ -249,12 +257,13 @@
         </div>
       </div>
     </section>
-    <section class="links-footer">
-      <div class="copyright">
-        <p class="copyright-upper">Cineplex S.A. | RUC 20429683581</p>
-        <p class="copyright-down">Todos los derechos reservados 2025</p>
-      </div>
-      <div class="social-links">
+    <div class="links-footer-wrapper">
+      <section class="links-footer">
+        <div class="copyright">
+          <p class="copyright-upper">Cineplex S.A. | RUC 20429683581</p>
+          <p class="copyright-down">Todos los derechos reservados 2025</p>
+        </div>
+        <div class="social-links">
         <a href="https://facebook.com/cineplanet" target="_blank" aria-label="Facebook" class="social-link">
           <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36" fill="none" class="social-icon facebook-icon">
             <g clip-path="url(#clip0_1695_1836-75)">
@@ -315,7 +324,8 @@
           </svg>
         </a>
       </div>
-    </section>
+      </section>
+    </div>
   </footer>
 </body>
 </html>

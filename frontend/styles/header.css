@@ -1,7 +1,7 @@
 header.main-header {
   text-align: left;
   border: none;  
-  background-color: rgba(0, 0, 0, 0.14);
+  background-color: transparent;
   width: 100%;
   margin: 0;
   padding: 0;
@@ -50,6 +50,8 @@ a.logo-a {
   zoom: 0.06;
   clip-path: inset(0 0 25% 0);
   display: block;
+  filter: brightness(0) invert(1);
+  transition: filter 0.3s ease;
 }
 
 #logo-principal-right {
@@ -58,6 +60,13 @@ a.logo-a {
   display: block;
   margin-top: -20%;
   margin-left: -5%;
+  filter: brightness(0) invert(1);
+  transition: filter 0.3s ease;
+}
+
+header.main-header.scrolled #logo-principal-left,
+header.main-header.scrolled #logo-principal-right {
+  filter: none;
 }
 
 .main-nav {
@@ -81,9 +90,14 @@ a.logo-a {
   font-family: 'Arial', sans-serif;
   font-size: 18px;
   font-weight: 100;
-  color: #333;
+  color: white;
   text-decoration: none;
   letter-spacing: 1px;
+  transition: color 0.3s ease;
+}
+
+header.main-header.scrolled .nav-item a {
+  color: #333;
 }
 
 .nav-item a:hover {
@@ -104,7 +118,14 @@ a.logo-a {
   font-size: 30px;
   cursor: pointer;
   padding: 5px;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, color 0.3s ease;
+  color: white;
+}
+
+header.main-header.scrolled .buscar-btn,
+header.main-header.scrolled .socio-btn,
+header.main-header.scrolled .ayuda-btn {
+  color: #333;
 }
 
 .buscar-btn:hover,
