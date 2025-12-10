@@ -54,6 +54,7 @@ CREATE TABLE PELICULA (
     autor VARCHAR(100),
     trailer VARCHAR(255),
     portada VARCHAR(255),
+    frame VARCHAR(255),
     estado ENUM('activa', 'inactiva') DEFAULT 'activa',
     FOREIGN KEY (genero) REFERENCES GENERO(id) ON DELETE CASCADE,
     FOREIGN KEY (restriccion) REFERENCES RESTRICCION(id) ON DELETE CASCADE
