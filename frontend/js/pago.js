@@ -354,10 +354,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             loader.innerHTML = `
                 <div style="background:#fff; padding:2em; border-radius:10px; box-shadow:0 4px 20px #0002; text-align:center;">
                     <div style="margin-bottom:1em;">
-                        <span style="font-size:2em;">⏳</span>
+                        <div class="loader-spinner" style="margin:0 auto; width:48px; height:48px; border:6px solid #eee; border-top:6px solid #004A8C; border-radius:50%; animation:spin-loader 1s linear infinite;"></div>
                     </div>
-                    <div>Procesando pago...</div>
+                    <div style="font-size:1.1em; color:#004A8C;">Procesando pago...</div>
                 </div>
+                <style>
+                @keyframes spin-loader {
+                    0% { transform: rotate(0deg);}
+                    100% { transform: rotate(360deg);}
+                }
+                </style>
             `;
             document.body.appendChild(loader);
         }
