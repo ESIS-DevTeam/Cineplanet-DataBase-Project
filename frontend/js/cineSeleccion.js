@@ -16,20 +16,27 @@ let modo = 'horarios'; // 'horarios' o 'peliculas'
 // Renderiza el select de fechas y el título del cine
 function renderCineInfo(nombreCine) {
     cineInfoDiv.innerHTML = `
-        <h2 style="margin-bottom:8px;">${nombreCine}</h2>
-        <div style="display:flex; align-items:center; gap:24px;">
-            <span id="tab-horarios" style="cursor:pointer; font-weight:${modo === 'horarios' ? 'bold' : 'normal'}; border-bottom:${modo === 'horarios' ? '2px solid #007bff' : 'none'};">Horarios</span>
-            <span id="tab-peliculas" style="cursor:pointer; margin-left:24px; font-weight:${modo === 'peliculas' ? 'bold' : 'normal'}; border-bottom:${modo === 'peliculas' ? '2px solid #007bff' : 'none'};">Películas</span>
+        <h2 class="cine-title">${nombreCine}</h2>
+        <div class="tabs-header">
+            <div class="tabs-container">
+                <div id="tab-horarios" class="tab-item ${modo === 'horarios' ? 'active' : ''}">Horarios</div>
+                <div id="tab-peliculas" class="tab-item ${modo === 'peliculas' ? 'active' : ''}">Películas</div>
+            </div>
             ${modo === 'horarios' ? `
-            <div style="margin-left:24px;">
-                <label for="fecha-select">Fecha:</label>
+            <div class="date-selector-container">
                 <select id="fecha-select"></select>
             </div>
             ` : ''}
         </div>
     `;
-    document.getElementById('tab-horarios').onclick = () => { modo = 'horarios'; cargarTodo(); };
-    document.getElementById('tab-peliculas').onclick = () => { modo = 'peliculas'; cargarTodo(); };
+    
+    document.getElementById('tab-horarios').onclick = () => { 
+        if(modo !== 'horarios') { modo = 'horarios'; cargarTodo(); }
+    };
+    document.getElementById('tab-peliculas').onclick = () => { 
+        if(modo !== 'peliculas') { modo = 'peliculas'; cargarTodo(); }
+    };
+
     if (modo === 'horarios') {
         const fechaSelect = document.getElementById('fecha-select');
         fechaSelect.innerHTML = fechasDisponibles.map(f =>
@@ -43,20 +50,21 @@ function renderCineInfo(nombreCine) {
     }
 }
 
-// Muestra "lunes 10/06/2024"
+// Muestra "lunes 10/06"
 function formatearFechaLabel(fecha) {
     const dias = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
-    const f = new Date(fecha);
+    const f = new Date(fecha + 'T00:00:00');
     const diaNombre = dias[f.getDay()];
     const dia = String(f.getDate()).padStart(2, '0');
-
-    return `${diaNombre} ${dia}`;
+    const mes = String(f.getMonth() + 1).padStart(2, '0');
+    
+    return `${diaNombre} ${dia}/${mes}`;
 }
 
 // Renderiza las funciones agrupadas por película, formato e idioma
 function renderFunciones(funciones) {
     if (funciones.length === 0) {
-        funcionesListDiv.innerHTML = '<div>No hay funciones para esta fecha.</div>';
+        funcionesListDiv.innerHTML = '<div style="padding:20px;">No hay funciones para esta fecha.</div>';
         return;
     }
     // Agrupa por película
@@ -65,6 +73,7 @@ function renderFunciones(funciones) {
         if (!pelis[f.pelicula.id]) pelis[f.pelicula.id] = { ...f.pelicula, funciones: [] };
         pelis[f.pelicula.id].funciones.push(f);
     });
+    
     funcionesListDiv.innerHTML = Object.values(pelis).map(peli => {
         // Agrupa funciones por formato/idioma
         const grupos = {};
@@ -73,21 +82,32 @@ function renderFunciones(funciones) {
             if (!grupos[key]) grupos[key] = { formato: f.formatoNombre, idioma: f.idiomaNombre, horas: [] };
             grupos[key].horas.push({ hora: f.hora.slice(0,5), idFuncion: f.id });
         });
+
+        const imgSrc = peli.portada 
+            ? '../images/portrait/peliculas/' + peli.portada 
+            : '../images/items/icono-cine.ico';
+
         return `
-        <div style="display:flex; gap:24px; margin-bottom:32px;">
-            <img src="${peli.portada || '../images/items/icono-cine.ico'}" alt="${peli.nombre}" style="width:180px; height:260px; object-fit:cover;">
-            <div>
-                <div style="font-weight:bold; font-size:1.1em;">${peli.nombre}</div>
-                <div>${peli.generoNombre}, ${peli.duracionStr}, ${peli.restriccionNombre}</div>
+        <div class="movie-row">
+            <div class="movie-poster-container">
+                <img src="${imgSrc}" alt="${peli.nombre}" class="movie-poster">
+            </div>
+            <div class="movie-details">
+                <div class="movie-title">${peli.nombre} <span class="restriction-text">(${peli.restriccionNombre})</span></div>
+                <div class="movie-meta">${peli.generoNombre}, ${peli.duracionStr}.</div>
+                
                 ${Object.values(grupos).map(grupo => `
-                    <div style="margin:10px 0;">
-                        <span style="border:1px solid #333; border-radius:6px; padding:2px 8px;">${grupo.formato}</span>
-                        <span style="margin-left:8px;">${grupo.idioma || ''}</span>
-                        <span style="margin-left:8px;">
+                    <div class="format-row">
+                        <div class="format-badges">
+                            <span class="format-badge">2D</span>
+                            <span class="format-badge">${grupo.formato}</span>
+                            <span class="format-lang">${grupo.idioma || ''}</span>
+                        </div>
+                        <div class="time-buttons">
                             ${grupo.horas.map(h =>
-                                `<button style="margin:2px 4px; border:1px solid #ccc; border-radius:6px; padding:2px 10px; background:#f8f8f8;" onclick="window.location.href='asientos.html?funcion=${h.idFuncion}'">${h.hora}</button>`
+                                `<button class="time-btn" onclick="window.location.href='asientos.html?funcion=${h.idFuncion}'">${h.hora}</button>`
                             ).join('')}
-                        </span>
+                        </div>
                     </div>
                 `).join('')}
             </div>
@@ -99,18 +119,23 @@ function renderFunciones(funciones) {
 // Renderiza todas las películas disponibles en el cine (funciones activas y fecha >= hoy)
 function renderPeliculas(peliculas) {
     if (!peliculas || peliculas.length === 0) {
-        funcionesListDiv.innerHTML = '<div>No hay películas disponibles en este cine.</div>';
+        funcionesListDiv.innerHTML = '<div style="padding:20px;">No hay películas disponibles en este cine.</div>';
         return;
     }
     funcionesListDiv.innerHTML = `
-        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:32px;">
-            ${peliculas.map(peli => `
-                <div style="cursor:pointer;" onclick="window.location.href='peliculaSeleccion.html?cine=${cineId}&pelicula=${peli.id}'">
-                    <img src="${peli.portada || '../images/items/icono-cine.ico'}" alt="${peli.nombre}" style="width:100%; height:260px; object-fit:cover;">
-                    <div style="font-weight:bold; margin-top:8px;">${peli.nombre}</div>
-                    <div>${peli.generoNombre}, ${peli.duracionStr}, ${peli.restriccionNombre}</div>
+        <div class="movies-grid">
+            ${peliculas.map(peli => {
+                const imgSrc = peli.portada 
+                    ? '../images/portrait/peliculas/' + peli.portada 
+                    : '../images/items/icono-cine.ico';
+                return `
+                <div class="grid-movie-card" onclick="window.location.href='peliculaSeleccion.html?cine=${cineId}&pelicula=${peli.id}'">
+                    <img src="${imgSrc}" alt="${peli.nombre}" class="grid-movie-poster">
+                    <div class="grid-movie-title">${peli.nombre}</div>
+                    <div class="grid-movie-meta">${peli.generoNombre}, ${peli.duracionStr}, ${peli.restriccionNombre}.</div>
                 </div>
-            `).join('')}
+                `;
+            }).join('')}
         </div>
     `;
 }
@@ -121,7 +146,9 @@ function cargarFechasDisponibles(nombreCine) {
         .then(res => res.json())
         .then(data => {
             fechasDisponibles = data.fechas || [];
-            fechaSeleccionada = fechasDisponibles[0] || null;
+            if (!fechasDisponibles.includes(fechaSeleccionada)) {
+                fechaSeleccionada = fechasDisponibles[0] || null;
+            }
             renderCineInfo(nombreCine);
             cargarFunciones();
         });
@@ -130,7 +157,7 @@ function cargarFechasDisponibles(nombreCine) {
 // Carga las funciones activas para la fecha seleccionada
 function cargarFunciones() {
     if (!fechaSeleccionada) {
-        funcionesListDiv.innerHTML = '<div>No hay funciones disponibles.</div>';
+        funcionesListDiv.innerHTML = '<div style="padding:20px;">No hay funciones disponibles.</div>';
         return;
     }
     fetch(`${BASE_API_DOMAIN}cines/funciones.php?id=${cineId}&fecha=${fechaSeleccionada}`)
