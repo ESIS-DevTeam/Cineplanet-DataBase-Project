@@ -7,8 +7,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cineplanet</title>
   <link rel="shortcut icon" href="frontend/images/items/icono-cine.ico" type="image/x-icon">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+  <!-- Stylesheets -->
   <link href="frontend/styles/header.css" rel="stylesheet" type="text/css" />
   <link href="frontend/styles/index.css" rel="stylesheet" type="text/css" />
+  <link href="frontend/styles/bannerSlider.css" rel="stylesheet" type="text/css" />
   <link href="frontend/styles/footer.css" rel="stylesheet" type="text/css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
@@ -48,13 +54,30 @@
       </div>
     </header>
     <main class="main-content">
+      <section class="bannerSlider">
+        <div class="slider-container">
+          <!-- Los slides se cargarán dinámicamente desde la base de datos -->
+        </div>
+        <div class="slider-controls">
+          <!-- Botón anterior -->
+          <button class="slider-prev" aria-label="Película anterior">
+            ‹
+          </button>
+          <div class="slide-indicators">
+            <!-- Los indicadores se generarán dinámicamente -->
+          </div>
+          <!-- Botón siguiente -->
+          <button class="slider-next" aria-label="Siguiente película">
+            ›
+          </button>
+        </div>
+      </section>
       <section class="filtro">
         <div class="filtro-cuadrado">
           <form action="peliculas.html" method="get" class="filtro-form">
             <!--select pelicula-->
             <div class="filtro-cuadro-caja">
               <h3 class="filtro-titulo">Por pelicula</h3>
-              <div class="filtro-description">Qué quieres ver</div>
               <select class="filtro-selector" id="select-pelicula" name="pelicula">
                 <option class="filtro-select-option" value="">Qué quieres ver</option>
               </select>
@@ -62,29 +85,22 @@
             <!--select ciudad-->
             <div class="filtro-cuadro-caja">
               <h3 class="filtro-titulo">Por ciudad</h3>
-              <div class="filtro-description">Dónde estás</div>
               <select class="filtro-selector" id="select-ciudad" name="ciudad">
-                <option class="filtro-select-option" value="">Elige tu Ciudad</option>
+                <option class="filtro-select-option" value="">Dónde estás</option>
               </select>
             </div>
             <!--select cp-->
             <div class="filtro-cuadro-caja">
               <h3 class="filtro-titulo">Por cine</h3>
-              <div class="filtro-description">Elige tu cineplanet</div>
               <select class="filtro-selector" id="select-cine" name="cine">
-                <option class="filtro-select-option" value="">Elige tu Cineplanet</option>
+                <option class="filtro-select-option" value="">Elige tu cineplanet</option>
               </select>
             </div>
             <!--select fechas-->
             <div class="filtro-cuadro-caja">
               <h3 class="filtro-titulo">Por fecha</h3>
-              <div class="filtro-description">Elige un día</div>
               <select class="filtro-selector" id="select-fecha" name="dia">
                 <option class="filtro-select-option" value="">Elige un día</option>
-                <option class="filtro-select-option" value="miercoles 15">Hoy Miercoles 15</option>
-                <option class="filtro-select-option" value="jueves 16">Mañana Jueves 16</option>
-                <option class="filtro-select-option" value="viernes 17">Viernes 17</option>
-                <option class="filtro-select-option" value="sabado 18">Sábado 18</option>
               </select>
             </div>
             <div class="filtro-button-container">
@@ -158,6 +174,7 @@
       }
     });
   </script>
+  <script src="frontend/js/bannerSlider.js"></script>
   <footer class="main-footer">
     <section class="footer-content">
       <div class="left-footer">

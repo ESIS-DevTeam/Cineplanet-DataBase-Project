@@ -81,9 +81,17 @@ function actualizarBotonFiltrar() {
   if (!form) return;
   const btnFiltrar = form.querySelector('button[type="submit"]');
   if (!btnFiltrar) return;
-  // Si todos los selects están en placeholder, deshabilitar
-  const algunoSeleccionado = Object.values(selects).some(select => select.value);
-  btnFiltrar.disabled = !algunoSeleccionado;
+  
+  // Verificar si AL MENOS UN select tiene un valor seleccionado (no placeholder)
+  const algunoSeleccionado = Object.values(selects).some(select => select.value && select.value !== '');
+  
+  if (algunoSeleccionado) {
+    btnFiltrar.classList.add('active');
+    btnFiltrar.disabled = false;
+  } else {
+    btnFiltrar.classList.remove('active');
+    btnFiltrar.disabled = true;
+  }
 }
 
 function habilitarSelects() {
