@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         params.set('redirect', window.location.pathname + '?' + params.toString());
         params.set('fromEntradas', '1');
         loginFrame.src = `login.html?${params.toString()}`;
-        loginModal.style.display = 'flex';
+        loginModal.style.display = 'block';
         document.body.style.overflow = 'hidden';
         return;
     } else {
