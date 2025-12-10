@@ -5,44 +5,48 @@
     <title>Mis Beneficios</title>
     <link rel="shortcut icon" href="../images/items/icono-cine.ico" type="image/x-icon">
     <link href="../styles/estilos.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="../styles/header2.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="app-container">
-        <header class="main-header">
-            <div class="header-container">
-                <h1 class="visually-hidden">Cineplanet</h1>
-                <div class="header-brand">
-                    <a href="../../index.html" target="_self">
-                        <img id="logo-principal" src="../images/items/Cineplanet_logo_actual.svg" alt="logo">
-                    </a>
+    <!-- HEADER AGREGADO -->
+    <header>
+        <div class="header-group">
+            <a href="../../index.html" target="_self">
+                <img src="../images/items/logo3.png" alt="Cineplanet Logo" class="logo-cineplanet" height="40">
+            </a>
+            <nav>
+                <ul class="menu-nav">
+                    <li><a href="peliculas.html" target="_self">Películas</a></li>
+                    <li><a href="cines.html" target="_self">Cines</a></li>
+                    <li><a href="promociones.html" target="_self">Promociones</a></li>
+                    <li><a href="socio.html" target="_self">Socio</a></li>
+                    <li><a href="dulceriaLading.html" target="_self">Dulcería</a></li>
+                    <li><a href="corporativo.html" target="_self">Corporativo</a></li>
+                    <li><a href="blog.html" target="_blank">Blog</a></li>
+                </ul>
+                <div class="nav-actions">
+                    <button class="socio-btn" aria-label="socio">
+                        <i class="fa-regular fa-user"></i>
+                    </button>
+                    <button class="buscar-btn" aria-label="Buscar">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                    <button class="ayuda-btn" aria-label="ayuda">
+                        <i class="fa-regular fa-circle-question"></i>
+                    </button>
                 </div>
-                <nav class="main-nav">
-                    <div class="nav-container">
-                        <ul class="nav-list">
-                            <li class="nav-item"><a href="peliculas.html" target="_self">Películas</a></li>
-                            <li class="nav-item"><a href="cines.html" target="_self">Cines</a></li>
-                            <li class="nav-item"><a href="promociones.html" target="_self">Promociones</a></li>
-                            <li class="nav-item"><a href="socio.html" target="_self">Socio</a></li>
-                            <li class="nav-item"><a href="dulceriaLading.html" target="_self">Dulcería</a></li>
-                            <li class="nav-item"><a href="corporativo.html" target="_self">Corporativo</a></li>
-                            <li class="nav-item"><a href="blog.html" target="_blank">Blog</a></li>
-                        </ul>
-                        <div class="nav-actions">
-                            <button class="buscar-btn" aria-label="Buscar">🔍</button>
-                            <button class="socio-btn" aria-label="socio">👤</button>
-                            <button class="ayuda-btn" aria-label="ayuda">❔</button>
-                        </div>
-                    </div>
-                </nav>
-            </div>
-        </header>
+            </nav>
+        </div>
+    </header>
+    <div class="app-container">
         <main class="main-content">
             <div id="resumen-socio"></div>
             <!-- ...contenido de Mis Beneficios aquí... -->
         </main>
     </div>
     <div id="socio-info" style="text-align:right; margin:10px;"></div>
-    <div id="socio-popup" style="display:none; position:fixed; top:70px; right:30px; background:#fff; border:1px solid #ccc; box-shadow:0 2px 8px #0002; z-index:1000; min-width:220px; padding:16px; border-radius:8px;">
+    <div id="socio-popup" style="display:none; position:fixed; top:70px; right:30px; background:#fff; border:1px solid #ccc; box-shadow:0 2px 8px #0002; z-index:1000; width:auto; min-width:0; max-width:260px; padding:16px; border-radius:8px;">
         <div id="socio-popup-content"></div>
     </div>
     <script>
@@ -65,9 +69,12 @@
             .then(() => window.location.href='../../index.html');
     }
     const socioBtn = document.querySelector('.socio-btn');
+    const socioIcon = socioBtn.querySelector('i');
     const popup = document.getElementById('socio-popup');
     const popupContent = document.getElementById('socio-popup-content');
-    socioBtn.addEventListener('click', function() {
+    // Solo abre con el ícono
+    socioIcon.addEventListener('click', function(e) {
+        e.stopPropagation();
         if (popup.style.display === 'block') {
             popup.style.display = 'none';
             return;
@@ -87,9 +94,19 @@
             `;
         }
         popup.style.display = 'block';
+        // Posiciona al lado del ícono
+        const rect = socioIcon.getBoundingClientRect();
+        popup.style.top = (rect.bottom + window.scrollY + 8) + 'px';
+        popup.style.left = (rect.left + window.scrollX) + 'px';
+        popup.style.width = 'auto';
+        popup.style.maxWidth = '260px';
+        popup.style.minWidth = '0';
+        popup.style.height = 'auto';
+        popup.style.maxHeight = 'none';
     });
+    // Cierra al hacer click fuera
     document.addEventListener('click', function(e) {
-        if (!popup.contains(e.target) && e.target !== socioBtn) {
+        if (!popup.contains(e.target) && e.target !== socioIcon) {
             popup.style.display = 'none';
         }
     });
