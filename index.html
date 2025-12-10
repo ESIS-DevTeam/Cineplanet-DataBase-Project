@@ -43,9 +43,15 @@
               <button class="buscar-btn" aria-label="Buscar">
                 <i class="fas fa-search"></i>
               </button>
-              <button class="socio-btn" aria-label="socio">
-                <i class="fas fa-user"></i>
-              </button>
+              <div class="socio-menu-container">
+                <button class="socio-btn" aria-label="Menú de usuario">
+                  <i class="fas fa-user"></i>
+                </button>
+                <div class="socio-dropdown" id="socioDropdown">
+                  <a href="frontend/pages/login.html" class="dropdown-item">Iniciar sesión</a>
+                  <a href="frontend/pages/registro.html" class="dropdown-item">Registrarse</a>
+                </div>
+              </div>
               <button class="ayuda-btn" aria-label="ayuda">
                 <i class="fas fa-question-circle"></i>
               </button>
@@ -111,10 +117,6 @@
       </section>
     </main>
   </div>
-  <!-- Ventana flotante socio -->
-  <div id="socio-popup" style="display:none; position:fixed; top:70px; right:30px; background:#fff; border:1px solid #ccc; box-shadow:0 2px 8px #0002; z-index:1000; min-width:220px; padding:16px; border-radius:8px;">
-    <div id="socio-popup-content"></div>
-  </div>
   <script src="frontend/js/header.js"></script>
   <script type="module" src="frontend/js/filtrosIndex.js"></script>
   <script>
@@ -131,45 +133,7 @@
         fetch('backend/auth/logout.php')
             .then(() => window.location.reload());
     }
-
-  // Ventana flotante socio
-  const socioBtn = document.querySelector('.socio-btn');
-  const popup = document.getElementById('socio-popup');
-  const popupContent = document.getElementById('socio-popup-content');
-  socioBtn.addEventListener('click', function() {
-    if (popup.style.display === 'block') {
-      popup.style.display = 'none';
-      return;
-    }
-    if (socioData) {
-      let adminButton = '';
-      if (socioData.tipo_usuario === 'admin') {
-        adminButton = `<button onclick="window.location.href='frontend/pages/admin/adminPanel.html'">Panel Admin</button><br>`;
-      }
-      popupContent.innerHTML = `
-        <div style="font-weight:bold; margin-bottom:8px;">${socioData.nombre}</div>
-        ${adminButton}
-        <button onclick="window.location.href='frontend/pages/misBeneficos.html'">Mis beneficios</button><br>
-        <button onclick="window.location.href='frontend/pages/misCompras.html'">Mis compras</button><br>
-        <button onclick="window.location.href='frontend/pages/misDatos.html'">Mis datos</button><br>
-        <button onclick="logout()">Cerrar sesión</button>
-      `;
-    } else {
-      // Botón de login con redirect dinámico
-      popupContent.innerHTML = `
-        <button onclick="window.location.href='frontend/pages/login.html?redirect=${encodeURIComponent(window.location.pathname)}'">Iniciar sesión</button><br>
-        <button onclick="window.location.href='frontend/pages/registro.html'">Registrar</button>
-      `;
-    }
-    popup.style.display = 'block';
-  });
-
-  // Ocultar popup al hacer click fuera
-  document.addEventListener('click', function(e) {
-      if (!popup.contains(e.target) && e.target !== socioBtn) {
-          popup.style.display = 'none';
-      }
-    });
+  </script>
   </script>
   <script src="frontend/js/bannerSlider.js"></script>
   <footer class="main-footer">
