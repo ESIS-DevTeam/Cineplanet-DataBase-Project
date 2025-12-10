@@ -17,9 +17,9 @@ function renderCines(cines) {
                     ? '../images/portrait/cines/' + cine.imagen + '?v=' + Date.now()
                     : '../images/items/icono-cine.ico';
                 return `
-                <div class="cine-card" data-id="${cine.id}" style="cursor:pointer; background:#fff; border-radius:8px; box-shadow:0 2px 8px #0001; overflow:hidden;">
+                <div class="cine-card" data-id="${cine.id}" style="cursor:pointer; background:#fff; overflow:hidden;">
                     <img src="${imgSrc}" alt="${cine.nombre}" style="width:100%; height:160px; object-fit:cover;">
-                    <div style="padding:16px;">
+                    <div style="padding:16px 0;">
                         <div style="font-weight:bold; font-size:1.1em; margin-bottom:4px;">${cine.nombre}</div>
                         <div style="color:#333; margin-bottom:8px;">${cine.direccion}</div>
                         <div style="color:#555;">${cine.formatos ? cine.formatos.join(', ') : 'N/A'}</div>
