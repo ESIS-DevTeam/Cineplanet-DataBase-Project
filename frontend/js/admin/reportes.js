@@ -26,6 +26,8 @@ window.cargarReporte = async function() {
         endpoint = BASE_API_DOMAIN + 'reportes/productos_mas_vendidos_mes.php';
     } else if (tipo === 'promos') {
         endpoint = BASE_API_DOMAIN + 'reportes/promociones_mas_usadas_mes.php';
+    } else if (tipo === 'peliculas') {
+        endpoint = BASE_API_DOMAIN + 'reportes/pelicula_mas_vendida_mes.php';
     } else {
         container.innerHTML = '<div class="empty-state"><p>❌ Reporte no soportado</p></div>';
         mostrarCarga(false);
@@ -94,6 +96,27 @@ window.cargarReporte = async function() {
                                     <td>${p.promocion}</td>
                                     <td>${p.veces_usada}</td>
                                     <td>S/. ${parseFloat(p.total_descuento).toFixed(2)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } else if (tipo === 'peliculas') {
+                container.innerHTML = `
+                    <table class="catalogo-table">
+                        <thead>
+                            <tr>
+                                <th>Película</th>
+                                <th>Entradas Vendidas</th>
+                                <th>Total Ingresos</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${json.data.map(p => `
+                                <tr>
+                                    <td>${p.pelicula}</td>
+                                    <td>${p.entradas_vendidas}</td>
+                                    <td>S/. ${parseFloat(p.total_ingresos).toFixed(2)}</td>
                                 </tr>
                             `).join('')}
                         </tbody>
