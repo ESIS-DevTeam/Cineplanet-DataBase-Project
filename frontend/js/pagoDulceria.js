@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const res = await fetch(BASE_API_DOMAIN + `getInfoCine.php?idCine=${idCine}`);
             const cine = await res.json();
             infoContainer.innerHTML = `
-                ${cine.imagen ? `<img src="${cine.imagen}" alt="Foto cine" class="portada-circular">` : ''}
+                ${cine.imagen ? `<img src="../images/portrait/cines/${cine.imagen}" alt="Foto cine" class="portada-circular">` : ''}
                 <h2 class="titulo-pelicula">${cine.nombre || ''}</h2>
                 <div class="cine-nombre">${cine.direccion || ''}</div>
                 <hr>
