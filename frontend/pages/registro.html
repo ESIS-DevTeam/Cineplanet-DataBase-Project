@@ -1,77 +1,119 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
     <title>Registro de Socio</title>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles/register.css">
 </head>
 <body>
-    <h2>Únete</h2>
-    <form method="POST" action="../../backend/auth/registro.php">
-        <label>Tipo de documento:</label>
-        <select name="tipoDocumento" required>
-            <option value="DNI">DNI</option>
-            <option value="CE">CE</option>
-            <!-- Agrega más si es necesario -->
-        </select><br>
+    <div class="register-card">
+        <button class="close-btn" onclick="window.history.back()" aria-label="Cerrar">&times;</button>
+        <h2>Únete</h2>
+        <p class="subtitle">Completa tus datos y accede a nuestro<br><span>universo de beneficios</span></p>
+        
+        <form method="POST" action="../../backend/auth/registro.php">
+            <div class="form-grid">
+                <div class="input-group">
+                    <label>Tipo de documento</label>
+                    <select name="tipoDocumento" required>
+                        <option value="DNI">DNI</option>
+                        <option value="CE">CE</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>N° de documento</label>
+                    <input type="text" name="numeroDocumento" required>
+                </div>
 
-        <label>N° de documento:</label>
-        <input type="text" name="numeroDocumento" required><br>
+                <div class="input-group">
+                    <label>Correo electrónico</label>
+                    <input type="email" name="email" required>
+                </div>
+                <div class="input-group">
+                    <label>Nombre</label>
+                    <input type="text" name="nombre" required>
+                </div>
 
-        <label>Correo electrónico:</label>
-        <input type="email" name="email" required><br>
+                <div class="input-group">
+                    <label>Apellido Paterno</label>
+                    <input type="text" name="apellidoPaterno" required>
+                </div>
+                <div class="input-group">
+                    <label>Apellido Materno</label>
+                    <input type="text" name="apellidoMaterno" required>
+                </div>
 
-        <label>Nombre:</label>
-        <input type="text" name="nombre" required><br>
+                <div class="input-group">
+                    <label>Contraseña</label>
+                    <input type="password" name="password" required>
+                </div>
+                <div class="input-group">
+                    <label>Confirmar contraseña</label>
+                    <input type="password" name="confirm_password" required>
+                </div>
 
-        <label>Apellido Paterno:</label>
-        <input type="text" name="apellidoPaterno" required><br>
+                <div class="input-group">
+                    <label>Fecha de Nacimiento <small>(DD/MM/AAAA)</small></label>
+                    <input type="date" name="fechaNacimiento" id="fechaNacimiento" required>
+                </div>
+                <div class="input-group">
+                    <label>Número de Celular</label>
+                    <input type="text" name="celular" required>
+                </div>
 
-        <label>Apellido Materno:</label>
-        <input type="text" name="apellidoMaterno" required><br>
+                <div class="input-group">
+                    <label>Departamento</label>
+                    <select id="departamentoSelect" name="departamento" required>
+                        <option value="">Seleccione departamento</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Provincia</label>
+                    <select id="provinciaSelect" name="provincia" required disabled>
+                        <option value="">Seleccione provincia</option>
+                    </select>
+                    <span id="provinciaLoading" class="loading-text" style="display:none;">Cargando provincias...</span>
+                </div>
 
-        <label>Contraseña:</label>
-        <input type="password" name="password" required><br>
+                <div class="input-group">
+                    <label>Distrito</label>
+                    <select id="distritoSelect" name="distrito" required disabled>
+                        <option value="">Seleccione distrito</option>
+                    </select>
+                    <span id="distritoLoading" class="loading-text" style="display:none;">Cargando distritos...</span>
+                </div>
+                <div class="input-group">
+                    <label>Tu Cineplanet favorito <small>Campo Opcional</small></label>
+                    <select id="cineplanetFavoritoSelect" name="cineplanetFavorito" required>
+                        <option value="">Seleccione un cine</option>
+                    </select>
+                </div>
+            </div>
 
-        <label>Confirmar contraseña:</label>
-        <input type="password" name="confirm_password" required><br>
+            <div class="gender-section">
+                <span class="gender-label">Género</span>
+                <div class="gender-options">
+                    <label><input type="radio" name="genero" value="Hombre" required> Hombre</label>
+                    <label><input type="radio" name="genero" value="Mujer" required> Mujer</label>
+                </div>
+            </div>
 
-        <label>Fecha de Nacimiento:</label>
-        <input type="date" name="fechaNacimiento" id="fechaNacimiento" required><br>
+            <div class="checkbox-section">
+                <div class="checkbox-item">
+                    <input type="checkbox" name="acepta_terminos" required>
+                    <span>Acepto los <a href="#">Términos y Condiciones</a> y la <a href="#">Política de Privacidad</a></span>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" name="acepta_finalidades" required>
+                    <span>He leído y acepto las finalidades de tratamiento adicionales</span>
+                </div>
+            </div>
 
-        <label>Número de Celular:</label>
-        <input type="text" name="celular" required><br>
-
-        <label>Departamento:</label>
-        <select id="departamentoSelect" name="departamento" required>
-            <option value="">Seleccione departamento</option>
-        </select><br>
-
-        <label>Provincia:</label>
-        <select id="provinciaSelect" name="provincia" required disabled>
-            <option value="">Seleccione provincia</option>
-        </select>
-        <span id="provinciaLoading" style="display:none; color: blue;">Cargando provincias...</span><br>
-
-        <label>Distrito:</label>
-        <select id="distritoSelect" name="distrito" required disabled>
-            <option value="">Seleccione distrito</option>
-        </select>
-        <span id="distritoLoading" style="display:none; color: blue;">Cargando distritos...</span><br>
-
-        <label>Tu Cineplanet favorito:</label>
-        <select id="cineplanetFavoritoSelect" name="cineplanetFavorito" required>
-            <option value="">Seleccione un cine</option>
-        </select><br>
-
-        <label>Género:</label>
-        <input type="radio" name="genero" value="Hombre" required> Hombre
-        <input type="radio" name="genero" value="Mujer" required> Mujer<br>
-
-        <input type="checkbox" name="acepta_terminos" required> Acepto los Términos y Condiciones y la Política de Privacidad<br>
-        <input type="checkbox" name="acepta_finalidades" required> He leído y acepto las finalidades de tratamiento adicionales<br>
-
-        <button type="submit">Registrarse</button>
-    </form>
+            <button type="submit" class="submit-btn"><i class="fa-regular fa-user"></i> Unirme</button>
+        </form>
+    </div>
 
     <script>
         const departamentoSelect = document.getElementById('departamentoSelect');

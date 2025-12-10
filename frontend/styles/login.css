@@ -1,0 +1,120 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+}
+.login-card {
+    background: #fff;
+    padding: 40px 30px;
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    box-shadow: 0 0 25px rgba(0,0,0,0.05);
+    border-radius: 8px;
+    position: relative;
+}
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #999;
+    cursor: pointer;
+    padding: 5px;
+    line-height: 1;
+}
+.close-btn:hover {
+    color: #333;
+}
+h2 {
+    color: #003985;
+    font-size: 2.2rem;
+    margin: 0 0 15px 0;
+    font-weight: 700;
+}
+p.description {
+    font-size: 0.9rem;
+    color: #333;
+    margin-bottom: 40px;
+    line-height: 1.4;
+}
+.form-group {
+    margin-bottom: 30px;
+    position: relative;
+}
+.form-group label {
+    display: block;
+    color: #333;
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+    font-weight: 400;
+}
+.form-group input {
+    width: 100%;
+    padding: 8px 0;
+    border: none;
+    border-bottom: 1px solid #999;
+    outline: none;
+    text-align: center;
+    font-size: 1.1rem;
+    color: #333;
+    background: transparent;
+    box-sizing: border-box;
+}
+.form-group input:focus {
+    border-bottom: 2px solid #003985;
+}
+.helper-text {
+    font-size: 0.8rem;
+    color: #000;
+    margin-top: 5px;
+    font-weight: 500;
+}
+.password-container {
+    position: relative;
+}
+.help-icon {
+    position: absolute;
+    right: 0;
+    bottom: 10px;
+    color: #003985;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+.forgot-password {
+    display: block;
+    margin: 30px 0;
+    color: #000;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+button[type="submit"] {
+    background-color: #003985;
+    color: white;
+    border: none;
+    padding: 14px 60px;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+button[type="submit"]:hover {
+    background-color: #00285e;
+}
+#invitado-container button {
+    margin-top: 20px;
+    background: none;
+    border: 1px solid #ccc;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    color: #666;
+}

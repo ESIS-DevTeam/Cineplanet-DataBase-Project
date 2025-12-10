@@ -1,0 +1,78 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+}
+.register-card {
+    background: #fff;
+    padding: 40px 50px;
+    width: 100%;
+    max-width: 800px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.05);
+    border-radius: 8px;
+    position: relative;
+}
+.close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #999;
+    cursor: pointer;
+    line-height: 1;
+}
+.close-btn:hover {
+    color: #333;
+}
+h2 {
+    color: #003985;
+    font-size: 2.5rem;
+    margin: 0 0 10px 0;
+    font-weight: 700;
+    text-align: center;
+}
+.subtitle {
+    text-align: center;
+    color: #333;
+    margin-bottom: 40px;
+    font-size: 0.95rem;
+}
+.subtitle span {
+    color: #b9292f;
+}
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px 40px;
+    margin-bottom: 30px;
+}
+@media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+.input-group { display: flex; flex-direction: column; }
+.input-group label { color: #333; font-size: 1rem; margin-bottom: 5px; }
+.input-group input, .input-group select {
+    border: none; border-bottom: 1px solid #999; padding: 8px 0;
+    font-size: 1rem; outline: none; background: transparent; width: 100%; color: #333;
+}
+.input-group input:focus, .input-group select:focus { border-bottom: 2px solid #003985; }
+.gender-section { text-align: center; margin-bottom: 30px; }
+.gender-label { font-weight: bold; font-size: 0.9rem; margin-bottom: 10px; display: block; }
+.gender-options { display: flex; justify-content: center; gap: 20px; }
+.gender-options label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 1.1rem; color: #003985; }
+.checkbox-section { margin-bottom: 30px; font-size: 0.9rem; }
+.checkbox-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+.checkbox-item input { margin-top: 4px; }
+.checkbox-item a { color: blue; text-decoration: underline; }
+.submit-btn {
+    display: block; margin: 0 auto; background-color: #d31027; color: white;
+    border: none; padding: 12px 50px; border-radius: 30px; font-size: 1.1rem;
+    font-weight: 600; cursor: pointer; transition: background 0.3s;
+}
+.submit-btn:hover { background-color: #b00d20; }
+.loading-text { font-size: 0.8rem; color: #003985; margin-top: 4px; }
